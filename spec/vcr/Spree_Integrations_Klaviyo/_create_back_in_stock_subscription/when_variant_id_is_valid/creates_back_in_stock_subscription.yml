@@ -1,0 +1,72 @@
+---
+http_interactions:
+- request:
+    method: post
+    uri: https://a.klaviyo.com/api/back-in-stock-subscriptions/
+    body:
+      encoding: UTF-8
+      string: '{"data":{"type":"back-in-stock-subscription","attributes":{"channels":["EMAIL"],"profile":{"data":{"type":"profile","attributes":{"email":"user@gmail.com"}}}},"relationships":{"variant":{"data":{"type":"catalog-variant","id":"$custom:::$default:::f91550db-8682-404f-81f3-fc48f98de2d0"}}}}}'
+    headers:
+      Accept-Encoding:
+      - gzip;q=1.0,deflate;q=0.6,identity;q=0.3
+      Accept:
+      - application/json
+      User-Agent:
+      - Ruby
+      Host:
+      - a.klaviyo.com
+      Revision:
+      - '2023-09-15'
+      Content-Type:
+      - application/json
+      Authorization:
+      - Klaviyo-API-Key <KLAVIYO_PRIVATE_API_KEY>
+  response:
+    status:
+      code: 202
+      message: Accepted
+    headers:
+      Date:
+      - Wed, 17 Apr 2024 16:10:18 GMT
+      Content-Length:
+      - '0'
+      Connection:
+      - keep-alive
+      Cf-Ray:
+      - 875daf3a8f21fbde-WAW
+      Cf-Cache-Status:
+      - DYNAMIC
+      Allow:
+      - GET, POST, HEAD, OPTIONS
+      Content-Language:
+      - en-us
+      Strict-Transport-Security:
+      - max-age=31536000; includeSubDomains; preload
+      Vary:
+      - Accept-Language, Cookie, Accept-Encoding
+      Cid:
+      - TRJmuC
+      Content-Security-Policy:
+      - script-src 'report-sample' 'strict-dynamic' 'unsafe-eval' https://cdn.ampproject.org/;
+        object-src 'none'; base-uri 'none'; frame-ancestors 'self' login.bigcommerce.com
+        *.mybigcommerce.com admin.shopify.com klaviyo.file.force.com klaviyo.lightning.force.com
+        klaviyo.my.salesforce.com; report-uri /csp/
+      Ratelimit-Limit:
+      - 350, 350;w=1, 3500;w=60
+      Ratelimit-Remaining:
+      - '349'
+      Ratelimit-Reset:
+      - '0'
+      X-Content-Type-Options:
+      - nosniff
+      X-Klaviyo-Api-Revision:
+      - '2023-09-15'
+      X-Robots-Tag:
+      - noindex, nofollow
+      Server:
+      - cloudflare
+    body:
+      encoding: UTF-8
+      string: ''
+  recorded_at: Wed, 17 Apr 2024 16:10:18 GMT
+recorded_with: VCR 6.2.0

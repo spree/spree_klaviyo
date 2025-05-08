@@ -21,3 +21,5 @@ public/spree
 .ruby-gemset
 *.gem
 */*.gem
+.env
+.env.test

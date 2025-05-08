@@ -1,0 +1,74 @@
+---
+http_interactions:
+- request:
+    method: post
+    uri: https://a.klaviyo.com/api/events/
+    body:
+      encoding: UTF-8
+      string: '{"data":{"type":"event","attributes":{"properties":{"name":"Product
+        42352","price":19.99,"brand":null,"category":null,"currency":"USD","url":"http://www.example.com:3000/products/product-42352","image_url":"","sku":"SKU-4"},"metric":{"data":{"type":"metric","attributes":{"name":"Product
+        Viewed"}}},"profile":{"data":{"type":"profile","attributes":{"anonymous_id":"guest-user-id-abcd1234"}}}}}}'
+    headers:
+      Accept-Encoding:
+      - gzip;q=1.0,deflate;q=0.6,identity;q=0.3
+      Accept:
+      - application/json
+      User-Agent:
+      - Ruby
+      Host:
+      - a.klaviyo.com
+      Revision:
+      - '2025-04-15'
+      Content-Type:
+      - application/json
+      Authorization:
+      - Klaviyo-API-Key <KLAVIYO_PRIVATE_API_KEY>
+  response:
+    status:
+      code: 202
+      message: Accepted
+    headers:
+      Date:
+      - Thu, 15 May 2025 12:17:43 GMT
+      Content-Length:
+      - '0'
+      Connection:
+      - keep-alive
+      Allow:
+      - GET, POST, HEAD, OPTIONS
+      Cid:
+      - "<KLAVIYO_PUBLIC_API_KEY>"
+      Content-Language:
+      - en-us
+      Content-Security-Policy:
+      - base-uri 'none'; script-src 'report-sample' 'strict-dynamic' 'unsafe-eval';
+        object-src 'none'; frame-ancestors 'self' login.bigcommerce.com *.mybigcommerce.com
+        admin.shopify.com klaviyo.file.force.com klaviyo.lightning.force.com klaviyo.my.salesforce.com;
+        report-uri /csp/
+      Ratelimit-Limit:
+      - 350, 350;w=1, 3500;w=60
+      Ratelimit-Remaining:
+      - '349'
+      Ratelimit-Reset:
+      - '0'
+      Vary:
+      - Accept, Accept-Language, Cookie
+      X-Klaviyo-Api-Revision:
+      - '2025-04-15'
+      X-Envoy-Upstream-Service-Time:
+      - '58'
+      Cf-Cache-Status:
+      - DYNAMIC
+      Strict-Transport-Security:
+      - max-age=31536000; includeSubDomains; preload
+      X-Content-Type-Options:
+      - nosniff
+      Server:
+      - cloudflare
+      Cf-Ray:
+      - 940292e668e401fa-WAW
+    body:
+      encoding: UTF-8
+      string: ''
+  recorded_at: Thu, 15 May 2025 12:17:43 GMT
+recorded_with: VCR 6.3.1
