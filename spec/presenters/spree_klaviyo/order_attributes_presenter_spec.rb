@@ -25,7 +25,7 @@ RSpec.describe SpreeKlaviyo::OrderAttributesPresenter do
     it 'builds top-level attributes' do
       expect(subject).to eq(
         value: order.total.to_f,
-        time: '2023-01-02T03:15:22-06:00'
+        time: order.canceled_at.iso8601
       )
     end
   end
