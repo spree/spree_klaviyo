@@ -16,9 +16,9 @@ module SpreeKlaviyo
 
     def time(order)
       case @event_name
-      when Spree::Analytics.events[:order_completed]
+      when ::Spree::Analytics.events[:order_completed]
         order.completed_at
-      when Spree::Analytics.events[:order_canceled]
+      when ::Spree::Analytics.events[:order_canceled]
         order.canceled_at
       else
         order.updated_at

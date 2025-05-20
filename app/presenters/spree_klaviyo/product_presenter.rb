@@ -1,6 +1,6 @@
 module SpreeKlaviyo
   class ProductPresenter
-    include Spree::BaseHelper
+    include ::Spree::BaseHelper
     include ::Spree::ImagesHelper
     include Rails.application.routes.mounted_helpers
 

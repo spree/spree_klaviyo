@@ -1,9 +1,9 @@
 module SpreeKlaviyo
   class FetchProfile < Base
-    prepend Spree::ServiceModule::Base
+    prepend ::Spree::ServiceModule::Base
 
     def call(klaviyo_integration:, user:)
-      return failure(false, Spree.t('admin.integrations.klaviyo.not_found')) unless klaviyo_integration
+      return failure(false, ::Spree.t('admin.integrations.klaviyo.not_found')) unless klaviyo_integration
 
       return success(user.klaviyo_id) if user.klaviyo_id.present?
 

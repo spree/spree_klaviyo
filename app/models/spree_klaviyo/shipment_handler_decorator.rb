@@ -8,7 +8,7 @@ module SpreeKlaviyo
     def track_package_shipped_event
       order = @shipment.order
 
-      analytics_event_handlers = Spree::Analytics.event_handlers.map do |handler|
+      analytics_event_handlers = ::Spree::Analytics.event_handlers.map do |handler|
         handler.new(user: order.user, session: nil, request: nil, store: order.store)
       end
 
@@ -24,5 +24,5 @@ module SpreeKlaviyo
     end
   end
 
-  Spree::ShipmentHandler.prepend(ShipmentHandlerDecorator)
+  ::Spree::ShipmentHandler.prepend(ShipmentHandlerDecorator)
 end

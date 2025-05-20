@@ -1,7 +1,7 @@
 module SpreeKlaviyo
   class LineItemPresenter < ProductPresenter
-    include Spree::BaseHelper
-    include Spree::ProductsHelper
+    include ::Spree::BaseHelper
+    include ::Spree::ProductsHelper
 
     def initialize(resource:, quantity:, total_price:, currency:, store:, position: nil)
       @resource = resource

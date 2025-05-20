@@ -4,7 +4,7 @@ module SpreeKlaviyo
       KLAVIYO_API_URL = "https://a.klaviyo.com/api/".freeze
       KLAVIYO_API_REVISION = "2025-04-15".freeze
 
-      class Result < Spree::ServiceModule::Result; end
+      class Result < ::Spree::ServiceModule::Result; end
 
       def initialize(public_api_key:, private_api_key:)
         @public_api_key = public_api_key

@@ -29,5 +29,5 @@ module SpreeKlaviyo
     end
   end
 
-  Spree::Order.prepend(OrderDecorator)
+  ::Spree::Order.prepend(OrderDecorator)
 end

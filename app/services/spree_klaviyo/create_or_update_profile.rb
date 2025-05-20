@@ -1,9 +1,9 @@
 module SpreeKlaviyo
   class CreateOrUpdateProfile < Base
-    prepend Spree::ServiceModule::Base
+    prepend ::Spree::ServiceModule::Base
 
     def call(klaviyo_integration:, user:, guest_id: nil)
-      return failure(false, Spree.t('admin.integrations.klaviyo.not_found')) unless klaviyo_integration
+      return failure(false, ::Spree.t('admin.integrations.klaviyo.not_found')) unless klaviyo_integration
 
       if user.klaviyo_id.blank?
         fetch_profile_result = FetchProfile.call(klaviyo_integration: klaviyo_integration, user: user)

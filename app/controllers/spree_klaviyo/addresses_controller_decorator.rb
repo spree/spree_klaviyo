@@ -1,7 +1,7 @@
 module SpreeKlaviyo
   module AddressesControllerDecorator
     def self.prepended(base)
-      base.include Spree::IntegrationsHelper
+      base.include ::Spree::IntegrationsHelper
 
       base.after_action :create_or_update_klaviyo_profile, only: %i[create update]
     end

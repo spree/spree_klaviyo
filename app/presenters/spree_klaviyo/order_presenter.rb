@@ -1,6 +1,6 @@
 module SpreeKlaviyo
   class OrderPresenter
-    include Spree::BaseHelper
+    include ::Spree::BaseHelper
     include ::Spree::ImagesHelper
 
     def initialize(order:)
@@ -12,7 +12,7 @@ module SpreeKlaviyo
     def call
       {
         email: @order&.user&.email || @order.email,
-        customer_name: @order.name || Spree.t('customer'),
+        customer_name: @order.name || ::Spree.t('customer'),
         store_name: @current_store.name,
         order_id: @order.number,
         order_number: @order.number,
@@ -31,7 +31,7 @@ module SpreeKlaviyo
         coupon: @order.coupon_code.to_s,
         currency: @order.currency,
         completed_at: @order.completed_at&.iso8601.to_s,
-        checkout_url: Spree::Core::Engine.routes.url_helpers.checkout_url(host: @current_store.url_or_custom_domain, token: @order.token),
+        checkout_url: ::Spree::Core::Engine.routes.url_helpers.checkout_url(host: @current_store.url_or_custom_domain, token: @order.token),
         all_adjustments: all_adjustments,
         bill_address: AddressPresenter.new(address: @order.bill_address).call,
         ship_address: AddressPresenter.new(address: @order.ship_address).call
@@ -88,7 +88,7 @@ module SpreeKlaviyo
 
     def try_variants(variant)
       {
-        variant_dict: Spree::Variants::OptionsPresenter.new(variant).to_hash
+        variant_dict: ::Spree::Variants::OptionsPresenter.new(variant).to_hash
       }
     end
   end

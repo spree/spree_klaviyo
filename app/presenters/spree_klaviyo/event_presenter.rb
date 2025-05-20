@@ -33,7 +33,7 @@ module SpreeKlaviyo
     private
 
     def top_level_attributes
-      if @resource.is_a?(Spree::Order)
+      if @resource.is_a?(::Spree::Order)
         OrderAttributesPresenter.new(event_name: @event, order: @resource).call
       else
         {}
@@ -41,13 +41,13 @@ module SpreeKlaviyo
     end
 
     def properties
-      if @resource.is_a? Spree::Order
+      if @resource.is_a? ::Spree::Order
         OrderPresenter.new(order: @resource).call
-      elsif @resource.is_a? Spree::Shipment
+      elsif @resource.is_a? ::Spree::Shipment
         ShipmentPresenter.new(shipment: @resource, store: @store).call
-      elsif @resource.is_a? Spree::Product
+      elsif @resource.is_a? ::Spree::Product
         ProductPresenter.new(product: @resource, store: @store).call
-      elsif @resource.is_a? Spree::Taxon
+      elsif @resource.is_a? ::Spree::Taxon
         TaxonPresenter.new(taxon: @resource).call
       elsif @resource.is_a? String
         {
@@ -59,7 +59,7 @@ module SpreeKlaviyo
     end
 
     def profile
-      if @resource.is_a?(Spree::Order) && events_that_update_profile.include?(@event)
+      if @resource.is_a?(::Spree::Order) && events_that_update_profile.include?(@event)
         UserPresenter.new(
           email: @email,
           address: @resource&.bill_address || @resource&.ship_address,
@@ -91,7 +91,7 @@ module SpreeKlaviyo
     end
 
     def events_that_update_profile
-      @events_that_update_profile ||= [Spree::Analytics.events[:checkout_email_entered], Spree::Analytics.events[:order_completed]]
+      @events_that_update_profile ||= [::Spree::Analytics.events[:checkout_email_entered], ::Spree::Analytics.events[:order_completed]]
     end
   end
 end

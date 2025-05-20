@@ -1,8 +1,8 @@
 module SpreeKlaviyo
   class ShipmentPresenter < OrderPresenter
-    include Spree::BaseHelper
-    include Spree::ProductsHelper
-    include Spree::ImagesHelper
+    include ::Spree::BaseHelper
+    include ::Spree::ProductsHelper
+    include ::Spree::ImagesHelper
     include Rails.application.routes.mounted_helpers
 
     def initialize(shipment:, order: nil, store: nil)
@@ -13,7 +13,7 @@ module SpreeKlaviyo
 
     def call
       {
-        customer_name: @order.name || Spree.t('customer'),
+        customer_name: @order.name || ::Spree.t('customer'),
         email: @order&.user&.email || @order.email,
         order_number: @order.number,
         shipping_method: shipping_method_name(@shipment),
