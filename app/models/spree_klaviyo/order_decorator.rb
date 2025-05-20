@@ -17,9 +17,10 @@ module SpreeKlaviyo
     end
 
     def track_order_cancelled_event
-      analytics_event_handler = SpreeKlaviyo::AnalyticsEventHandler.new(user: user, session: nil, request: nil, store: store)
+      klaviyo_integration = store.integrations.active.find_by(type: 'Spree::Integrations::Klaviyo')
+      return if klaviyo_integration.nil?
 
-      analytics_event_handler.handle_event('order_cancelled', { order: self })
+      klaviyo_integration.create_event(event: 'Order Cancelled', resource: self, email: email)
     rescue StandardError => e
       Rails.error.report(
         e,

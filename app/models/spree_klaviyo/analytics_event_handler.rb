@@ -40,12 +40,9 @@ module SpreeKlaviyo
                when 'checkout_step_viewed', 'checkout_step_completed'
                  email ||= properties[:order].email
                  properties[:order]
-               when 'order_completed', 'order_cancelled'
+               when 'order_completed'
                  email ||= properties[:order].email
                  properties[:order]
-               when 'package_shipped'
-                 email ||= properties[:order].email
-                 properties[:shipment]
                when 'subscribed_to_newsletter'
                  email ||= properties[:email]
                  SpreeKlaviyo::SubscribeJob.perform_later(client.id, email, user&.id)

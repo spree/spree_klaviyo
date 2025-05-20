@@ -18,7 +18,7 @@ module SpreeKlaviyo
       case @event_name
       when ::Spree::Analytics.events[:order_completed]
         order.completed_at
-      when ::Spree::Analytics.events[:order_canceled]
+      when 'Order Cancelled'
         order.canceled_at
       else
         order.updated_at

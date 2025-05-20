@@ -6,6 +6,7 @@ describe Spree::Shipment, type: :model do
   let(:shipment) do
     create(:shipment, number: 'H21265865494', cost: 1, state: 'pending', stock_location: create(:stock_location), order: order)
   end
+  let!(:klaviyo_integration) { create(:klaviyo_integration, store: order.store) }
 
   describe '#ship' do
     %w[ready canceled].each do |state|
@@ -16,10 +17,8 @@ describe Spree::Shipment, type: :model do
         end
 
         it 'tracks package shipped event' do
-          analytics_event_handler = double
-          allow(Spree::Analytics).to receive(:event_handlers).and_return([analytics_event_handler])
-          allow(analytics_event_handler).to receive(:new).and_return(analytics_event_handler)
-          expect(analytics_event_handler).to receive(:handle_event).with('package_shipped', { order: order, shipment: shipment })
+          expect_any_instance_of(Spree::Integrations::Klaviyo).to receive(:create_event)
+            .with(event: 'Package Shipped', resource: shipment, email: order.email)
 
           shipment.ship!
         end
