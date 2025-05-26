@@ -1,9 +1,6 @@
 module SpreeKlaviyo
   module Klaviyo
     class Client
-      KLAVIYO_API_URL = "https://a.klaviyo.com/api/".freeze
-      KLAVIYO_API_REVISION = "2025-04-15".freeze
-
       class Result < ::Spree::ServiceModule::Result; end
 
       def initialize(public_api_key:, private_api_key:)
@@ -14,7 +11,7 @@ module SpreeKlaviyo
       def get_request(api_endpoint)
         request = Net::HTTP::Get.new(url(api_endpoint))
         request["accept"] = "application/json"
-        request["revision"] = KLAVIYO_API_REVISION
+        request["revision"] = SpreeKlaviyo::Config[:klaviyo_api_revision]
         request["Authorization"] = "Klaviyo-API-Key #{private_api_key}"
 
         response = http.request(request)
@@ -29,7 +26,7 @@ module SpreeKlaviyo
       def post_request(api_endpoint, body)
         request = Net::HTTP::Post.new(url(api_endpoint))
         request["accept"] = "application/json"
-        request["revision"] = KLAVIYO_API_REVISION
+        request["revision"] = SpreeKlaviyo::Config[:klaviyo_api_revision]
         request["content-type"] = "application/json"
         request["Authorization"] = "Klaviyo-API-Key #{private_api_key}"
         request.body = body.to_json
@@ -46,7 +43,7 @@ module SpreeKlaviyo
       def patch_request(api_endpoint, body)
         request = Net::HTTP::Patch.new(url(api_endpoint))
         request["accept"] = "application/json"
-        request["revision"] = KLAVIYO_API_REVISION
+        request["revision"] = SpreeKlaviyo::Config[:klaviyo_api_revision]
         request["content-type"] = "application/json"
         request["Authorization"] = "Klaviyo-API-Key #{private_api_key}"
         request.body = body.to_json
@@ -65,12 +62,14 @@ module SpreeKlaviyo
       attr_reader :public_api_key, :private_api_key
 
       def url(endpoint = "")
-        @url ||= URI.join(KLAVIYO_API_URL, endpoint)
+        @url ||= URI.join(SpreeKlaviyo::Config[:klaviyo_api_url], endpoint)
       end
 
       def http
         @http ||= Net::HTTP.new(url.host, url.port).tap do |net_http_instance|
           net_http_instance.use_ssl = true
+          net_http_instance.open_timeout = SpreeKlaviyo::Config[:klaviyo_api_open_timeout]
+          net_http_instance.read_timeout = SpreeKlaviyo::Config[:klaviyo_api_read_timeout]
         end
       end
     end

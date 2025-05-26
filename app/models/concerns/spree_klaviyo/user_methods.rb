@@ -13,16 +13,12 @@ module SpreeKlaviyo
 
     def create_or_update_klaviyo_profile(klaviyo_integration:, guest_id: nil)
       SpreeKlaviyo::CreateOrUpdateProfileJob.perform_later(klaviyo_integration.id, id, guest_id)
-    rescue RedisClient::CannotConnectError, Redis::CannotConnectError, Redis::TimeoutError, Redis::CommandError => e
-      Rails.error.report(e, context: { user_id: id }, source: 'spree.klaviyo')
     end
 
     def fetch_klaviyo_profile(klaviyo_integration:)
       return if klaviyo_id.present?
 
       SpreeKlaviyo::FetchProfileJob.perform_later(klaviyo_integration.id, id)
-    rescue RedisClient::CannotConnectError, Redis::CannotConnectError, Redis::TimeoutError, Redis::CommandError => e
-      Rails.error.report(e, context: { user_id: id }, source: 'spree.klaviyo')
     end
   end
 end
