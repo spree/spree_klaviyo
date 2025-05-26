@@ -25,5 +25,9 @@ Gem::Specification.new do |s|
   s.add_dependency 'spree_admin', '>= 5.0.3'
   s.add_dependency 'spree_extension'
 
+  s.add_development_dependency 'dotenv'
+  s.add_development_dependency 'rubocop-rspec'
   s.add_development_dependency 'spree_dev_tools'
+  s.add_development_dependency 'vcr'
+  s.add_development_dependency 'webmock'
 end

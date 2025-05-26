@@ -1,0 +1,73 @@
+---
+http_interactions:
+- request:
+    method: post
+    uri: https://a.klaviyo.com/api/profile-subscription-bulk-create-jobs/
+    body:
+      encoding: UTF-8
+      string: '{"data":{"type":"profile-subscription-bulk-create-job","attributes":{"profiles":{"data":[{"type":"profile","attributes":{"email":"wrong-email"}}]}},"relationships":{"list":{"data":{"type":"list","id":"XLUG56"}}}}}'
+    headers:
+      Accept-Encoding:
+      - gzip;q=1.0,deflate;q=0.6,identity;q=0.3
+      Accept:
+      - application/json
+      User-Agent:
+      - Ruby
+      Host:
+      - a.klaviyo.com
+      Revision:
+      - '2023-09-15'
+      Content-Type:
+      - application/json
+      Authorization:
+      - Klaviyo-API-Key <KLAVIYO_PRIVATE_API_KEY>
+  response:
+    status:
+      code: 400
+      message: Bad Request
+    headers:
+      Date:
+      - Thu, 26 Oct 2023 08:30:54 GMT
+      Content-Type:
+      - application/vnd.api+json
+      Content-Length:
+      - '229'
+      Connection:
+      - keep-alive
+      Cf-Ray:
+      - 81c15706da7cfbde-WAW
+      Cf-Cache-Status:
+      - DYNAMIC
+      Allow:
+      - GET, POST, HEAD, OPTIONS
+      Strict-Transport-Security:
+      - max-age=31536000; includeSubDomains; preload
+      Vary:
+      - Cookie, Accept-Encoding
+      Cid:
+      - RZUvUQ
+      Content-Security-Policy:
+      - object-src 'none'; script-src 'report-sample' 'strict-dynamic' 'unsafe-eval';
+        base-uri 'none'; frame-ancestors 'self' login.bigcommerce.com *.mybigcommerce.com
+        admin.shopify.com klaviyo.file.force.com klaviyo.lightning.force.com klaviyo.my.salesforce.com;
+        report-uri /csp/
+      Ratelimit-Limit:
+      - 700, 75;w=1, 700;w=60
+      Ratelimit-Remaining:
+      - '699'
+      Ratelimit-Reset:
+      - '10'
+      X-Content-Type-Options:
+      - nosniff
+      X-Klaviyo-Api-Revision:
+      - '2023-07-15'
+      X-Robots-Tag:
+      - noindex, nofollow
+      Server:
+      - cloudflare
+    body:
+      encoding: UTF-8
+      string: '{"errors":[{"id":"c88d36da-3c53-46f8-a0b5-dce512bfa497","status":400,"code":"invalid","title":"Invalid
+        input.","detail":"Invalid email address","source":{"pointer":"/data/attributes/profiles/data/0/attributes/email"},"meta":{}}]}'
+  recorded_at: Thu, 26 Oct 2023 08:30:54 GMT
+recorded_with: VCR 6.2.0
