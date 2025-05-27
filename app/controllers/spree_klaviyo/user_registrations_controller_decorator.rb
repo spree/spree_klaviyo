@@ -8,10 +8,11 @@ module SpreeKlaviyo
     private
 
     def create_or_update_klaviyo_profile
-      return if store_integration('klaviyo').nil?
+      integration = store_integration('klaviyo')
+      return if integration.nil?
 
       try_spree_current_user.create_or_update_klaviyo_profile(
-        klaviyo_integration: store_integration('klaviyo'),
+        klaviyo_integration: integration,
         guest_id: visitor_id
       )
     end
