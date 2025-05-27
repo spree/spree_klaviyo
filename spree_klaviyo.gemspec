@@ -8,21 +8,22 @@ Gem::Specification.new do |s|
   s.platform    = Gem::Platform::RUBY
   s.name        = 'spree_klaviyo'
   s.version     = SpreeKlaviyo::VERSION
-  s.summary     = "Spree Commerce Klaviyo Extension"
+  s.summary     = "Official Spree Commerce Klaviyo email marketing extension"
   s.required_ruby_version = '>= 3.0'
 
-  s.author    = 'You'
-  s.email     = 'you@example.com'
-  s.homepage  = 'https://github.com/your-github-handle/spree_klaviyo'
+  s.author    = 'Vendo Connect Inc.'
+  s.email     = 'hello@spreecommerce.org'
+  s.homepage  = 'https://spreecommerce.org'
   s.license = 'AGPL-3.0-or-later'
 
   s.files        = Dir["{app,config,db,lib,vendor}/**/*", "LICENSE.md", "Rakefile", "README.md"].reject { |f| f.match(/^spec/) && !f.match(/^spec\/fixtures/) }
   s.require_path = 'lib'
   s.requirements << 'none'
 
-  s.add_dependency 'spree', '>= 5.0.3'
-  s.add_dependency 'spree_storefront', '>= 5.0.3'
-  s.add_dependency 'spree_admin', '>= 5.0.3'
+  spree_opts = '>= 5.1.0.beta2'
+  s.add_dependency 'spree', spree_opts
+  s.add_dependency 'spree_storefront', spree_opts
+  s.add_dependency 'spree_admin', spree_opts
   s.add_dependency 'spree_extension'
 
   s.add_development_dependency 'dotenv'
