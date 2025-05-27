@@ -6,4 +6,4 @@ module SpreeKlaviyo
   end
 end
 
-Spree::User.prepend(SpreeKlaviyo::UserDecorator) if defined?(Spree::User)
+Spree.user_class.prepend(SpreeKlaviyo::UserDecorator) if Spree.user_class.present?
