@@ -1,6 +1,6 @@
 # Spree Klaviyo
 
-This is a Klaviyo extension for [Spree Commerce](https://spreecommerce.org), an open source e-commerce platform built with Ruby on Rails.
+This is an official Klaviyo email marketing extension for [Spree Commerce](https://spreecommerce.org).
 
 ## Installation
 
@@ -19,6 +19,10 @@ This is a Klaviyo extension for [Spree Commerce](https://spreecommerce.org), an 
 3. Restart your server
 
   If your server was running, restart it so that it can find the assets properly.
+
+## Configuration
+
+Go to [Klaviyo section in Spree Commerce documentation](https://spreecommerce.org/docs/integrations/klaviyo) for more information.
 
 ## Developing
 
@@ -58,4 +62,4 @@ If you'd like to contribute, please take a look at the
 [instructions](CONTRIBUTING.md) for installing dependencies and crafting a good
 pull request.
 
-Copyright (c) 2025 [name of extension creator], released under the New BSD License
+Copyright (c) 2025 [Vendo Connect Inc.](https://getvendo.com), released under the AGPL 3.0 license.
