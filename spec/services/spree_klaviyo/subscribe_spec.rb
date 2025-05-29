@@ -63,7 +63,7 @@ describe SpreeKlaviyo::Subscribe do
 
       it 'returns a failure' do
         expect(subject.success?).to be false
-        expect(subject.error.value).to eq Spree.t('admin.integrations.email_marketing.klaviyo.not_found')
+        expect(subject.error.value).to eq Spree.t('admin.integrations.klaviyo.not_found')
       end
     end
   end
