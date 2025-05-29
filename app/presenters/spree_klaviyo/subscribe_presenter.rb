@@ -1,9 +1,13 @@
 module SpreeKlaviyo
   class SubscribePresenter
-    def initialize(email:, list_id:, type: 'profile-subscription-bulk-create-job')
+    SUBSCRIBED = 'SUBSCRIBED'.freeze
+    UNSUBSCRIBED = 'UNSUBSCRIBED'.freeze
+
+    def initialize(email:, list_id:, type: 'profile-subscription-bulk-create-job', subscribed: true)
       @email = email
       @list_id = list_id
       @type = type
+      @subscribed = subscribed
     end
 
     def call
@@ -20,7 +24,7 @@ module SpreeKlaviyo
                     "subscriptions": {
                       "email": {
                         "marketing": {
-                          "consent": 'SUBSCRIBED'
+                          "consent": @subscribed ? SUBSCRIBED : UNSUBSCRIBED
                         }
                       }
                     }
