@@ -58,7 +58,8 @@ module Spree
         payload = ::SpreeKlaviyo::SubscribePresenter.new(
           email: email,
           list_id: preferred_default_newsletter_list_id,
-          type: 'profile-subscription-bulk-delete-job'
+          type: 'profile-subscription-bulk-delete-job',
+          subscribed: false
         ).call
 
         result = client.post_request(
