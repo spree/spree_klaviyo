@@ -20,9 +20,9 @@ This is an official Klaviyo email marketing extension for [Spree Commerce](https
 
   If your server was running, restart it so that it can find the assets properly.
 
-## Configuration
+## Setup guide
 
-Go to [Klaviyo section in Spree Commerce documentation](https://spreecommerce.org/docs/integrations/klaviyo) for more information.
+[Please follow our setup guide](https://spreecommerce.org/docs/integrations/marketing/klaviyo) how to setup Klaviyo with Spree Commerce.
 
 ## Developing
 

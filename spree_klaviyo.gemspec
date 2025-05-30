@@ -13,8 +13,7 @@ Gem::Specification.new do |s|
 
   s.author    = 'Vendo Connect Inc.'
   s.email     = 'hello@spreecommerce.org'
-  s.homepage  = 'https://spreecommerce.org/docs/integrations/marketing/klaviyo'
-  s.source    = 'https://github.com/spree/spree_klaviyo'
+  s.homepage  = 'https://github.com/spree/spree_klaviyo'
   s.license   = 'AGPL-3.0-or-later'
 
   s.files        = Dir["{app,config,db,lib,vendor}/**/*", "LICENSE.md", "Rakefile", "README.md"].reject { |f| f.match(/^spec/) && !f.match(/^spec\/fixtures/) }
