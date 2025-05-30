@@ -13,6 +13,10 @@ module SpreeKlaviyo
       SpreeKlaviyo::Config = SpreeKlaviyo::Configuration.new
     end
 
+    initializer 'spree_klaviyo.assets' do |app|
+      app.config.assets.precompile += %w[spree_klaviyo_manifest]
+    end
+
     def self.activate
       Dir.glob(File.join(File.dirname(__FILE__), '../../app/**/*_decorator*.rb')) do |c|
         Rails.configuration.cache_classes ? require(c) : load(c)

@@ -1,5 +1,11 @@
-# Sample localization file for English. Add more files in this directory for other locales.
-# See https://github.com/svenfuchs/rails-i18n/tree/master/rails%2Flocale for starting points.
-
+---
 en:
-  hello: "Hello world"
+  spree:
+    admin:
+      integrations:
+        klaviyo:
+          default_newsletter_list_id: Newsletter List ID
+          description: Klaviyo is a powerful email marketing platform that helps businesses understand and analyze their website and app data.
+          klaviyo_private_api_key: Private API Key
+          klaviyo_public_api_key: Public API Key
+          not_found: Klaviyo not connected.
