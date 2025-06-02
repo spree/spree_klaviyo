@@ -1,6 +1,28 @@
 # Spree Klaviyo
 
-This is an official Klaviyo email marketing extension for [Spree Commerce](https://spreecommerce.org).
+This is an official Klaviyo email marketing extension for [Spree Commerce](https://spreecommerce.org) - the [open-source eCommerce platform](https://spreecommerce.org) for [Rails](https://spreecommerce.org/category/ruby-on-rails/). 
+
+
+# Event Tracking
+
+Once the [Spree and Klaviyo integration is set up](https://spreecommerce.org/docs/integrations/marketing/klaviyo), Spree automatically tracks the following customer events happening on your store website and sends them to Klaviyo, so you could set up your desired email campaigns triggered by these events:
+- Product view
+- Product list view
+- Product search
+- Product added to cart
+- Product removed from cart
+- Checkout step view
+- Checkout step complete
+- Coupon entered/removed
+- Coupon applied/denied
+- Checkout email entered
+- Newsletter subscription
+- Unsubscribe from newsletter
+
+> [!NOTE]
+> When a user subscribes to the newsletter on the storefront, they’re automatically added to the list you configured in the integration settings.
+
+These events populate the Audience → Profiles section in Klaviyo, where you can view each user’s tracked activity and properties. Lists used for newsletter subscriptions can be found in Audience → Lists & Segments.
 
 ## Installation
 
@@ -63,3 +85,16 @@ If you'd like to contribute, please take a look at the
 pull request.
 
 Copyright (c) 2025 [Vendo Connect Inc.](https://getvendo.com), released under the AGPL 3.0 license.
+
+
+## Join the Community 
+
+[Join our Slack](https://slack.spreecommerce.org) to meet other 6k+ community members and get some support.
+
+## Need more support?
+
+[Contact us](https://spreecommerce.org/contact/) for enterprise support and custom development services. We offer:
+  * migrations and upgrades,
+  * delivering your Spree application,
+  * optimizing your Spree stack.
+
