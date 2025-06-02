@@ -1,7 +1,6 @@
-# Spree Klaviyo
+# Klaviyo integration for Spree Commerce
 
 This is an official Klaviyo email marketing extension for [Spree Commerce](https://spreecommerce.org) - the [open-source eCommerce platform](https://spreecommerce.org) for [Rails](https://spreecommerce.org/category/ruby-on-rails/). 
-
 
 # Event Tracking
 
