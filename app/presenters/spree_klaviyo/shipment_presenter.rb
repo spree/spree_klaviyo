@@ -37,7 +37,7 @@ module SpreeKlaviyo
         shipped_items_quantity = shipped_item.line_item.quantity
         {
           url: spree_storefront_resource_url(shipped_item.variant.product),
-          image_url: shipped_item.variant.default_image.present? ? spree_image_url(shipped_item.variant.default_image, width: 1200, height: 1200) : '',
+          image_url: shipped_item.variant.default_image.present? ? spree_image_url(shipped_item.variant.default_image, width: 1200, height: 1200, format: :png) : '',
           name: shipped_item.variant.name,
           variant: shipped_item.variant.options_text,
           sku: shipped_item.variant.sku,

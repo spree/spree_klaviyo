@@ -11,7 +11,7 @@ module SpreeKlaviyo
     def call
       {
         name: @taxon.pretty_name,
-        image_url: @taxon.image.present? ? spree_image_url(@taxon.image, width: 1200, height: 1200) : '',
+        image_url: @taxon.image.present? ? spree_image_url(@taxon.image, width: 1200, height: 1200, format: :png) : '',
         url: spree_storefront_resource_url(@taxon, store: @taxon.store)
       }
     end

@@ -20,7 +20,7 @@ module SpreeKlaviyo
         category: @product.main_taxon&.pretty_name,
         currency: current_currency,
         url: spree_storefront_resource_url(@product, store: @store),
-        image_url: @product.default_image.present? ? spree_image_url(@product.default_image, width: 1200, height: 1200) : '',
+        image_url: @product.default_image.present? ? spree_image_url(@product.default_image, width: 1200, height: 1200, format: :png) : '',
         sku: @product.sku
       }
     end
