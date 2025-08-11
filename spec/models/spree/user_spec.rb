@@ -4,10 +4,19 @@ RSpec.describe Spree.user_class, type: :model do
   include ActiveJob::TestHelper
 
   describe 'Klaviyo' do
-    describe '#subscribe_to_klaviyo' do
-      let(:user) { build(:user) }
-      let!(:klaviyo_integration) { create(:klaviyo_integration) }
-
+ describe 'Klaviyo' do
+   describe '#subscribe_to_klaviyo' do
+     let(:user) { build(:user) }
+     let!(:klaviyo_integration) { create(:klaviyo_integration) }
+ 
+     before do
+       ActiveJob::Base.queue_adapter = :test
+       clear_enqueued_jobs
+     end
+ 
+     after { clear_enqueued_jobs }
+ 
+     it 'enqueues a SubscribeJob' do
       it 'enqueues a SubscribeJob' do
         expect {
           user.send(:subscribe_to_klaviyo)
