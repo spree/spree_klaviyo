@@ -6,6 +6,10 @@ describe SpreeKlaviyo::Unsubscribe do
   let(:user) { create(:user) }
   let(:email) { user.email }
 
+  before do
+    allow_any_instance_of(Spree.user_class).to receive(:marketing_opt_in_changed?).and_return(false)
+  end
+
   describe '#call' do
     context 'when klaviyo integration exists' do
       let!(:klaviyo_integration) { create(:klaviyo_integration) }
@@ -14,7 +18,7 @@ describe SpreeKlaviyo::Unsubscribe do
         before do
           allow_any_instance_of(Spree::Integrations::Klaviyo)
             .to receive(:unsubscribe_user).with(email)
-            .and_return(Spree::ServiceModule::Result.new(true, user))
+                                          .and_return(Spree::ServiceModule::Result.new(true, user))
         end
 
         context 'when email belongs to registered user' do
@@ -55,7 +59,7 @@ describe SpreeKlaviyo::Unsubscribe do
         it 'returns failure' do
           allow_any_instance_of(Spree::Integrations::Klaviyo)
             .to receive(:unsubscribe_user).with(email)
-            .and_return(Spree::ServiceModule::Result.new(false, user))
+                                          .and_return(Spree::ServiceModule::Result.new(false, user))
 
           expect(subject.success?).to be false
         end
