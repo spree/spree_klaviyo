@@ -3,6 +3,10 @@ require 'spec_helper'
 RSpec.describe SpreeKlaviyo::CreateOrUpdateProfile do
   subject { described_class.call(klaviyo_integration: klaviyo_integration, user: user) }
 
+  before do
+    allow_any_instance_of(Spree.user_class).to receive(:marketing_opt_in_changed?).and_return(false)
+  end
+
   context 'when klaviyo integration is exists', :vcr do
     let(:user) { create(:user, email: email) }
 

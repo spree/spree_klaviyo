@@ -11,6 +11,4 @@ require 'spree_klaviyo/factories'
 # in spec/support/ and its subdirectories.
 Dir[File.join(File.dirname(__FILE__), 'support/**/*.rb')].sort.each { |f| require f }
 
-ActiveRecord::Migration.maintain_test_schema!
-
 Spree::LegacyUser.include SpreeKlaviyo::UserMethods
