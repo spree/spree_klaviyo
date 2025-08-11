@@ -5,6 +5,10 @@ describe SpreeKlaviyo::FetchProfile do
 
   let(:user) { create(:user) }
 
+  before do
+    allow(user).to receive(:marketing_opt_in_changed?).and_return(false)
+  end
+
   describe '#call' do
     context 'when klaviyo integration is exists' do
       let!(:klaviyo_integration) { create(:klaviyo_integration) }
