@@ -5,6 +5,8 @@ module SpreeKlaviyo
     included do
       store_accessor :private_metadata, :klaviyo_id
       store_accessor :private_metadata, :klaviyo_subscribed
+
+      after_commit :subscribe_to_klaviyo, on: :update, if: :marketing_opt_in_changed?
     end
 
     def klaviyo_subscribed?
@@ -19,6 +21,21 @@ module SpreeKlaviyo
       return if klaviyo_id.present?
 
       SpreeKlaviyo::FetchProfileJob.perform_later(klaviyo_integration.id, id)
+    end
+
+    private
+
+    def marketing_opt_in_changed?
+      return false if klaviyo_subscribed?
+
+      saved_change_to_accepted_marketing? && accepted_marketing?
+    end
+
+    def subscribe_to_klaviyo
+      klaviyo_integration = ::Spree::Integrations::Klaviyo.last
+      return unless klaviyo_integration
+
+      SpreeKlaviyo::SubscribeJob.perform_later(klaviyo_integration.id, email)
     end
   end
 end
