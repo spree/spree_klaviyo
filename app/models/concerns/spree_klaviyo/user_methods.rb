@@ -32,7 +32,7 @@ module SpreeKlaviyo
     end
 
     def subscribe_to_klaviyo
-      klaviyo_integration = ::Spree::Integrations::Klaviyo.last
+      klaviyo_integration = ::Spree::Integrations::Klaviyo.active.last
       return unless klaviyo_integration
 
       SpreeKlaviyo::SubscribeJob.perform_later(klaviyo_integration.id, email)

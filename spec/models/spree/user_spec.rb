@@ -13,6 +13,18 @@ RSpec.describe Spree.user_class, type: :model do
           user.send(:subscribe_to_klaviyo)
         }.to have_enqueued_job(SpreeKlaviyo::SubscribeJob)
       end
+
+      context 'when klaviyo integration is not active' do
+        before do
+          klaviyo_integration.update(active: false)
+        end
+
+        it 'does not enqueue a SubscribeJob' do
+          expect {
+            user.send(:subscribe_to_klaviyo)
+          }.not_to have_enqueued_job(SpreeKlaviyo::SubscribeJob)
+        end
+      end
     end
   end
 end
