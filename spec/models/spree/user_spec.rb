@@ -47,10 +47,6 @@ RSpec.describe Spree.user_class, type: :model do
     end
 
     describe '#marketing_opt_in_changed? (private)' do
-      before do
-        # user.klaviyo_subscribed = false
-      end
-
       context 'when using accepts_email_marketing column (integration style)' do
         before do
           skip 'accepts_email_marketing not present in this Spree version' unless Spree.user_class.new.respond_to?(:accepts_email_marketing)
