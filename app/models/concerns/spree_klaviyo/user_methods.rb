@@ -28,7 +28,7 @@ module SpreeKlaviyo
     def marketing_opt_in_changed?
       return false if klaviyo_subscribed?
 
-      saved_change_to_accepted_marketing? && accepted_marketing?
+      saved_change_to_accepts_email_marketing? && accepts_email_marketing?
     end
 
     def subscribe_to_klaviyo

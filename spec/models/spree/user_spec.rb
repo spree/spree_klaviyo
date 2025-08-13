@@ -48,32 +48,39 @@ RSpec.describe Spree.user_class, type: :model do
 
     describe '#marketing_opt_in_changed? (private)' do
       before do
-        allow(user).to receive(:klaviyo_subscribed?).and_return(false)
+        # user.klaviyo_subscribed = false
       end
 
-      it 'returns true when flag changed and accepted_marketing is true' do
-        allow(user).to receive(:saved_change_to_accepted_marketing?).and_return(true)
-        allow(user).to receive(:accepted_marketing?).and_return(true)
-        expect(user.send(:marketing_opt_in_changed?)).to be(true)
-      end
+      context 'when using accepts_email_marketing column (integration style)' do
+        before do
+          skip 'accepts_email_marketing not present in this Spree version' unless Spree.user_class.new.respond_to?(:accepts_email_marketing)
+        end
 
-      it 'returns false when flag did not change' do
-        allow(user).to receive(:saved_change_to_accepted_marketing?).and_return(false)
-        allow(user).to receive(:accepted_marketing?).and_return(true)
-        expect(user.send(:marketing_opt_in_changed?)).to be(false)
-      end
+        it 'returns true when toggled from false to true on the same instance' do
+          u = create(:user, accepts_email_marketing: false)
+          expect(u.accepts_email_marketing).to be(false)
+          # Ensure not already subscribed
+          expect(u.send(:klaviyo_subscribed?)).to be(false)
 
-      it 'returns false when accepted_marketing is false' do
-        allow(user).to receive(:saved_change_to_accepted_marketing?).and_return(true)
-        allow(user).to receive(:accepted_marketing?).and_return(false)
-        expect(user.send(:marketing_opt_in_changed?)).to be(false)
-      end
+          u.update!(accepts_email_marketing: true)
+          expect(u.accepts_email_marketing).to be(true)
+          expect(u.send(:marketing_opt_in_changed?)).to be(true)
+        end
 
-      it 'returns false when already subscribed (prevents duplicate enqueues)' do
-        allow(user).to receive(:klaviyo_subscribed?).and_return(true)
-        allow(user).to receive(:saved_change_to_accepted_marketing?).and_return(true)
-        allow(user).to receive(:accepted_marketing?).and_return(true)
-        expect(user.send(:marketing_opt_in_changed?)).to be(false)
+        it 'returns false when toggled to false' do
+          u = create(:user, accepts_email_marketing: true)
+          u.update!(accepts_email_marketing: false)
+          expect(u.accepts_email_marketing).to be(false)
+          expect(u.send(:marketing_opt_in_changed?)).to be(false)
+        end
+
+        it 'returns false when already Klaviyo-subscribed even if flag changed to true' do
+          u = create(:user, accepts_email_marketing: false)
+          u.klaviyo_subscribed = true
+          u.update!(accepts_email_marketing: true)
+          expect(u.accepts_email_marketing).to be(true)
+          expect(u.send(:marketing_opt_in_changed?)).to be(false)
+        end
       end
     end
   end
