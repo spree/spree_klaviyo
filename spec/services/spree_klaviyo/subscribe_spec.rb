@@ -48,6 +48,22 @@ describe SpreeKlaviyo::Subscribe do
           end
         end
 
+        context 'when guest email with custom properties' do
+          let(:user) { nil }
+          let(:email) { FFaker::Internet.email }
+          let(:subject_extra_kwargs) { { custom_properties: { 'foo' => 'bar' } } }
+
+          it 'builds a GuestUser and forwards to CreateOrUpdateProfile' do
+            expect(SpreeKlaviyo::CreateOrUpdateProfile).to receive(:call).with(hash_including(
+                                                                                 klaviyo_integration: klaviyo_integration,
+                                                                                 custom_properties: { 'foo' => 'bar' },
+                                                                                 user: instance_of(SpreeKlaviyo::GuestUser)
+                                                                               ))
+
+            subject
+          end
+        end
+
         context 'when custom properties are provided' do
           let(:subject_extra_kwargs) { { custom_properties: { 'Waitlist Zipcode' => '99999' } } }
 

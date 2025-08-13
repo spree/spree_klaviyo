@@ -9,14 +9,13 @@ module SpreeKlaviyo
         fetch_profile_result = FetchProfile.call(klaviyo_integration: klaviyo_integration, user: user)
 
         if fetch_profile_result.success?
-          if guest_id.present?
-            klaviyo_integration.update_profile(user, guest_id)
-          else
-            fetch_profile_result
-          end
+          guest_id.present? ? klaviyo_integration.update_profile(user, guest_id) : fetch_profile_result
         else
           klaviyo_integration.create_profile(user).tap do |res|
-            user.update!(klaviyo_id: JSON.parse(res.value).dig('data', 'id')) if res.success?
+            # Only persist klaviyo_id if this user record is already saved in DB.
+            if res.success? && user.persisted?
+              user.update_columns(klaviyo_id: JSON.parse(res.value).dig('data', 'id'))
+            end
           end
         end
       else
@@ -24,7 +23,18 @@ module SpreeKlaviyo
       end
 
       if custom_properties.present? && result.success?
-        klaviyo_id = user.reload.klaviyo_id
+        # Determine the Klaviyo profile id to update.
+        klaviyo_id = user.persisted? ? user.reload.klaviyo_id : nil
+
+        # Fallback: extract id from response payload if still blank.
+        if klaviyo_id.blank?
+          begin
+            parsed = JSON.parse(result.value)
+            klaviyo_id = parsed.dig('data', 0, 'id') || parsed.dig('data', 'id')
+          rescue JSON::ParserError
+            klaviyo_id = nil
+          end
+        end
         update_profile_properties(klaviyo_integration, klaviyo_id, custom_properties)
       end
 
