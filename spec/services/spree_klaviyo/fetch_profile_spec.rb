@@ -4,9 +4,7 @@ describe SpreeKlaviyo::FetchProfile do
   subject { described_class.call(klaviyo_integration: klaviyo_integration, user: user) }
 
   let(:user) do
-    user_attributes = {}
-    user_attributes[:accepts_email_marketing] = true if Spree.user_class.new.respond_to?(:accepts_email_marketing=)
-    create(:user, user_attributes)
+    create(:user, accepts_email_marketing: true)
   end
 
   describe '#call' do
