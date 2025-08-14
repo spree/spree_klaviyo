@@ -3,10 +3,10 @@ require 'spec_helper'
 describe SpreeKlaviyo::FetchProfile do
   subject { described_class.call(klaviyo_integration: klaviyo_integration, user: user) }
 
-  let(:user) { create(:user) }
-
-  before do
-    allow(user).to receive(:marketing_opt_in_changed?).and_return(false)
+  let(:user) do
+    user_attributes = {}
+    user_attributes[:accepts_email_marketing] = true if Spree.user_class.new.respond_to?(:accepts_email_marketing=)
+    create(:user, user_attributes)
   end
 
   describe '#call' do

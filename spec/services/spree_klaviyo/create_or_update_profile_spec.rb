@@ -3,12 +3,14 @@ require 'spec_helper'
 RSpec.describe SpreeKlaviyo::CreateOrUpdateProfile do
   subject { described_class.call(klaviyo_integration: klaviyo_integration, user: user) }
 
-  before do
-    allow_any_instance_of(Spree.user_class).to receive(:marketing_opt_in_changed?).and_return(false)
-  end
-
   context 'when klaviyo integration is exists', :vcr do
-    let(:user) { create(:user, email: email) }
+    let(:user) do
+      if Spree.user_class.new.respond_to?(:accepts_email_marketing=)
+        create(:user, email: email, accepts_email_marketing: true)
+      else
+        create(:user, email: email)
+      end
+    end
 
     let!(:klaviyo_integration) { create(:klaviyo_integration, preferred_klaviyo_private_api_key: 'pk_123') }
 
@@ -103,7 +105,13 @@ RSpec.describe SpreeKlaviyo::CreateOrUpdateProfile do
   end
 
   context 'when klaviyo integration is not found' do
-    let(:user) { create(:user) }
+    let(:user) do
+      if Spree.user_class.new.respond_to?(:accepts_email_marketing=)
+        create(:user, accepts_email_marketing: true)
+      else
+        create(:user)
+      end
+    end
     let(:klaviyo_integration) { nil }
 
     it 'returns a failure' do

@@ -3,11 +3,13 @@ require 'spec_helper'
 describe SpreeKlaviyo::Unsubscribe do
   subject { described_class.call(klaviyo_integration: klaviyo_integration, email: email, user: user) }
 
-  let(:user) { create(:user) }
-  let(:email) { user.email }
-
-  before do
-    allow_any_instance_of(Spree.user_class).to receive(:marketing_opt_in_changed?).and_return(false)
+  let(:email) { FFaker::Internet.email }
+  let(:user) do
+    if Spree.user_class.new.respond_to?(:accepts_email_marketing=)
+      create(:user, email: email, accepts_email_marketing: true)
+    else
+      create(:user, email: email)
+    end
   end
 
   describe '#call' do
@@ -47,7 +49,6 @@ describe SpreeKlaviyo::Unsubscribe do
 
         context 'when emails belongs to guest user' do
           let(:user) { nil }
-          let(:email) { FFaker::Internet.email }
 
           it 'returns success' do
             expect(subject.success?).to be true
