@@ -5,10 +5,7 @@ describe SpreeKlaviyo::Unsubscribe do
 
   let(:email) { FFaker::Internet.email }
   let(:user) do
-    if Spree.user_class.new.respond_to?(:accepts_email_marketing=)
-      create(:user, email: email, accepts_email_marketing: true)
-    else
-      create(:user, email: email)
+    create(:user, email: email, accepts_email_marketing: true)
     end
   end
 
