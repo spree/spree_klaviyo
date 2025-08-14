@@ -99,13 +99,7 @@ RSpec.describe SpreeKlaviyo::CreateOrUpdateProfile do
   end
 
   context 'when klaviyo integration is not found' do
-    let(:user) do
-      if Spree.user_class.new.respond_to?(:accepts_email_marketing=)
-        create(:user, accepts_email_marketing: true)
-      else
-        create(:user)
-      end
-    end
+    let(:user) { create(:user, accepts_email_marketing: true) }
     let(:klaviyo_integration) { nil }
 
     it 'returns a failure' do
