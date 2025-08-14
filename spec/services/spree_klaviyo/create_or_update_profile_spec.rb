@@ -4,13 +4,7 @@ RSpec.describe SpreeKlaviyo::CreateOrUpdateProfile do
   subject { described_class.call(klaviyo_integration: klaviyo_integration, user: user) }
 
   context 'when klaviyo integration is exists', :vcr do
-    let(:user) do
-      if Spree.user_class.new.respond_to?(:accepts_email_marketing=)
-        create(:user, email: email, accepts_email_marketing: true)
-      else
-        create(:user, email: email)
-      end
-    end
+    let(:user) { create(:user, email: email, accepts_email_marketing: true) }
 
     let!(:klaviyo_integration) { create(:klaviyo_integration, preferred_klaviyo_private_api_key: 'pk_123') }
 
