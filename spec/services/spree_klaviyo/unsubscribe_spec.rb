@@ -4,10 +4,7 @@ describe SpreeKlaviyo::Unsubscribe do
   subject { described_class.call(klaviyo_integration: klaviyo_integration, email: email, user: user) }
 
   let(:email) { FFaker::Internet.email }
-  let(:user) do
-    create(:user, email: email, accepts_email_marketing: true)
-    end
-  end
+  let(:user) { create(:user, email: email, accepts_email_marketing: true) }
 
   describe '#call' do
     context 'when klaviyo integration exists' do
