@@ -5,15 +5,9 @@ module SpreeKlaviyo
   # It avoids the previous on-the-fly Struct monkey-patching and follows a clear
   # PORO pattern that is easier to test and extend.
   class GuestUser
-    attr_accessor :email, :klaviyo_id, :id, :bill_address, :ship_address
+    include ActiveModel::Model
 
-    def initialize(email:, klaviyo_id: nil, id: nil, bill_address: nil, ship_address: nil)
-      @email = email
-      @klaviyo_id = klaviyo_id
-      @id = id
-      @bill_address = bill_address
-      @ship_address = ship_address
-    end
+    attr_accessor :email, :klaviyo_id, :id, :bill_address, :ship_address
 
     # --------------------------------------------------------------------------
     # ActiveRecord-like API expected by downstream services
