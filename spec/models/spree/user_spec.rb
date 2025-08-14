@@ -48,10 +48,6 @@ RSpec.describe Spree.user_class, type: :model do
 
     describe '#marketing_opt_in_changed? (private)' do
       context 'when using accepts_email_marketing column (integration style)' do
-        before do
-          skip 'accepts_email_marketing not present in this Spree version' unless Spree.user_class.new.respond_to?(:accepts_email_marketing)
-        end
-
         it 'returns true when toggled from false to true on the same instance' do
           u = create(:user, accepts_email_marketing: false)
           expect(u.accepts_email_marketing).to be(false)
