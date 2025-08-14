@@ -3,8 +3,8 @@ require 'spec_helper'
 describe SpreeKlaviyo::Unsubscribe do
   subject { described_class.call(klaviyo_integration: klaviyo_integration, email: email, user: user) }
 
-  let(:user) { create(:user) }
-  let(:email) { user.email }
+  let(:email) { FFaker::Internet.email }
+  let(:user) { create(:user, email: email, accepts_email_marketing: true) }
 
   describe '#call' do
     context 'when klaviyo integration exists' do
@@ -43,7 +43,6 @@ describe SpreeKlaviyo::Unsubscribe do
 
         context 'when emails belongs to guest user' do
           let(:user) { nil }
-          let(:email) { FFaker::Internet.email }
 
           it 'returns success' do
             expect(subject.success?).to be true
