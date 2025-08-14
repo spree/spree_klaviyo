@@ -6,6 +6,6 @@ require 'spree_klaviyo/configuration'
 
 module SpreeKlaviyo
   def self.queue
-    'spree_klaviyo'
+    SpreeKlaviyo::Config.queue
   end
 end
