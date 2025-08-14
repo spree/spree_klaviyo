@@ -5,7 +5,9 @@ require 'spree_klaviyo/version'
 require 'spree_klaviyo/configuration'
 
 module SpreeKlaviyo
+  mattr_accessor :queue
+
   def self.queue
-    'spree_klaviyo'
+    @@queue ||= Spree.queues.default
   end
 end
