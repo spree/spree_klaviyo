@@ -1,8 +1,9 @@
 require 'spec_helper'
 
 describe SpreeKlaviyo::Subscribe do
-  subject { described_class.call(klaviyo_integration: klaviyo_integration, email: email, user: user) }
+  subject { described_class.call(klaviyo_integration: klaviyo_integration, email: email, user: user, **subject_extra_kwargs) }
 
+  let(:subject_extra_kwargs) { {} }
   let(:user) { create(:user) }
   let(:email) { user.email }
 
@@ -11,10 +12,10 @@ describe SpreeKlaviyo::Subscribe do
       let!(:klaviyo_integration) { create(:klaviyo_integration) }
 
       context 'when subscribe request succeeds' do
-        before {
+        before do
           allow_any_instance_of(Spree::Integrations::Klaviyo).to receive(:subscribe_user).with(email).and_return(Spree::ServiceModule::Result.new(true,
                                                                                                                                                   user))
-        }
+        end
 
         context 'when email belongs to registered user' do
           it 'returns success' do
@@ -44,6 +45,44 @@ describe SpreeKlaviyo::Subscribe do
 
           it 'returns success' do
             expect(subject.success?).to be true
+          end
+        end
+
+        context 'when guest email with custom properties' do
+          let(:user) { nil }
+          let(:email) { FFaker::Internet.email }
+          let(:subject_extra_kwargs) { { custom_properties: { 'foo' => 'bar' } } }
+
+          it 'builds a GuestUser and forwards to CreateOrUpdateProfile' do
+            expect(SpreeKlaviyo::CreateOrUpdateProfile).to receive(:call).with(hash_including(
+                                                                                 klaviyo_integration: klaviyo_integration,
+                                                                                 custom_properties: { 'foo' => 'bar' },
+                                                                                 user: instance_of(SpreeKlaviyo::GuestUser)
+                                                                               ))
+
+            subject
+          end
+        end
+
+        context 'when custom properties are provided' do
+          let(:subject_extra_kwargs) { { custom_properties: { 'Waitlist Zipcode' => '99999' } } }
+
+          it 'forwards properties to CreateOrUpdateProfile' do
+            expect(SpreeKlaviyo::CreateOrUpdateProfile).to receive(:call).with(hash_including(
+                                                                                 klaviyo_integration: klaviyo_integration,
+                                                                                 custom_properties: { 'Waitlist Zipcode' => '99999' },
+                                                                                 user: user
+                                                                               ))
+
+            subject
+          end
+        end
+
+        context 'when no custom properties are provided' do
+          it 'does not call CreateOrUpdateProfile' do
+            expect(SpreeKlaviyo::CreateOrUpdateProfile).not_to receive(:call)
+
+            subject
           end
         end
       end
