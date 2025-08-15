@@ -12,6 +12,7 @@ module SpreeKlaviyo
     # --------------------------------------------------------------------------
     # ActiveRecord-like API expected by downstream services
     # --------------------------------------------------------------------------
+    def persisted?; false; end
     def update(*); true; end
     def update!(*); true; end
     def update_columns(*); true; end
