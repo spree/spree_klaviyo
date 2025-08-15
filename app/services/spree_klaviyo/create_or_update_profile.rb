@@ -7,12 +7,28 @@ module SpreeKlaviyo
 
       result = if user.klaviyo_id.blank?
         fetch_profile_result = FetchProfile.call(klaviyo_integration: klaviyo_integration, user: user)
-
+        
         if fetch_profile_result.success?
-          guest_id.present? ? klaviyo_integration.update_profile(user, guest_id) : fetch_profile_result
+          fetched_id = begin
+            parsed = JSON.parse(fetch_profile_result.value)
+            parsed.dig('data', 0, 'id') || parsed.dig('data', 'id')
+          rescue JSON::ParserError
+            nil
+          end
+
+          if fetched_id.present?
+            user.klaviyo_id ||= fetched_id
+            user.update_columns(klaviyo_id: fetched_id) if user.persisted?
+          end
+
+          if guest_id.present?
+            klaviyo_integration.update_profile(user, guest_id)
+          else
+            fetch_profile_result
+          end
         else
           klaviyo_integration.create_profile(user).tap do |res|
-            # Only persist klaviyo_id if this user record is already saved in DB.
+            # Only persist klaviyo_id if this user record is already saved in DB
             if res.success? && user.persisted?
               user.update_columns(klaviyo_id: JSON.parse(res.value).dig('data', 'id'))
             end
@@ -22,11 +38,10 @@ module SpreeKlaviyo
         klaviyo_integration.update_profile(user)
       end
 
-      if custom_properties.present? && result.success?
-        # Determine the Klaviyo profile id to update.
+      if result.success? && custom_properties.is_a?(Hash) && custom_properties.present?
+        # Determine the Klaviyo profile id to update
         klaviyo_id = user.persisted? ? user.reload.klaviyo_id : nil
 
-        # Fallback: extract id from response payload if still blank.
         if klaviyo_id.blank?
           begin
             parsed = JSON.parse(result.value)
@@ -35,7 +50,15 @@ module SpreeKlaviyo
             klaviyo_id = nil
           end
         end
-        update_profile_properties(klaviyo_integration, klaviyo_id, custom_properties)
+
+        if klaviyo_id.blank?
+          Rails.logger.warn("[Klaviyo][CreateOrUpdateProfile] Skipping properties patch: missing klaviyo_id")
+        else
+          patch_result = update_profile_properties(klaviyo_integration, klaviyo_id, custom_properties)
+          if patch_result && !patch_result.success?
+            Rails.logger.warn("[Klaviyo][CreateOrUpdateProfile] Properties patch failed for #{klaviyo_id}: #{patch_result&.value}")
+          end
+        end
       end
 
       result
@@ -56,7 +79,7 @@ module SpreeKlaviyo
         }
       }
 
-      klaviyo_integration.send(:client).patch_request("profiles/#{klaviyo_id}/", payload)
+      klaviyo_integration.patch_profile_properties(klaviyo_id, payload)
     end
   end
 end

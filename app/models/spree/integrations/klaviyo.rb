@@ -100,6 +100,10 @@ module Spree
         handle_result(result)
       end
 
+      def patch_profile_properties(klaviyo_id, payload)
+        client.patch_request("profiles/#{klaviyo_id}/", payload)
+      end
+
       private
 
       def client

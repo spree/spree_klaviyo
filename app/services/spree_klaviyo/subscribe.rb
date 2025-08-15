@@ -6,12 +6,14 @@ module SpreeKlaviyo
       return failure(false, ::Spree.t('admin.integrations.klaviyo.not_found')) unless klaviyo_integration
 
       result = klaviyo_integration.subscribe_user(email)
-
+      
       if result.success?
         user&.update(klaviyo_subscribed: true) if user && !user.klaviyo_subscribed?
+        
         if custom_properties.present?
-          user_object = ::Spree.user_class.find_by(email: email) || SpreeKlaviyo::GuestUser.new(email: email)
-
+          # Prefer provided user first, then lookup, then guest
+          user_object = user || ::Spree.user_class.find_by(email: email) || SpreeKlaviyo::GuestUser.new(email: email)
+          
           SpreeKlaviyo::CreateOrUpdateProfile.call(
             klaviyo_integration: klaviyo_integration,
             user: user_object,
@@ -21,7 +23,7 @@ module SpreeKlaviyo
       else
         Rails.logger.warn("[Klaviyo][Subscribe] Failed subscribe for #{email}: #{result.value}")
       end
-
+      
       result
     end
   end
