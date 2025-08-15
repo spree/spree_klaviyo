@@ -8,7 +8,9 @@ module SpreeKlaviyo
       return success(user.klaviyo_id) if user.klaviyo_id.present?
 
       klaviyo_integration.fetch_profile(email: user.email).tap do |result|
-        user.update!(klaviyo_id: JSON.parse(result.value)['data'].first['id']) if result.success?
+        if result.success? && user.persisted?
+          user.update!(klaviyo_id: JSON.parse(result.value)['data'].first['id'])
+        end
       end
     end
   end

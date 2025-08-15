@@ -101,7 +101,8 @@ module Spree
       end
 
       def patch_profile_properties(klaviyo_id, payload)
-        client.patch_request("profiles/#{klaviyo_id}/", payload)
+        result = client.patch_request("profiles/#{klaviyo_id}/", payload)
+        handle_result(result)
       end
 
       private

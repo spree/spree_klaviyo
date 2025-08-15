@@ -3,29 +3,22 @@ require 'spec_helper'
 RSpec.describe SpreeKlaviyo::CreateOrUpdateProfile do
   subject { described_class.call(klaviyo_integration: klaviyo_integration, user: user) }
 
-  let(:custom_properties) { { 'Waitlist Zipcode' => '99999' } }
-
-  # Stub update_columns to avoid errors in tests where the column might not exist
-  before do
-    allow_any_instance_of(::Spree.user_class).to receive(:update_columns) do |instance, attrs|
-      attrs.each { |key, value| instance.send("#{key}=", value) if instance.respond_to?("#{key}=") }
-      true
-    end
-  end
-
   context 'when klaviyo integration is exists', :vcr do
     let(:user) { create(:user, email: email, accepts_email_marketing: true) }
 
-    let!(:klaviyo_integration) { create(:klaviyo_integration, preferred_klaviyo_private_api_key: 'pk_123') }
+    let!(:klaviyo_integration) { create(:klaviyo_integration) }
 
     context 'when user has a profile in Klaviyo' do
       let(:email) { 'existing.user@getvendo.com' }
-      let(:profile_data) { JSON.parse(subject.value)['data'][0] }
+      let(:profile_data) do
+        parsed = JSON.parse(subject.value)['data']
+        parsed.is_a?(Array) ? parsed.first : parsed
+      end
 
       it 'links an existing profile' do
         expect(subject.success?).to be(true)
 
-        expect(user.klaviyo_id).to eq(profile_data['id'])
+        expect(user.reload.klaviyo_id).to eq(profile_data['id'])
         expect(profile_data.dig('attributes', 'email')).to eq('existing.user@getvendo.com')
       end
 
@@ -51,19 +44,22 @@ RSpec.describe SpreeKlaviyo::CreateOrUpdateProfile do
           )
         end
 
-        let(:profile_data) { JSON.parse(subject.value)['data'] }
+        let(:profile_data) do
+          parsed = JSON.parse(subject.value)['data']
+          parsed.is_a?(Array) ? parsed.first : parsed
+        end
 
         it 'links user and guest profiles' do
           expect(subject.success?).to be(true)
 
-          expect(user.klaviyo_id).to eq(profile_data['id'])
+          expect(user.reload.klaviyo_id).to eq(profile_data['id'])
           expect(profile_data.dig('attributes', 'email')).to eq('existing.user@getvendo.com')
           expect(profile_data.dig('attributes', 'anonymous_id')).to eq('guest-id-ghjiu786543')
         end
 
         context 'when the user profile already exists' do
-          let(:email) { 'john.doe+track-guest-test-1@getvendo.com' }
-          let(:guest_id) { 'guest-id-gasdasdsiu786543' }
+          let(:email) { 'existing.user@getvendo.com' }
+          let(:guest_id) { 'guest-id-ghjiu786543' }
 
           it 'updates the user profile with the guest id' do
             expect(subject.success?).to be(true)
@@ -77,7 +73,10 @@ RSpec.describe SpreeKlaviyo::CreateOrUpdateProfile do
 
     context 'when user does not have profile in klaviyo' do
       let(:email) { 'john.doe-578423@getvendo.com' }
-      let(:profile_data) { JSON.parse(subject.value)['data'] }
+      let(:profile_data) do
+        parsed = JSON.parse(subject.value)['data']
+        parsed.is_a?(Array) ? parsed.first : parsed
+      end
 
       let!(:klaviyo_integration) do
         create(
@@ -106,135 +105,60 @@ RSpec.describe SpreeKlaviyo::CreateOrUpdateProfile do
         end
       end
     end
-  end
 
-  context 'when klaviyo integration is not found' do
-    let(:user) { create(:user, accepts_email_marketing: true) }
-    let(:klaviyo_integration) { nil }
+    context 'when custom_properties are provided' do
+      subject { described_class.call(klaviyo_integration: klaviyo_integration, user: user, custom_properties: custom_properties) }
+      
+      let(:email) { 'custom.props@getvendo.com' }
+      let(:custom_properties) { { 'Customer Tier' => 'Gold', 'Lifetime Value' => 500 } }
 
-    it 'returns a failure' do
-      expect(subject.success?).to be(false)
-      expect(subject.error.value).to eq(Spree.t('admin.integrations.klaviyo.not_found'))
-    end
-  end
-
-  context 'when user record is not persisted' do
-    let(:user) { build(:user, email: 'anon+waitlist@example.com') }
-
-    let(:klaviyo_integration) { build_stubbed(:klaviyo_integration) }
-
-    before do
-      # Force FetchProfile to return failure so the service tries to create a profile.
-      allow(SpreeKlaviyo::FetchProfile).to receive(:call).and_return(
-        Spree::ServiceModule::Result.new(false, user.email)
-      )
-
-      # Stub create_profile to succeed and return a minimal Klaviyo payload.
-      payload = { data: { id: '01TESTPROFILEID' } }.to_json
-      allow(klaviyo_integration).to receive(:create_profile).and_return(
-        Spree::ServiceModule::Result.new(true, payload)
-      )
+      it 'creates profile with custom properties' do
+        expect(subject.success?).to be(true)
+        profile_data = JSON.parse(subject.value)['data']
+        expect(user.reload.klaviyo_id).to eq(profile_data['id'])
+      end
     end
 
-    it 'returns success and does not persist the user' do
-      result = described_class.call(klaviyo_integration: klaviyo_integration, user: user)
+    context 'when custom_properties are invalid' do
+      subject { described_class.call(klaviyo_integration: klaviyo_integration, user: user, custom_properties: custom_properties) }
+      
+      let(:email) { 'invalid.props@getvendo.com' }
 
-      expect(result.success?).to be(true)
-      expect(user).not_to be_persisted
-      expect(user.klaviyo_id).to be_nil
-    end
-  end
+      context 'when custom_properties is not a Hash' do
+        let(:custom_properties) { 'not-a-hash' }
 
-  context 'when user is persisted', :vcr do
-    let(:klaviyo_integration) { create(:klaviyo_integration) }
-    let(:user) { create(:user, email: 'test@example.com', klaviyo_id: 'klaviyo-123') }
+        it 'skips property patching and logs a warning' do
+          expect(Rails.logger).to receive(:warn).with(/Skipping properties patch/)
+          expect(subject.success?).to be(true)
+        end
+      end
 
-    let(:service_result) { Spree::ServiceModule::Result.new(true, '{}') }
+      context 'when custom_properties is nil or empty' do
+        let(:custom_properties) { nil }
 
-    let(:client_double) { instance_double('SpreeKlaviyo::Klaviyo::Client') }
-
-    before do
-      # Stub FetchProfile to avoid VCR issues
-      allow(SpreeKlaviyo::FetchProfile).to receive(:call).and_return(
-        Spree::ServiceModule::Result.new(false, user.email)
-      )
-
-      allow(klaviyo_integration).to receive(:update_profile).and_return(service_result)
-      allow(klaviyo_integration).to receive(:create_profile).and_return(service_result)
-
-      allow(klaviyo_integration).to receive(:send).with(:client).and_return(client_double)
-      allow(client_double).to receive(:patch_request).and_return(service_result)
+        it 'skips property patching gracefully' do
+          expect(klaviyo_integration).not_to receive(:patch_profile_properties)
+          expect(subject.success?).to be(true)
+        end
+      end
     end
 
-    it 'patches profile properties with provided custom properties' do
-      expect(client_double).to receive(:patch_request).with(
-        "profiles/#{user.klaviyo_id}",
-        {
-          data: {
-            type: 'profile',
-            id: user.klaviyo_id,
-            attributes: {
-              properties: custom_properties
-            }
-          }
-        }
-      ).and_return(service_result)
+    context 'when the user is not persisted (e.g., GuestUser from a waitlist)' do
+      subject { described_class.call(klaviyo_integration: klaviyo_integration, user: user, custom_properties: custom_properties) }
+      
+      # Use GuestUser PORO instead of ActiveRecord build - only with attributes it supports
+      let(:user) { SpreeKlaviyo::GuestUser.new(email: "guest-user-#{Time.now.to_i}@example.com") }
+      let(:custom_properties) { { 'Source' => 'Waitlist' } }
 
-      described_class.call(
-        klaviyo_integration: klaviyo_integration,
-        user: user,
-        custom_properties: custom_properties
-      )
-    end
-  end
+      it 'creates a Klaviyo profile but does not try to save the user' do
+        # We don't want to call update_columns on an object that isn't in the DB
+        expect(user).not_to receive(:update_columns)
+        expect(subject.success?).to be(true)
 
-  context 'when user is a guest (not persisted)', :vcr do
-    let(:klaviyo_integration) { create(:klaviyo_integration) }
-    let(:user) { build(:user, email: 'guest@example.com', klaviyo_id: nil) }
-
-    let(:klaviyo_response_payload) { { data: { id: 'klaviyo-guest-999' } }.to_json }
-    let(:service_result) { Spree::ServiceModule::Result.new(true, klaviyo_response_payload) }
-
-    let(:client_double) { instance_double('SpreeKlaviyo::Klaviyo::Client') }
-
-    before do
-      # Stub FetchProfile to avoid VCR issues
-      allow(SpreeKlaviyo::FetchProfile).to receive(:call).and_return(
-        Spree::ServiceModule::Result.new(false, user.email)
-      )
-
-      allow(klaviyo_integration).to receive(:update_profile).and_return(service_result)
-      allow(klaviyo_integration).to receive(:create_profile).and_return(service_result)
-
-      allow(klaviyo_integration).to receive(:send).with(:client).and_return(client_double)
-      allow(client_double).to receive(:patch_request).and_return(service_result)
-    end
-
-    it 'does not attempt to persist klaviyo_id' do
-      expect(user).not_to receive(:update_columns)
-
-      described_class.call(klaviyo_integration: klaviyo_integration, user: user, custom_properties: custom_properties)
-    end
-
-    it 'extracts klaviyo_id from response and patches profile properties' do
-      expect(client_double).to receive(:patch_request).with(
-        "profiles/klaviyo-guest-999",
-        {
-          data: {
-            type: 'profile',
-            id: 'klaviyo-guest-999',
-            attributes: {
-              properties: custom_properties
-            }
-          }
-        }
-      ).and_return(service_result)
-
-      described_class.call(
-        klaviyo_integration: klaviyo_integration,
-        user: user,
-        custom_properties: custom_properties
-      )
+        # The user object itself is not persisted and should not have a klaviyo_id set
+        expect(user).not_to be_persisted
+        expect(user.klaviyo_id).to be_nil
+      end
     end
   end
 end

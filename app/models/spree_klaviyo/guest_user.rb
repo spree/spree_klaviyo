@@ -18,4 +18,4 @@ module SpreeKlaviyo
     def update_columns(*); true; end
     def reload; self; end
   end
-end 
+end

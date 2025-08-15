@@ -18,46 +18,49 @@ module SpreeKlaviyo
 
           if fetched_id.present?
             user.klaviyo_id ||= fetched_id
-            user.update_columns(klaviyo_id: fetched_id) if user.persisted?
+            user.update(klaviyo_id: fetched_id) if user.persisted?
           end
 
           if guest_id.present?
-            klaviyo_integration.update_profile(user, guest_id)
+            result = klaviyo_integration.update_profile(user, guest_id)
           else
-            fetch_profile_result
+            result = fetch_profile_result
           end
         else
-          klaviyo_integration.create_profile(user).tap do |res|
+          result = klaviyo_integration.create_profile(user).tap do |res|
             # Only persist klaviyo_id if this user record is already saved in DB
             if res.success? && user.persisted?
-              user.update_columns(klaviyo_id: JSON.parse(res.value).dig('data', 'id'))
+              user.update(klaviyo_id: JSON.parse(res.value).dig('data', 'id'))
             end
           end
         end
       else
-        klaviyo_integration.update_profile(user)
+        result = klaviyo_integration.update_profile(user)
       end
 
-      if result.success? && custom_properties.is_a?(Hash) && custom_properties.present?
-        # Determine the Klaviyo profile id to update
-        klaviyo_id = user.persisted? ? user.reload.klaviyo_id : nil
+      if result.success? && custom_properties.present?
+        if custom_properties.is_a?(Hash)
+          klaviyo_id = user.persisted? ? user.reload.klaviyo_id : nil
 
-        if klaviyo_id.blank?
-          begin
-            parsed = JSON.parse(result.value)
-            klaviyo_id = parsed.dig('data', 0, 'id') || parsed.dig('data', 'id')
-          rescue JSON::ParserError
-            klaviyo_id = nil
+          if klaviyo_id.blank?
+            begin
+              parsed = JSON.parse(result.value)
+              klaviyo_id = parsed.dig('data', 0, 'id') || parsed.dig('data', 'id')
+            rescue JSON::ParserError
+              klaviyo_id = nil
+            end
           end
-        end
 
-        if klaviyo_id.blank?
-          Rails.logger.warn("[Klaviyo][CreateOrUpdateProfile] Skipping properties patch: missing klaviyo_id")
+          if klaviyo_id.blank?
+            Rails.logger.warn("[Klaviyo][CreateOrUpdateProfile] Skipping properties patch: missing klaviyo_id")
+          else
+            patch_result = update_profile_properties(klaviyo_integration, klaviyo_id, custom_properties)
+            if patch_result && !patch_result.success?
+              Rails.logger.warn("[Klaviyo][CreateOrUpdateProfile] Properties patch failed for #{klaviyo_id}: #{patch_result&.value}")
+            end
+          end
         else
-          patch_result = update_profile_properties(klaviyo_integration, klaviyo_id, custom_properties)
-          if patch_result && !patch_result.success?
-            Rails.logger.warn("[Klaviyo][CreateOrUpdateProfile] Properties patch failed for #{klaviyo_id}: #{patch_result&.value}")
-          end
+          Rails.logger.warn("[Klaviyo][CreateOrUpdateProfile] Skipping properties patch: custom_properties is not a Hash (#{custom_properties.class})")
         end
       end
 
