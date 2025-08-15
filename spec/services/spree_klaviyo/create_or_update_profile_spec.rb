@@ -145,7 +145,7 @@ RSpec.describe SpreeKlaviyo::CreateOrUpdateProfile do
     end
   end
 
-  context 'when user is persisted' do
+  context 'when user is persisted', :vcr do
     let(:klaviyo_integration) { create(:klaviyo_integration) }
     let(:user) { create(:user, email: 'test@example.com', klaviyo_id: 'klaviyo-123') }
 
@@ -176,7 +176,7 @@ RSpec.describe SpreeKlaviyo::CreateOrUpdateProfile do
     end
   end
 
-  context 'when user is a guest (not persisted)' do
+  context 'when user is a guest (not persisted)', :vcr do
     let(:klaviyo_integration) { create(:klaviyo_integration) }
     let(:user) { build(:user, email: 'guest@example.com', klaviyo_id: nil) }
 
