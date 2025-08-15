@@ -56,7 +56,7 @@ RSpec.describe SpreeKlaviyo::CreateOrUpdateProfile do
         it 'links user and guest profiles' do
           expect(subject.success?).to be(true)
 
-          expect(user.klaviyo_id).to eq(profile_data['id'])
+          expect(user.reload.klaviyo_id).to eq(profile_data['id'])
           expect(profile_data.dig('attributes', 'email')).to eq('existing.user@getvendo.com')
           expect(profile_data.dig('attributes', 'anonymous_id')).to eq('guest-id-ghjiu786543')
         end
