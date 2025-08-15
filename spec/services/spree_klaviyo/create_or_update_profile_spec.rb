@@ -168,11 +168,23 @@ RSpec.describe SpreeKlaviyo::CreateOrUpdateProfile do
 
     it 'patches profile properties with provided custom properties' do
       expect(client_double).to receive(:patch_request).with(
-        "profiles/#{user.klaviyo_id}/",
-        hash_including(data: hash_including(attributes: hash_including(properties: custom_properties)))
+        "profiles/#{user.klaviyo_id}",
+        {
+          data: {
+            type: 'profile',
+            id: user.klaviyo_id,
+            attributes: {
+              properties: custom_properties
+            }
+          }
+        }
       ).and_return(service_result)
 
-      described_class.call(klaviyo_integration: klaviyo_integration, user: user, custom_properties: custom_properties)
+      described_class.call(
+        klaviyo_integration: klaviyo_integration,
+        user: user,
+        custom_properties: custom_properties
+      )
     end
   end
 
@@ -206,11 +218,23 @@ RSpec.describe SpreeKlaviyo::CreateOrUpdateProfile do
 
     it 'extracts klaviyo_id from response and patches profile properties' do
       expect(client_double).to receive(:patch_request).with(
-        'profiles/klaviyo-guest-999/',
-        hash_including(data: hash_including(id: 'klaviyo-guest-999', attributes: hash_including(properties: custom_properties)))
+        "profiles/klaviyo-guest-999",
+        {
+          data: {
+            type: 'profile',
+            id: 'klaviyo-guest-999',
+            attributes: {
+              properties: custom_properties
+            }
+          }
+        }
       ).and_return(service_result)
 
-      described_class.call(klaviyo_integration: klaviyo_integration, user: user, custom_properties: custom_properties)
+      described_class.call(
+        klaviyo_integration: klaviyo_integration,
+        user: user,
+        custom_properties: custom_properties
+      )
     end
   end
 end
