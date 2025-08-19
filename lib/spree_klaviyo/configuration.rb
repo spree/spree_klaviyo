@@ -1,8 +1,21 @@
 module SpreeKlaviyo
-  class Configuration < Spree::Preferences::Configuration
-    preference :klaviyo_api_url, :string, default: 'https://a.klaviyo.com/api/'
-    preference :klaviyo_api_revision, :string, default: '2025-04-15'
-    preference :klaviyo_api_open_timeout, :integer, default: 10
-    preference :klaviyo_api_read_timeout, :integer, default: 10
+  class Configuration
+    class << self
+      def klaviyo_api_url
+        ENV.fetch('KLAVIYO_API_URL', 'https://a.klaviyo.com/api/')
+      end
+
+      def klaviyo_api_revision
+        ENV.fetch('KLAVIYO_API_REVISION', '2025-04-15')
+      end
+
+      def klaviyo_api_open_timeout
+        ENV.fetch('KLAVIYO_API_OPEN_TIMEOUT', 10).to_i
+      end
+
+      def klaviyo_api_read_timeout
+        ENV.fetch('KLAVIYO_API_READ_TIMEOUT', 10).to_i
+      end
+    end
   end
 end
