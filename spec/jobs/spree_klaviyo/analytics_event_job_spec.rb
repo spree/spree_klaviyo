@@ -1,70 +1,74 @@
 require 'spec_helper'
 
 describe SpreeKlaviyo::AnalyticsEventJob do
-  include ActiveJob::TestHelper
+  subject(:perform_job) { described_class.new.perform(klaviyo_integration.id, event_name, record, email, guest_id) }
 
+  let(:klaviyo_integration) { create(:klaviyo_integration) }
   let(:event_name) { 'test_event' }
-  let(:customer_properties) { { email: 'test@example.com', guest_id: 'visitor_123' } }
-  let(:event_properties) { { resource: 'test_resource' } }
-  let(:time) { Time.current }
-  let(:klaviyo_integration) { double('KlaviyoIntegration') }
-  let(:store) { double('Store') }
+  let(:record) { create(:order) }
+  let(:email) { 'test@example.com' }
+  let(:guest_id) { 'guest_123' }
+  let(:service_result) { instance_double(Spree::ServiceModule::Result, success?: true) }
 
   before do
-    allow(subject).to receive(:store).and_return(store)
-    allow(store).to receive(:integrations).and_return(double('Integrations'))
-    allow(store.integrations).to receive(:active).and_return(double('ActiveIntegrations'))
-    allow(store.integrations.active).to receive(:find_by).with(type: 'Spree::Integrations::Klaviyo').and_return(klaviyo_integration)
+    allow(SpreeKlaviyo::CreateEvent).to receive(:call).and_return(service_result)
   end
 
-  describe '#perform' do
-    it 'processes the event successfully' do
-      success_result = Spree::ServiceModule::Result.new(true, 'success')
-      expect(klaviyo_integration).to receive(:create_event).and_return(success_result)
-      subject.perform(event_name, customer_properties, event_properties, time)
-    end
+  context 'with valid parameters' do
+    it 'calls SpreeKlaviyo::CreateEvent with correct arguments' do
+      perform_job
 
-    it 'handles event creation failure gracefully' do
-      error_result = Spree::ServiceModule::Result.new(false, 'API Error')
-      expect(klaviyo_integration).to receive(:create_event).and_return(error_result)
-      expect(Rails.logger).to receive(:error).with("SpreeKlaviyo: Failed to track event #{event_name}: API Error")
-      subject.perform(event_name, customer_properties, event_properties, time)
-    end
-
-    it 'handles exceptions gracefully' do
-      expect(klaviyo_integration).to receive(:create_event).and_raise(StandardError.new('Network Error'))
-      expect(Rails.logger).to receive(:error).with("SpreeKlaviyo: Failed to track event #{event_name}: Network Error")
-      subject.perform(event_name, customer_properties, event_properties, time)
-    end
-
-    it 'does not re-raise exceptions' do
-      expect(klaviyo_integration).to receive(:create_event).and_raise(StandardError.new('Network Error'))
-      expect { subject.perform(event_name, customer_properties, event_properties, time) }.not_to raise_error
+      expect(SpreeKlaviyo::CreateEvent).to have_received(:call).with(
+        klaviyo_integration: klaviyo_integration,
+        event: event_name,
+        resource: record,
+        email: email,
+        guest_id: guest_id
+      )
     end
   end
 
-  describe 'job configuration' do
-    it 'uses the correct queue' do
-      expect(SpreeKlaviyo.queue).to eq(Spree.queues.default)
-      expect(subject.queue_name).to eq(Spree.queues.default.to_s)
-    end
+  context 'without guest_id' do
+    let(:guest_id) { nil }
 
-    it 'inherits from BaseJob' do
-      expect(subject).to be_a(SpreeKlaviyo::BaseJob)
+    it 'calls SpreeKlaviyo::CreateEvent with nil guest_id' do
+      perform_job
+
+      expect(SpreeKlaviyo::CreateEvent).to have_received(:call).with(
+        klaviyo_integration: klaviyo_integration,
+        event: event_name,
+        resource: record,
+        email: email,
+        guest_id: nil
+      )
     end
   end
 
-  describe 'job enqueueing' do
-    it 'can be enqueued' do
+  context 'when klaviyo_integration is not found' do
+    it 'raises ActiveRecord::RecordNotFound' do
       expect {
-        SpreeKlaviyo::AnalyticsEventJob.perform_later(event_name, customer_properties, event_properties, time)
-      }.to have_enqueued_job(SpreeKlaviyo::AnalyticsEventJob)
+        described_class.new.perform(999_999, event_name, record, email, guest_id)
+      }.to raise_error(ActiveRecord::RecordNotFound)
+    end
+  end
+
+  context 'when service call fails' do
+    let(:service_result) { instance_double(Spree::ServiceModule::Result, success?: false, error: 'Some error') }
+
+    it 'does not raise an error' do
+      expect { perform_job }.not_to raise_error
     end
 
-    it 'enqueues with correct parameters' do
-      expect {
-        SpreeKlaviyo::AnalyticsEventJob.perform_later(event_name, customer_properties, event_properties, time)
-      }.to have_enqueued_job.with(event_name, customer_properties, event_properties, time)
+    it 'calls the service with correct arguments' do
+      perform_job
+
+      expect(SpreeKlaviyo::CreateEvent).to have_received(:call).with(
+        klaviyo_integration: klaviyo_integration,
+        event: event_name,
+        resource: record,
+        email: email,
+        guest_id: guest_id
+      )
     end
   end
 end
