@@ -1,0 +1,70 @@
+---
+http_interactions:
+- request:
+    method: get
+    uri: https://a.klaviyo.com/api/profiles/?fields%5Bprofile%5D=email&filter=equals(email,%27angelika%2B13@getvendo.com%27)
+    body:
+      encoding: US-ASCII
+      string: ''
+    headers:
+      Accept-Encoding:
+      - gzip;q=1.0,deflate;q=0.6,identity;q=0.3
+      Accept:
+      - application/json
+      User-Agent:
+      - Ruby
+      Host:
+      - a.klaviyo.com
+      Revision:
+      - '2023-09-15'
+      Authorization:
+      - Klaviyo-API-Key pk_123
+  response:
+    status:
+      code: 200
+      message: OK
+    headers:
+      Date:
+      - Tue, 05 Dec 2023 16:24:14 GMT
+      Content-Type:
+      - application/vnd.api+json
+      Transfer-Encoding:
+      - chunked
+      Connection:
+      - keep-alive
+      Cf-Ray:
+      - 830da3613833fc5f-WAW
+      Cf-Cache-Status:
+      - DYNAMIC
+      Allow:
+      - GET, POST, HEAD, OPTIONS
+      Strict-Transport-Security:
+      - max-age=31536000; includeSubDomains; preload
+      Vary:
+      - Cookie, Accept-Encoding
+      Cid:
+      - TRJmuC
+      Content-Security-Policy:
+      - base-uri 'none'; object-src 'none'; script-src 'report-sample' 'strict-dynamic'
+        'unsafe-eval'; frame-ancestors 'self' login.bigcommerce.com *.mybigcommerce.com
+        admin.shopify.com klaviyo.file.force.com klaviyo.lightning.force.com klaviyo.my.salesforce.com;
+        report-uri /csp/
+      Ratelimit-Limit:
+      - "('0, 700, 75;w=1, 0, 700;w=60, 0;w=0',)"
+      Ratelimit-Remaining:
+      - '0'
+      Ratelimit-Reset:
+      - '8'
+      X-Content-Type-Options:
+      - nosniff
+      X-Klaviyo-Api-Revision:
+      - '2022-10-17'
+      X-Robots-Tag:
+      - noindex, nofollow
+      Server:
+      - cloudflare
+    body:
+      encoding: ASCII-8BIT
+      string: '{"data":[{"type":"profile","id":"01HEQ696B83PE3T6VKVXH9C86R","attributes":{"email":"angelika+13@getvendo.com"},"relationships":{"lists":{"links":{"self":"https://a.klaviyo.com/api/profiles/01HEQ696B83PE3T6VKVXH9C86R/relationships/lists/","related":"https://a.klaviyo.com/api/profiles/01HEQ696B83PE3T6VKVXH9C86R/lists/"}},"segments":{"links":{"self":"https://a.klaviyo.com/api/profiles/01HEQ696B83PE3T6VKVXH9C86R/relationships/segments/","related":"https://a.klaviyo.com/api/profiles/01HEQ696B83PE3T6VKVXH9C86R/segments/"}}},"links":{"self":"https://a.klaviyo.com/api/profiles/01HEQ696B83PE3T6VKVXH9C86R/"}}],"links":{"self":"https://a.klaviyo.com/api/profiles/?fields[profile]=email&filter=equals(email,%27angelika%2B13%40getvendo.com%27)","next":null,"prev":null}}'
+  recorded_at: Tue, 05 Dec 2023 16:24:14 GMT
+recorded_with: VCR 6.2.0

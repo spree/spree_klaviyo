@@ -1,0 +1,196 @@
+---
+http_interactions:
+- request:
+    method: get
+    uri: https://a.klaviyo.com/api/profiles/?fields%5Bprofile%5D=email&filter=equals(email,%27custom.props@getvendo.com%27)
+    body:
+      encoding: US-ASCII
+      string: ''
+    headers:
+      Accept-Encoding:
+      - gzip;q=1.0,deflate;q=0.6,identity;q=0.3
+      Accept:
+      - application/json
+      User-Agent:
+      - Ruby
+      Host:
+      - a.klaviyo.com
+      Revision:
+      - '2025-04-15'
+      Authorization:
+      - Klaviyo-API-Key 1234567899
+  response:
+    status:
+      code: 200
+      message: OK
+    headers:
+      Date:
+      - Wed, 20 Aug 2025 00:53:49 GMT
+      Content-Type:
+      - application/vnd.api+json
+      Content-Length:
+      - '0'
+      Connection:
+      - keep-alive
+      Cf-Ray:
+      - 971dea79cc76908f-KHI
+      Allow:
+      - GET, POST, HEAD, OPTIONS
+      Content-Language:
+      - en-us
+      Content-Security-Policy:
+      - object-src 'none'; script-src 'report-sample' 'strict-dynamic' 'unsafe-eval';
+        frame-ancestors 'self' login.bigcommerce.com *.mybigcommerce.com admin.shopify.com
+        klaviyo.file.force.com klaviyo.lightning.force.com klaviyo.my.salesforce.com;
+        base-uri 'none'; report-uri /csp/
+      Vary:
+      - Accept, Accept-Language, Cookie
+      X-Klaviyo-Req-Id:
+      - c5af5de1-56f5-41c5-907b-c22416364510
+      X-Envoy-Upstream-Service-Time:
+      - '27'
+      Cf-Cache-Status:
+      - DYNAMIC
+      Strict-Transport-Security:
+      - max-age=31536000; includeSubDomains; preload
+      X-Content-Type-Options:
+      - nosniff
+      Server:
+      - cloudflare
+    body:
+      encoding: UTF-8
+      string: '{"data":[]}'
+  recorded_at: Wed, 20 Aug 2025 00:53:49 GMT
+- request:
+    method: post
+    uri: https://a.klaviyo.com/api/profiles/
+    body:
+      encoding: UTF-8
+      string: '{"data":{"type":"profile","attributes":{"anonymous_id":null,"email":"custom.props@getvendo.com","first_name":null,"last_name":null,"external_id":null,"location":{"address1":null,"address2":null,"city":null,"country":null,"region":null,"zip":null}}}}'
+    headers:
+      Accept-Encoding:
+      - gzip;q=1.0,deflate;q=0.6,identity;q=0.3
+      Accept:
+      - application/json
+      User-Agent:
+      - Ruby
+      Host:
+      - a.klaviyo.com
+      Revision:
+      - '2025-04-15'
+      Content-Type:
+      - application/json
+      Authorization:
+      - Klaviyo-API-Key 1234567899
+  response:
+    status:
+      code: 201
+      message: Created
+    headers:
+      Date:
+      - Wed, 20 Aug 2025 00:53:50 GMT
+      Content-Type:
+      - application/vnd.api+json
+      Content-Length:
+      - '300'
+      Connection:
+      - keep-alive
+      Cf-Ray:
+      - 971dea7bed2dd055-KHI
+      Allow:
+      - GET, POST, HEAD, OPTIONS
+      Content-Language:
+      - en-us
+      Content-Security-Policy:
+      - script-src 'report-sample' 'strict-dynamic' 'unsafe-eval'; object-src 'none';
+        frame-ancestors 'self' login.bigcommerce.com *.mybigcommerce.com admin.shopify.com
+        klaviyo.file.force.com klaviyo.lightning.force.com klaviyo.my.salesforce.com;
+        base-uri 'none'; report-uri /csp/
+      Vary:
+      - Accept, Accept-Language, Cookie
+      Www-Authenticate:
+      - Bearer, Klaviyo-API-Key
+      X-Klaviyo-Req-Id:
+      - 8b070bac-2206-4616-8292-ddff6b3fa3eb
+      X-Envoy-Upstream-Service-Time:
+      - '27'
+      Cf-Cache-Status:
+      - DYNAMIC
+      Strict-Transport-Security:
+      - max-age=31536000; includeSubDomains; preload
+      X-Content-Type-Options:
+      - nosniff
+      Server:
+      - cloudflare
+    body:
+      encoding: UTF-8
+      string: '{"data":{"type":"profile","id":"01HXGX6SXYRZBRVCTV6RNAY81B","attributes":{"email":"custom.props@getvendo.com","anonymous_id":null,"first_name":null,"last_name":null,"external_id":null,"location":{"address1":null,"address2":null,"city":null,"country":null,"region":null,"zip":null}},"relationships":{"lists":{"links":{"self":"https://a.klaviyo.com/api/profiles/01HXGX6SXYRZBRVCTV6RNAY81B/relationships/lists/","related":"https://a.klaviyo.com/api/profiles/01HXGX6SXYRZBRVCTV6RNAY81B/lists/"}},"segments":{"links":{"self":"https://a.klaviyo.com/api/profiles/01HXGX6SXYRZBRVCTV6RNAY81B/relationships/segments/","related":"https://a.klaviyo.com/api/profiles/01HXGX6SXYRZBRVCTV6RNAY81B/segments/"}}},"links":{"self":"https://a.klaviyo.com/api/profiles/01HXGX6SXYRZBRVCTV6RNAY81B/"}}}'
+  recorded_at: Wed, 20 Aug 2025 00:53:50 GMT
+- request:
+    method: patch
+    uri: https://a.klaviyo.com/api/profiles/01HXGX6SXYRZBRVCTV6RNAY81B/
+    body:
+      encoding: UTF-8
+      string: '{"data":{"type":"profile","id":"01HXGX6SXYRZBRVCTV6RNAY81B","attributes":{"properties":{"Customer
+        Tier":"Gold","Lifetime Value":500}}}}'
+    headers:
+      Accept-Encoding:
+      - gzip;q=1.0,deflate;q=0.6,identity;q=0.3
+      Accept:
+      - application/json
+      User-Agent:
+      - Ruby
+      Host:
+      - a.klaviyo.com
+      Revision:
+      - '2025-04-15'
+      Content-Type:
+      - application/json
+      Authorization:
+      - Klaviyo-API-Key 1234567899
+  response:
+    status:
+      code: 401
+      message: Unauthorized
+    headers:
+      Date:
+      - Wed, 20 Aug 2025 01:04:22 GMT
+      Content-Type:
+      - application/vnd.api+json
+      Content-Length:
+      - '227'
+      Connection:
+      - keep-alive
+      Cf-Ray:
+      - 971df9e7ff969089-KHI
+      Allow:
+      - GET, PUT, PATCH, DELETE, HEAD, OPTIONS
+      Content-Language:
+      - en-us
+      Content-Security-Policy:
+      - object-src 'none'; script-src 'report-sample' 'strict-dynamic' 'unsafe-eval';
+        frame-ancestors 'self' login.bigcommerce.com *.mybigcommerce.com admin.shopify.com
+        klaviyo.file.force.com klaviyo.lightning.force.com klaviyo.my.salesforce.com;
+        base-uri 'none'; report-uri /csp/
+      Vary:
+      - Accept, Accept-Language, Cookie
+      Www-Authenticate:
+      - Bearer, Klaviyo-API-Key
+      X-Klaviyo-Req-Id:
+      - 291a187e-fee3-4f5b-b4e2-7a3b17618e25
+      X-Envoy-Upstream-Service-Time:
+      - '37'
+      Cf-Cache-Status:
+      - DYNAMIC
+      Strict-Transport-Security:
+      - max-age=31536000; includeSubDomains; preload
+      X-Content-Type-Options:
+      - nosniff
+      Server:
+      - cloudflare
+    body:
+      encoding: UTF-8
+      string: '{"errors":[{"id":"291a187e-fee3-4f5b-b4e2-7a3b17618e25","status":401,"code":"not_authenticated","title":"Authentication
+        credentials were not provided.","detail":"Missing or invalid private key.","source":{"pointer":"/data/"}}]}'
+  recorded_at: Wed, 20 Aug 2025 01:04:21 GMT
+recorded_with: VCR 6.3.1
