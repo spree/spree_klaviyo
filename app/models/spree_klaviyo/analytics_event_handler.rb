@@ -55,7 +55,42 @@ module SpreeKlaviyo
 
       return if email&.strip&.blank? && identity_hash[:visitor_id].blank?
 
-      client.create_event(event: event_human_name(event_name), resource: record, email: email, guest_id: identity_hash[:visitor_id])
+      # Use async tracking if enabled, otherwise fall back to sync
+      if SpreeKlaviyo::Config[:async_tracking]
+        enqueue_event(event_name, record, email, identity_hash[:visitor_id])
+      else
+        track_event_sync(event_name, record, email, identity_hash[:visitor_id])
+      end
+    end
+    
+    private
+
+    # Enqueue event for async processing
+    def enqueue_event(event_name, record, email, guest_id)
+      customer_properties = { email: email, guest_id: guest_id }
+      event_properties = { resource: record }
+
+      SpreeKlaviyo::AnalyticsEventJob.perform_later(
+        event_name,
+        customer_properties,
+        event_properties
+      )
+    end
+
+    # Synchronous event tracking (fallback)
+    def track_event_sync(event_name, record, email, guest_id)
+      return unless should_track_event?
+
+      client.create_event(
+        event: event_human_name(event_name), 
+        resource: record, 
+        email: email, 
+        guest_id: guest_id
+      )
+    end
+
+    def should_track_event?
+      SpreeKlaviyo::Config[:enabled]
     end
   end
 end
