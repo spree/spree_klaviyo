@@ -5,7 +5,5 @@ module SpreeKlaviyo
     preference :klaviyo_api_open_timeout, :integer, default: 10
     preference :klaviyo_api_read_timeout, :integer, default: 10
     preference :async_tracking, :boolean, default: true
-    preference :job_queue, :string, default: 'default'
-    preference :enabled, :boolean, default: true
   end
 end

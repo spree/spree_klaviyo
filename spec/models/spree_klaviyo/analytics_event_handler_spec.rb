@@ -3,24 +3,25 @@ require 'spec_helper'
 describe SpreeKlaviyo::AnalyticsEventHandler do
   include ActiveJob::TestHelper
 
-  subject { described_class.new }
-
   let(:store) { create(:store) }
   let(:user) { create(:user) }
-  let(:klaviyo_integration) { create(:klaviyo_integration, store: store) }
+  let(:order) { create(:order, user: user) }
   let(:product) { create(:product) }
-  let(:order) { create(:order, user: user, store: store) }
-  let(:line_item) { create(:line_item, order: order, product: product) }
+  let(:line_item) { create(:line_item, order: order) }
+  let(:klaviyo_integration) { create(:klaviyo_integration, store: store) }
+
+  subject { described_class.new }
 
   before do
     allow(subject).to receive(:store).and_return(store)
     allow(subject).to receive(:user).and_return(user)
     allow(subject).to receive(:identity_hash).and_return({ visitor_id: 'visitor_123' })
-    
-    # Stub all configuration keys that might be accessed
-    allow(SpreeKlaviyo::Config).to receive(:[]).with(:enabled).and_return(true)
+
+    # Stub the client method to return the klaviyo_integration
+    allow(subject).to receive(:client).and_return(klaviyo_integration)
+
+    # Stub configuration for async_tracking
     allow(SpreeKlaviyo::Config).to receive(:[]).with(:async_tracking).and_return(true)
-    allow(SpreeKlaviyo::Config).to receive(:[]).with(:job_queue).and_return('default')
   end
 
   describe '#handle_event' do
@@ -33,6 +34,7 @@ describe SpreeKlaviyo::AnalyticsEventHandler do
         expect {
           subject.handle_event('product_viewed', { product: product })
         }.to have_enqueued_job(SpreeKlaviyo::AnalyticsEventJob).with(
+          klaviyo_integration.id,
           'product_viewed',
           { email: user.email, guest_id: 'visitor_123' },
           { resource: product }
@@ -43,6 +45,7 @@ describe SpreeKlaviyo::AnalyticsEventHandler do
         expect {
           subject.handle_event('order_completed', { order: order })
         }.to have_enqueued_job(SpreeKlaviyo::AnalyticsEventJob).with(
+          klaviyo_integration.id,
           'order_completed',
           { email: order.email, guest_id: 'visitor_123' },
           { resource: order }
@@ -53,6 +56,7 @@ describe SpreeKlaviyo::AnalyticsEventHandler do
         expect {
           subject.handle_event('product_added', { line_item: line_item })
         }.to have_enqueued_job(SpreeKlaviyo::AnalyticsEventJob).with(
+          klaviyo_integration.id,
           'product_added',
           { email: order.email, guest_id: 'visitor_123' },
           { resource: order }
@@ -76,12 +80,12 @@ describe SpreeKlaviyo::AnalyticsEventHandler do
       end
 
       it 'handles events without email gracefully' do
-        allow(user).to receive(:email).and_return(nil)
-        allow(order).to receive(:email).and_return(nil)
-
+        allow(subject).to receive(:user).and_return(nil)
+        
         expect {
           subject.handle_event('product_viewed', { product: product })
         }.to have_enqueued_job(SpreeKlaviyo::AnalyticsEventJob).with(
+          klaviyo_integration.id,
           'product_viewed',
           { email: nil, guest_id: 'visitor_123' },
           { resource: product }
@@ -98,37 +102,31 @@ describe SpreeKlaviyo::AnalyticsEventHandler do
 
       it 'calls create_event directly for product_viewed' do
         expect(klaviyo_integration).to receive(:create_event).with(
-          event: 'Product Viewed',
+          event: 'product_viewed',
           resource: product,
           email: user.email,
           guest_id: 'visitor_123'
         )
-
         subject.handle_event('product_viewed', { product: product })
       end
 
       it 'calls create_event directly for order_completed' do
         expect(klaviyo_integration).to receive(:create_event).with(
-          event: 'Order Completed',
+          event: 'order_completed',
           resource: order,
           email: order.email,
           guest_id: 'visitor_123'
         )
-
         subject.handle_event('order_completed', { order: order })
       end
     end
 
     context 'when no client is available' do
       before do
-        allow(store.integrations.active).to receive(:find_by).and_return(nil)
+        allow(subject).to receive(:client).and_return(nil)
       end
 
       it 'returns early without processing' do
-        expect {
-          subject.handle_event('product_viewed', { product: product })
-        }.not_to have_enqueued_job(SpreeKlaviyo::AnalyticsEventJob)
-
         expect {
           subject.handle_event('product_viewed', { product: product })
         }.not_to have_enqueued_job(SpreeKlaviyo::AnalyticsEventJob)
@@ -137,21 +135,8 @@ describe SpreeKlaviyo::AnalyticsEventHandler do
 
     context 'when both email and visitor_id are blank' do
       before do
-        allow(user).to receive(:email).and_return(nil)
-        allow(order).to receive(:email).and_return(nil)
+        allow(subject).to receive(:user).and_return(nil)
         allow(subject).to receive(:identity_hash).and_return({ visitor_id: nil })
-      end
-
-      it 'returns early without processing' do
-        expect {
-          subject.handle_event('product_viewed', { product: product })
-        }.not_to have_enqueued_job(SpreeKlaviyo::AnalyticsEventJob)
-      end
-    end
-
-    context 'when configuration is disabled' do
-      before do
-        allow(SpreeKlaviyo::Config).to receive(:[]).with(:enabled).and_return(false)
       end
 
       it 'returns early without processing' do
@@ -166,11 +151,12 @@ describe SpreeKlaviyo::AnalyticsEventHandler do
     describe '#enqueue_event' do
       it 'enqueues analytics event job with correct parameters' do
         expect {
-          subject.send(:enqueue_event, 'test_event', product, 'test@example.com', 'visitor_456')
+          subject.send(:enqueue_event, 'test_event', 'test_resource', 'test@example.com', 'visitor_123')
         }.to have_enqueued_job(SpreeKlaviyo::AnalyticsEventJob).with(
+          klaviyo_integration.id,
           'test_event',
-          { email: 'test@example.com', guest_id: 'visitor_456' },
-          { resource: product }
+          { email: 'test@example.com', guest_id: 'visitor_123' },
+          { resource: 'test_resource' }
         )
       end
     end
@@ -183,33 +169,12 @@ describe SpreeKlaviyo::AnalyticsEventHandler do
 
       it 'calls create_event on client' do
         expect(klaviyo_integration).to receive(:create_event).with(
-          event: 'Test Event',
-          resource: product,
+          event: 'test_event',
+          resource: 'test_resource',
           email: 'test@example.com',
-          guest_id: 'visitor_456'
+          guest_id: 'visitor_123'
         )
-
-        subject.send(:track_event_sync, 'test_event', product, 'test@example.com', 'visitor_456')
-      end
-
-      it 'returns early when should_track_event? is false' do
-        allow(SpreeKlaviyo::Config).to receive(:[]).with(:enabled).and_return(false)
-
-        expect(klaviyo_integration).not_to receive(:create_event)
-
-        subject.send(:track_event_sync, 'test_event', product, 'test@example.com', 'visitor_456')
-      end
-    end
-
-    describe '#should_track_event?' do
-      it 'returns true when configuration is enabled' do
-        allow(SpreeKlaviyo::Config).to receive(:[]).with(:enabled).and_return(true)
-        expect(subject.send(:should_track_event?)).to be true
-      end
-
-      it 'returns false when configuration is disabled' do
-        allow(SpreeKlaviyo::Config).to receive(:[]).with(:enabled).and_return(false)
-        expect(subject.send(:should_track_event?)).to be false
+        subject.send(:track_event_sync, 'test_event', 'test_resource', 'test@example.com', 'visitor_123')
       end
     end
   end
