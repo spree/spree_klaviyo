@@ -1,12 +1,13 @@
 require 'spec_helper'
 
 RSpec.describe SpreeKlaviyo::SubscribePresenter do
-  subject { described_class.new(email: email, list_id: list_id, type: type, subscribed: subscribed).call }
+  subject { described_class.new(email: email, list_id: list_id, type: type, subscribed: subscribed, custom_properties: custom_properties).call }
 
   let(:email) { 'test@example.com' }
   let(:list_id) { 'list_123' }
   let(:type) { 'profile-subscription-bulk-create-job' }
   let(:subscribed) { true }
+  let(:custom_properties) { {} }
 
   describe '#call' do
     context 'when subscribed is true' do
@@ -111,6 +112,59 @@ RSpec.describe SpreeKlaviyo::SubscribePresenter do
       it 'uses default type and subscribed values' do
         expect(subject[:data][:type]).to eq('profile-subscription-bulk-create-job')
         expect(subject[:data][:attributes][:profiles][:data][0][:attributes][:subscriptions][:email][:marketing][:consent]).to eq('SUBSCRIBED')
+      end
+    end
+
+    context 'with truly generic custom properties' do
+      let(:custom_properties) { { 
+        zipcode: '12345', 
+        interests: 'technology', 
+        favorite_color: 'blue',
+        preferred_payment: 'credit_card'
+      } }
+
+      it 'includes all custom properties as direct attributes without hardcoded mapping' do
+        profile_attributes = subject[:data][:attributes][:profiles][:data].first[:attributes]
+
+        expect(profile_attributes[:zipcode]).to eq('12345')
+        expect(profile_attributes[:interests]).to eq('technology')
+        expect(profile_attributes[:favorite_color]).to eq('blue')
+        expect(profile_attributes[:preferred_payment]).to eq('credit_card')
+      end
+
+      it 'does not have hardcoded property mapping logic' do
+        profile_attributes = subject[:data][:attributes][:profiles][:data].first[:attributes]
+
+        expect(profile_attributes[:location]).to be_nil
+        expect(profile_attributes[:zipcode]).to eq('12345')
+      end
+
+      it 'handles any property type without special cases' do
+        profile_attributes = subject[:data][:attributes][:profiles][:data].first[:attributes]
+
+        expect(profile_attributes[:favorite_color]).to eq('blue')
+      end
+    end
+
+    context 'with empty custom properties' do
+      let(:custom_properties) { {} }
+
+      it 'only includes basic subscription attributes' do
+        result = subject
+        profile_attributes = result[:data][:attributes][:profiles][:data].first[:attributes]
+
+        expect(profile_attributes.keys).to contain_exactly(:email, :subscriptions)
+      end
+    end
+
+    context 'with nil custom properties' do
+      let(:custom_properties) { nil }
+
+      it 'handles nil gracefully and only includes basic attributes' do
+        result = subject
+        profile_attributes = result[:data][:attributes][:profiles][:data].first[:attributes]
+
+        expect(profile_attributes.keys).to contain_exactly(:email, :subscriptions)
       end
     end
   end

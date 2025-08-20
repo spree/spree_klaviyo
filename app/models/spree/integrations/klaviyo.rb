@@ -45,10 +45,14 @@ module Spree
         handle_result(result)
       end
 
-      def subscribe_user(email)
+      def subscribe_user(email, custom_properties = {})
         result = client.post_request(
           'profile-subscription-bulk-create-jobs/',
-          ::SpreeKlaviyo::SubscribePresenter.new(email: email, list_id: preferred_default_newsletter_list_id).call
+          ::SpreeKlaviyo::SubscribePresenter.new(
+            email: email,
+            list_id: preferred_default_newsletter_list_id,
+            custom_properties: custom_properties
+          ).call
         )
 
         handle_result(result)
