@@ -18,7 +18,7 @@ http_interactions:
       Revision:
       - '2025-04-15'
       Authorization:
-      - Klaviyo-API-Key 1234567899
+      - Klaviyo-API-Key <KLAVIYO_PRIVATE_API_KEY>
   response:
     status:
       code: 200
@@ -81,7 +81,7 @@ http_interactions:
       Content-Type:
       - application/json
       Authorization:
-      - Klaviyo-API-Key 1234567899
+      - Klaviyo-API-Key <KLAVIYO_PRIVATE_API_KEY>
   response:
     status:
       code: 201
@@ -147,7 +147,7 @@ http_interactions:
       Content-Type:
       - application/json
       Authorization:
-      - Klaviyo-API-Key 1234567899
+      - Klaviyo-API-Key <KLAVIYO_PRIVATE_API_KEY>
   response:
     status:
       code: 401
