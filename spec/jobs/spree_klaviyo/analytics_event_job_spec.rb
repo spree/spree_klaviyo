@@ -20,18 +20,19 @@ describe SpreeKlaviyo::AnalyticsEventJob do
   describe '#perform' do
     context 'when configuration is enabled' do
       it 'processes the event successfully' do
+        success_result = Spree::ServiceModule::Result.new(true, 'success')
         expect(klaviyo_integration).to receive(:create_event).with(
           event: event_name,
           resource: event_properties[:resource],
           email: customer_properties[:email],
           guest_id: customer_properties[:guest_id]
-        ).and_return(double(success?: true))
+        ).and_return(success_result)
 
         subject.perform(event_name, customer_properties, event_properties, time)
       end
 
       it 'handles event creation failure gracefully' do
-        error_result = double(success?: false, value: 'API Error')
+        error_result = Spree::ServiceModule::Result.new(false, 'API Error')
         expect(klaviyo_integration).to receive(:create_event).and_return(error_result)
         expect(Rails.logger).to receive(:error).with(
           "SpreeKlaviyo: Failed to track event #{event_name}: API Error"
@@ -99,7 +100,8 @@ describe SpreeKlaviyo::AnalyticsEventJob do
     end
 
     it 'can be executed immediately with perform_now' do
-      expect(klaviyo_integration).to receive(:create_event).and_return(double(success?: true))
+      success_result = Spree::ServiceModule::Result.new(true, 'success')
+      expect(klaviyo_integration).to receive(:create_event).and_return(success_result)
 
       described_class.perform_now(event_name, customer_properties, event_properties, time)
     end

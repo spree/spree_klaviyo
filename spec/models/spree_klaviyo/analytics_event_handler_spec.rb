@@ -16,8 +16,11 @@ describe SpreeKlaviyo::AnalyticsEventHandler do
     allow(subject).to receive(:store).and_return(store)
     allow(subject).to receive(:user).and_return(user)
     allow(subject).to receive(:identity_hash).and_return({ visitor_id: 'visitor_123' })
+    
+    # Stub all configuration keys that might be accessed
     allow(SpreeKlaviyo::Config).to receive(:[]).with(:enabled).and_return(true)
     allow(SpreeKlaviyo::Config).to receive(:[]).with(:async_tracking).and_return(true)
+    allow(SpreeKlaviyo::Config).to receive(:[]).with(:job_queue).and_return('default')
   end
 
   describe '#handle_event' do
@@ -90,7 +93,7 @@ describe SpreeKlaviyo::AnalyticsEventHandler do
       before do
         allow(SpreeKlaviyo::Config).to receive(:[]).with(:async_tracking).and_return(false)
         allow(subject).to receive(:client).and_return(klaviyo_integration)
-        allow(klaviyo_integration).to receive(:create_event).and_return(double(success?: true))
+        allow(klaviyo_integration).to receive(:create_event).and_return(Spree::ServiceModule::Result.new(true, 'success'))
       end
 
       it 'calls create_event directly for product_viewed' do
@@ -175,7 +178,7 @@ describe SpreeKlaviyo::AnalyticsEventHandler do
     describe '#track_event_sync' do
       before do
         allow(subject).to receive(:client).and_return(klaviyo_integration)
-        allow(klaviyo_integration).to receive(:create_event).and_return(double(success?: true))
+        allow(klaviyo_integration).to receive(:create_event).and_return(Spree::ServiceModule::Result.new(true, 'success'))
       end
 
       it 'calls create_event on client' do

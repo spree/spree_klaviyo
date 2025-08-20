@@ -33,12 +33,13 @@ describe SpreeKlaviyo::BulkAnalyticsEventJob do
     context 'when configuration is enabled' do
       it 'processes all events successfully' do
         events.each do |event_data|
+          success_result = Spree::ServiceModule::Result.new(true, 'success')
           expect(klaviyo_integration).to receive(:create_event).with(
             event: event_data[:event_name],
             resource: event_data[:event_properties][:resource],
             email: event_data[:customer_properties][:email],
             guest_id: event_data[:customer_properties][:guest_id]
-          ).and_return(double(success?: true))
+          ).and_return(success_result)
         end
 
         subject.perform(events)
@@ -46,15 +47,16 @@ describe SpreeKlaviyo::BulkAnalyticsEventJob do
 
       it 'handles individual event failures gracefully' do
         # First event succeeds
+        success_result = Spree::ServiceModule::Result.new(true, 'success')
         expect(klaviyo_integration).to receive(:create_event).with(
           event: events[0][:event_name],
           resource: events[0][:event_properties][:resource],
           email: events[0][:customer_properties][:email],
           guest_id: events[0][:customer_properties][:guest_id]
-        ).and_return(double(success?: true))
+        ).and_return(success_result)
 
         # Second event fails
-        error_result = double(success?: false, value: 'API Error')
+        error_result = Spree::ServiceModule::Result.new(false, 'API Error')
         expect(klaviyo_integration).to receive(:create_event).with(
           event: events[1][:event_name],
           resource: events[1][:event_properties][:resource],
@@ -79,12 +81,13 @@ describe SpreeKlaviyo::BulkAnalyticsEventJob do
         ).and_raise(StandardError.new('Network Error'))
 
         # Second event should still be processed
+        success_result = Spree::ServiceModule::Result.new(true, 'success')
         expect(klaviyo_integration).to receive(:create_event).with(
           event: events[1][:event_name],
           resource: events[1][:event_properties][:resource],
           email: events[1][:customer_properties][:email],
           guest_id: events[1][:customer_properties][:guest_id]
-        ).and_return(double(success?: true))
+        ).and_return(success_result)
 
         expect(Rails.logger).to receive(:error).with(
           "SpreeKlaviyo: Failed to track event #{events[0][:event_name]}: Network Error"
@@ -167,7 +170,8 @@ describe SpreeKlaviyo::BulkAnalyticsEventJob do
 
     it 'can be executed immediately with perform_now' do
       events.each do |event_data|
-        expect(klaviyo_integration).to receive(:create_event).and_return(double(success?: true))
+        success_result = Spree::ServiceModule::Result.new(true, 'success')
+        expect(klaviyo_integration).to receive(:create_event).and_return(success_result)
       end
 
       described_class.perform_now(events)
