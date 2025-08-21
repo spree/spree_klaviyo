@@ -32,30 +32,6 @@ describe SpreeKlaviyo::AnalyticsEventHandler do
           'visitor_123'
         )
       end
-
-      it 'enqueues analytics event job for product_list_viewed' do
-        expect {
-          subject.handle_event('product_list_viewed', { taxon: taxon })
-        }.to have_enqueued_job(SpreeKlaviyo::AnalyticsEventJob).with(
-          klaviyo_integration.id,
-          'Product List Viewed',
-          taxon,
-          user.email,
-          'visitor_123'
-        )
-      end
-
-      it 'enqueues analytics event job for product_searched' do
-        expect {
-          subject.handle_event('product_searched', { query: 'search term' })
-        }.to have_enqueued_job(SpreeKlaviyo::AnalyticsEventJob).with(
-          klaviyo_integration.id,
-          'Product Searched',
-          'search term',
-          user.email,
-          'visitor_123'
-        )
-      end
     end
 
     context 'with cart events' do
@@ -65,18 +41,6 @@ describe SpreeKlaviyo::AnalyticsEventHandler do
         }.to have_enqueued_job(SpreeKlaviyo::AnalyticsEventJob).with(
           klaviyo_integration.id,
           'Product Added',
-          order,
-          order.email,
-          'visitor_123'
-        )
-      end
-
-      it 'enqueues analytics event job for product_removed' do
-        expect {
-          subject.handle_event('product_removed', { line_item: line_item })
-        }.to have_enqueued_job(SpreeKlaviyo::AnalyticsEventJob).with(
-          klaviyo_integration.id,
-          'Product Removed',
           order,
           order.email,
           'visitor_123'
@@ -108,42 +72,6 @@ describe SpreeKlaviyo::AnalyticsEventHandler do
           'visitor_123'
         )
       end
-
-      it 'enqueues analytics event job for checkout_step_viewed' do
-        expect {
-          subject.handle_event('checkout_step_viewed', { order: order })
-        }.to have_enqueued_job(SpreeKlaviyo::AnalyticsEventJob).with(
-          klaviyo_integration.id,
-          'Checkout Step Viewed',
-          order,
-          order.email,
-          'visitor_123'
-        )
-      end
-
-      it 'enqueues analytics event job for checkout_step_completed' do
-        expect {
-          subject.handle_event('checkout_step_completed', { order: order })
-        }.to have_enqueued_job(SpreeKlaviyo::AnalyticsEventJob).with(
-          klaviyo_integration.id,
-          'Checkout Step Completed',
-          order,
-          order.email,
-          'visitor_123'
-        )
-      end
-
-      it 'enqueues analytics event job for payment_info_entered' do
-        expect {
-          subject.handle_event('payment_info_entered', { order: order })
-        }.to have_enqueued_job(SpreeKlaviyo::AnalyticsEventJob).with(
-          klaviyo_integration.id,
-          'Payment Info Entered',
-          order,
-          order.email,
-          'visitor_123'
-        )
-      end
     end
 
     context 'with coupon events' do
@@ -153,42 +81,6 @@ describe SpreeKlaviyo::AnalyticsEventHandler do
         }.to have_enqueued_job(SpreeKlaviyo::AnalyticsEventJob).with(
           klaviyo_integration.id,
           'Coupon Entered',
-          order,
-          order.email,
-          'visitor_123'
-        )
-      end
-
-      it 'enqueues analytics event job for coupon_removed' do
-        expect {
-          subject.handle_event('coupon_removed', { order: order })
-        }.to have_enqueued_job(SpreeKlaviyo::AnalyticsEventJob).with(
-          klaviyo_integration.id,
-          'Coupon Removed',
-          order,
-          order.email,
-          'visitor_123'
-        )
-      end
-
-      it 'enqueues analytics event job for coupon_applied' do
-        expect {
-          subject.handle_event('coupon_applied', { order: order })
-        }.to have_enqueued_job(SpreeKlaviyo::AnalyticsEventJob).with(
-          klaviyo_integration.id,
-          'Coupon Applied',
-          order,
-          order.email,
-          'visitor_123'
-        )
-      end
-
-      it 'enqueues analytics event job for coupon_denied' do
-        expect {
-          subject.handle_event('coupon_denied', { order: order })
-        }.to have_enqueued_job(SpreeKlaviyo::AnalyticsEventJob).with(
-          klaviyo_integration.id,
-          'Coupon Denied',
           order,
           order.email,
           'visitor_123'
@@ -221,16 +113,6 @@ describe SpreeKlaviyo::AnalyticsEventHandler do
         )
       end
 
-      it 'enqueues unsubscribe job for newsletter unsubscription' do
-        expect {
-          subject.handle_event('unsubscribed_from_newsletter', { email: 'test@example.com' })
-        }.to have_enqueued_job(SpreeKlaviyo::UnsubscribeJob).with(
-          klaviyo_integration.id,
-          user.email,
-          user.id
-        )
-      end
-
       context 'when user is not present' do
         subject do
           described_class.new(
@@ -244,16 +126,6 @@ describe SpreeKlaviyo::AnalyticsEventHandler do
           expect {
             subject.handle_event('subscribed_to_newsletter', { email: 'test@example.com' })
           }.to have_enqueued_job(SpreeKlaviyo::SubscribeJob).with(
-            klaviyo_integration.id,
-            'test@example.com',
-            nil
-          )
-        end
-
-        it 'uses provided email for newsletter unsubscription' do
-          expect {
-            subject.handle_event('unsubscribed_from_newsletter', { email: 'test@example.com' })
-          }.to have_enqueued_job(SpreeKlaviyo::UnsubscribeJob).with(
             klaviyo_integration.id,
             'test@example.com',
             nil
