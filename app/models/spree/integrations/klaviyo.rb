@@ -5,11 +5,11 @@ module Spree
 
       NO_PROFILE_FOUND = 'No profile found'.freeze
 
-      preference :klaviyo_public_api_key, :string
-      preference :klaviyo_private_api_key, :password
-      preference :default_newsletter_list_id, :string
+      # Use regular attributes instead of preferences
+      # These will be stored in the preferences JSON column
+      attr_accessor :klaviyo_public_api_key, :klaviyo_private_api_key, :default_newsletter_list_id
 
-      validates :preferred_klaviyo_public_api_key, :preferred_klaviyo_private_api_key, :preferred_default_newsletter_list_id, presence: true
+      validates :klaviyo_public_api_key, :klaviyo_private_api_key, :default_newsletter_list_id, presence: true
 
       def self.integration_group
         'marketing'
@@ -22,7 +22,7 @@ module Spree
       def can_connect?
         # There's no method for checking if credentials are valid, but we can figure it out basing on response,
         # except Public API Key.
-        result = client.get_request("lists/#{preferred_default_newsletter_list_id}")
+        result = client.get_request("lists/#{default_newsletter_list_id}")
 
         # 'Missing or invalid private key.' for invalid private key
         # 'A list with id #{id} does not exist.' for invalid newsletter list id
@@ -48,7 +48,7 @@ module Spree
       def subscribe_user(email)
         result = client.post_request(
           'profile-subscription-bulk-create-jobs/',
-          ::SpreeKlaviyo::SubscribePresenter.new(email: email, list_id: preferred_default_newsletter_list_id).call
+          ::SpreeKlaviyo::SubscribePresenter.new(email: email, list_id: default_newsletter_list_id).call
         )
 
         handle_result(result)
@@ -57,7 +57,7 @@ module Spree
       def unsubscribe_user(email)
         payload = ::SpreeKlaviyo::SubscribePresenter.new(
           email: email,
-          list_id: preferred_default_newsletter_list_id,
+          list_id: default_newsletter_list_id,
           type: 'profile-subscription-bulk-delete-job',
           subscribed: false
         ).call
@@ -104,8 +104,8 @@ module Spree
 
       def client
         ::SpreeKlaviyo::Klaviyo::Client.new(
-          public_api_key: preferred_klaviyo_public_api_key,
-          private_api_key: preferred_klaviyo_private_api_key
+          public_api_key: klaviyo_public_api_key,
+          private_api_key: klaviyo_private_api_key
         )
       end
 

@@ -6,7 +6,7 @@ RSpec.describe SpreeKlaviyo::CreateOrUpdateProfile do
   context 'when klaviyo integration is exists', :vcr do
     let(:user) { create(:user, email: email, accepts_email_marketing: true) }
 
-    let!(:klaviyo_integration) { create(:klaviyo_integration, preferred_klaviyo_private_api_key: 'pk_123') }
+    let!(:klaviyo_integration) { create(:klaviyo_integration, klaviyo_private_api_key: 'pk_123') }
 
     context 'when user has a profile in Klaviyo' do
       let(:email) { 'existing.user@getvendo.com' }

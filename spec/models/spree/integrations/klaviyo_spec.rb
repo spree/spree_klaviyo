@@ -19,17 +19,17 @@ describe Spree::Integrations::Klaviyo, type: :model do
 
   describe 'validations' do
     it 'validates presence of klaviyo_public_api_key' do
-      klaviyo_integration.preferred_klaviyo_public_api_key = nil
+      klaviyo_integration.klaviyo_public_api_key = nil
       expect(klaviyo_integration).not_to be_valid
     end
 
     it 'validates presence of klaviyo_private_api_key' do
-      klaviyo_integration.preferred_klaviyo_private_api_key = nil
+      klaviyo_integration.klaviyo_private_api_key = nil
       expect(klaviyo_integration).not_to be_valid
     end
 
     it 'validates presence of default_newsletter_list_id' do
-      klaviyo_integration.preferred_default_newsletter_list_id = nil
+      klaviyo_integration.default_newsletter_list_id = nil
       expect(klaviyo_integration).not_to be_valid
     end
   end
@@ -40,9 +40,9 @@ describe Spree::Integrations::Klaviyo, type: :model do
     let(:klaviyo_integration) do
       create(
         :klaviyo_integration,
-        preferred_klaviyo_public_api_key: 'RZUvUQ',
-        preferred_klaviyo_private_api_key: 'pk_8d2bcc4570678967f4d3756fed304430eb',
-        preferred_default_newsletter_list_id: 'XLUG56'
+        klaviyo_public_api_key: 'RZUvUQ',
+        klaviyo_private_api_key: 'pk_8d2bcc4570678967f4d3756fed304430eb',
+        default_newsletter_list_id: 'XLUG56'
       )
     end
     let(:email) { 'example@email.com' }
@@ -79,9 +79,9 @@ describe Spree::Integrations::Klaviyo, type: :model do
     let(:klaviyo_integration) do
       create(
         :klaviyo_integration,
-        preferred_klaviyo_public_api_key: 'RZUvUQ',
-        preferred_klaviyo_private_api_key: 'pk_8d2bcc4570678967f4d3756fed304430eb',
-        preferred_default_newsletter_list_id: 'XLUG56'
+        klaviyo_public_api_key: 'RZUvUQ',
+        klaviyo_private_api_key: 'pk_8d2bcc4570678967f4d3756fed304430eb',
+        default_newsletter_list_id: 'XLUG56'
       )
     end
     let(:email) { 'example@email.com' }
@@ -151,9 +151,9 @@ describe Spree::Integrations::Klaviyo, type: :model do
     let!(:klaviyo_integration) do
       create(
         :klaviyo_integration,
-        preferred_klaviyo_public_api_key: 'RZUvUQ',
-        preferred_klaviyo_private_api_key: 'pk_8d2bcc4570678967f4d3756fed304430eb',
-        preferred_default_newsletter_list_id: 'XLUG56'
+        klaviyo_public_api_key: 'RZUvUQ',
+        klaviyo_private_api_key: 'pk_8d2bcc4570678967f4d3756fed304430eb',
+        default_newsletter_list_id: 'XLUG56'
       )
     end
 
@@ -164,7 +164,7 @@ describe Spree::Integrations::Klaviyo, type: :model do
     end
 
     it 'returns failure' do
-      klaviyo_integration.preferred_klaviyo_private_api_key = 'invalid_key'
+      klaviyo_integration.klaviyo_private_api_key = 'invalid_key'
       klaviyo_integration.save
       VCR.use_cassette('klaviyo/create_event/order_completed/failure') do
         expect(subject.success?).to be false
@@ -194,9 +194,9 @@ describe Spree::Integrations::Klaviyo, type: :model do
     let(:klaviyo_integration) do
       create(
         :klaviyo_integration,
-        preferred_klaviyo_public_api_key: 'RZUvUQ',
-        preferred_klaviyo_private_api_key: klaviyo_private_api_key,
-        preferred_default_newsletter_list_id: default_newsletter_list_id
+        klaviyo_public_api_key: 'RZUvUQ',
+        klaviyo_private_api_key: klaviyo_private_api_key,
+        default_newsletter_list_id: default_newsletter_list_id
       )
     end
 
