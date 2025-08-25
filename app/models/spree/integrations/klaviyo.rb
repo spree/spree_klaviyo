@@ -31,28 +31,31 @@ module Spree
         result.success?
       end
 
-      def create_profile(user, guest_id = nil)
-        user_presenter = ::SpreeKlaviyo::UserPresenter.new(email: user.email, address: user&.bill_address, guest_id: guest_id)
+      def create_profile(user, guest_id = nil, custom_properties = {})
+        user_presenter = ::SpreeKlaviyo::UserPresenter.new(email: user.email, address: user&.bill_address, guest_id: guest_id, custom_properties: custom_properties)
         result = client.post_request('profiles/', user_presenter.call)
 
         handle_result(result)
       end
 
-      def update_profile(user, guest_id = nil)
-        user_presenter = ::SpreeKlaviyo::UserPresenter.new(email: user.email, address: user&.bill_address, user: user, guest_id: guest_id)
+      def update_profile(user, guest_id = nil, custom_properties = {})
+        user_presenter = ::SpreeKlaviyo::UserPresenter.new(email: user.email, address: user&.bill_address, user: user, guest_id: guest_id, custom_properties: custom_properties)
         result = client.patch_request("profiles/#{user.klaviyo_id}/", user_presenter.call)
 
         handle_result(result)
       end
 
-      def subscribe_user(email, custom_properties = {})
+      def create_guest_profile(guest_id: nil, custom_properties: {})
+        user_presenter = ::SpreeKlaviyo::UserPresenter.new(email: nil, address: nil, user: nil, guest_id: guest_id, custom_properties: custom_properties)
+        result = client.post_request('profiles/', user_presenter.call)
+
+        handle_result(result)
+      end
+
+      def subscribe_user(email)
         result = client.post_request(
           'profile-subscription-bulk-create-jobs/',
-          ::SpreeKlaviyo::SubscribePresenter.new(
-            email: email,
-            list_id: preferred_default_newsletter_list_id,
-            custom_properties: custom_properties
-          ).call
+          ::SpreeKlaviyo::SubscribePresenter.new(email: email, list_id: preferred_default_newsletter_list_id).call
         )
 
         handle_result(result)

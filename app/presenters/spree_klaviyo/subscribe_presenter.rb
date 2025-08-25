@@ -20,7 +20,16 @@ module SpreeKlaviyo
               data: [
                 {
                   "type": 'profile',
-                  "attributes": profile_attributes
+                  "attributes": {
+                    email: @email,
+                    "subscriptions": {
+                      "email": {
+                        "marketing": {
+                          "consent": @subscribed ? SUBSCRIBED : UNSUBSCRIBED
+                        }
+                      }
+                    }
+                  }
                 }
               ]
             }
@@ -35,31 +44,6 @@ module SpreeKlaviyo
           }
         }
       }
-    end
-
-    private
-
-    def profile_attributes
-      attributes = {
-        email: @email,
-        "subscriptions": {
-          "email": {
-            "marketing": {
-              "consent": @subscribed ? SUBSCRIBED : UNSUBSCRIBED
-            }
-          }
-        }
-      }
-
-      if @custom_properties.present?
-        @custom_properties.each do |key, value|
-          if value.present?
-            attributes[key] = value
-          end
-        end
-      end
-
-      attributes
     end
   end
 end
