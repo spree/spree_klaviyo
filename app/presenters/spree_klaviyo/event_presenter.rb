@@ -49,6 +49,8 @@ module SpreeKlaviyo
         ProductPresenter.new(product: @resource, store: @store).call
       elsif @resource.is_a? ::Spree::Taxon
         TaxonPresenter.new(taxon: @resource).call
+      elsif @resource.is_a? Hash
+        @resource
       elsif @resource.is_a? String
         {
           query: @resource

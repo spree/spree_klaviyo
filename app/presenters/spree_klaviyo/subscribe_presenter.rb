@@ -3,11 +3,12 @@ module SpreeKlaviyo
     SUBSCRIBED = 'SUBSCRIBED'.freeze
     UNSUBSCRIBED = 'UNSUBSCRIBED'.freeze
 
-    def initialize(email:, list_id:, type: 'profile-subscription-bulk-create-job', subscribed: true)
+    def initialize(email:, list_id:, type: 'profile-subscription-bulk-create-job', subscribed: true, custom_properties: {})
       @email = email
       @list_id = list_id
       @type = type
       @subscribed = subscribed
+      @custom_properties = custom_properties
     end
 
     def call
