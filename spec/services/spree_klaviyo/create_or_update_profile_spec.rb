@@ -160,9 +160,7 @@ RSpec.describe SpreeKlaviyo::CreateOrUpdateProfile do
   end
 
   context 'when passing custom_properties (user present)', :vcr do
-    let(:test_id) { SecureRandom.hex(6) }
-    let(:user) { create(:user, email: "john.doe+test-#{test_id}@getvendo.com") }
-    
+    let(:user) { create(:user, email: "john.doe+test-props@getvendo.com") }
     let!(:klaviyo_integration) do
       create(:klaviyo_integration, preferred_klaviyo_public_api_key: 'RZUvUQ', preferred_klaviyo_private_api_key: 'pk_8d2bcc4570678967f4d3756fed304430eb', preferred_default_newsletter_list_id: 'XLUG56')
     end
