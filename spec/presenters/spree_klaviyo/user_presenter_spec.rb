@@ -33,7 +33,7 @@ RSpec.describe SpreeKlaviyo::UserPresenter do
       it 'merges klaviyo id at the top level' do
         user.update!(private_metadata: user.private_metadata.merge('klaviyo_id' => 'klv_123'))
 
-        expect(subject[:id]).to eq('klv_123')
+        expect(subject[:data][:id]).to eq('klv_123')
         expect(subject[:data][:attributes][:email]).to eq(user.email)
       end
     end
