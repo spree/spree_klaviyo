@@ -9,19 +9,21 @@ module SpreeKlaviyo
     end
 
     def call
-      {
+      body = {
         data: {
           type: 'profile',
           attributes: attributes
         }
-      }.merge(try_klaviyo_id)
+      }
+
+      if @user&.klaviyo_id.present?
+        body[:data][:id] = @user.klaviyo_id
+      end
+
+      body
     end
 
     private
-
-    def try_klaviyo_id
-      @user&.klaviyo_id.present? ? { id: @user.klaviyo_id } : {}
-    end
 
     def attributes
       base = {

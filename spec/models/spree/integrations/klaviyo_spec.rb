@@ -235,4 +235,25 @@ describe Spree::Integrations::Klaviyo, type: :model do
       end
     end
   end
+
+  describe '#create_guest_profile' do
+    subject { klaviyo_integration.create_guest_profile(guest_id: 'guest-123', custom_properties: { source: 'test' }) }
+
+
+    let(:klaviyo_integration) do
+      create(
+        :klaviyo_integration,
+        preferred_klaviyo_public_api_key: 'RZUvUQ' ,
+        preferred_klaviyo_private_api_key: 'pk_8d2bcc4570678967f4d3756fed304430eb',
+        preferred_default_newsletter_list_id: 'XLUG56'
+      )
+    end
+
+    it 'posts a profile with guest attributes' do      
+      VCR.use_cassette('klaviyo/create_guest_profile/success') do
+        expect(subject).to be_success
+        expect(JSON.parse(subject.value).dig('data', 'attributes', 'anonymous_id')).to eq('guest-123')
+      end
+    end
+  end
 end
