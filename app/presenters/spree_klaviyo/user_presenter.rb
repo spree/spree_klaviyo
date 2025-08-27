@@ -26,25 +26,26 @@ module SpreeKlaviyo
     private
 
     def attributes
-      base = {
-        anonymous_id: @guest_id,
-        email: @user.present? ? @user.email : @email,
-        first_name: @user&.first_name || @address&.first_name,
-        last_name: @user&.last_name || @address&.last_name,
-        external_id: @user&.id,
-        location: {
-          address1: @address&.address1,
-          address2: @address&.address2,
-          city: @address&.city,
-          country: @address&.country_name,
-          region: @address&.state_text,
-          zip: @address&.zipcode
-        }
-      }
-
-      return base if @custom_properties.empty?
-
-      base.merge(properties: @custom_properties)
+      location = {
+        address1: @address&.address1,
+        address2: @address&.address2,
+        city:     @address&.city,
+        country:  @address&.country_name,
+        region:   @address&.state_text,
+        zip:      @address&.zipcode
+      }.compact
+    
+      attrs = {
+        email:       @user.present? ? @user.email : @email,
+        first_name:  @user&.first_name || @address&.first_name,
+        last_name:   @user&.last_name  || @address&.last_name,
+        external_id: @user&.id
+      }.compact
+    
+      attrs[:anonymous_id] = @guest_id if @guest_id.present?
+      attrs[:location] = location unless location.empty?
+      attrs[:properties] = @custom_properties unless @custom_properties.empty?
+      attrs
     end
   end
 end
