@@ -7,7 +7,6 @@ module SpreeKlaviyo
 
       unless user.present?
         return failure(false, 'No identifier (guest_id) provided') if guest_id.blank?
-
         return klaviyo_integration.create_guest_profile(guest_id: guest_id, custom_properties: custom_properties)
       end
 
@@ -22,11 +21,22 @@ module SpreeKlaviyo
           return fetch_profile_result
         end
 
-        klaviyo_integration.create_profile(user, guest_id: guest_id, custom_properties: custom_properties).tap do |result|
-          user.update!(klaviyo_id: JSON.parse(result.value).dig('data', 'id')) if result.success?
+        create_result = klaviyo_integration.create_profile(user, guest_id: guest_id, custom_properties: custom_properties)
+
+        if create_result.success?
+          user.update!(klaviyo_id: JSON.parse(create_result.value).dig('data', 'id'))
+          return create_result
+        else
+          error_response = JSON.parse(create_result.value) rescue {}
+          dup_id = error_response.dig('errors', 0, 'meta', 'duplicate_profile_id')
+          if dup_id
+            user.update!(klaviyo_id: dup_id)
+            return klaviyo_integration.update_profile(user, guest_id: guest_id, custom_properties: custom_properties)
+          end
+
+          return create_result
         end
       end
-
       klaviyo_integration.update_profile(user, guest_id: guest_id, custom_properties: custom_properties)
     end
   end

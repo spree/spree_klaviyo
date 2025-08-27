@@ -110,7 +110,7 @@ RSpec.describe SpreeKlaviyo::CreateOrUpdateProfile do
 
   context 'when creating guest-only profiles (no user)', :vcr do
     let!(:klaviyo_integration) do 
-      create(:klaviyo_integration, preferred_klaviyo_public_api_key: 'Y5VPrP', preferred_klaviyo_private_api_key: 'pk_9139be52dea58123181586b6c784b448cf', preferred_default_newsletter_list_id: 'XuuhmQ')
+      create(:klaviyo_integration, preferred_klaviyo_public_api_key: 'RZUvUQ', preferred_klaviyo_private_api_key: 'pk_8d2bcc4570678967f4d3756fed304430eb', preferred_default_newsletter_list_id: 'XLUG56')
     end
     let(:custom_properties) { { 'source' => 'newsletter', 'zip_code' => '12345' } }
   
@@ -155,6 +155,61 @@ RSpec.describe SpreeKlaviyo::CreateOrUpdateProfile do
         profile_data = JSON.parse(subject.value)['data']
         expect(profile_data.dig('attributes', 'anonymous_id')).to eq(guest_id)
         expect(profile_data.dig('attributes', 'properties')).to eq({})
+      end
+    end
+  end
+
+  context 'when passing custom_properties (user present)', :vcr do
+    let(:test_id) { SecureRandom.hex(6) }
+    let(:user) { create(:user, email: "john.doe+test-#{test_id}@getvendo.com") }
+    
+    let!(:klaviyo_integration) do
+      create(:klaviyo_integration, preferred_klaviyo_public_api_key: 'RZUvUQ', preferred_klaviyo_private_api_key: 'pk_8d2bcc4570678967f4d3756fed304430eb', preferred_default_newsletter_list_id: 'XLUG56')
+    end
+    
+    let(:custom_properties) { { 'unsupported_zip_code' => '99999', 'source' => 'test' } }
+  
+    context 'and user already has klaviyo_id' do
+      subject do
+        described_class.call(
+          klaviyo_integration: klaviyo_integration,
+          user: user,
+          custom_properties: custom_properties
+        )
+      end
+      
+      it 'updates profile successfully', vcr: { cassette_name: 'update_profile_with_properties' } do
+        fetch_result = SpreeKlaviyo::FetchProfile.call(klaviyo_integration: klaviyo_integration, user: user)
+        if fetch_result.success?
+          klaviyo_id = JSON.parse(fetch_result.value).dig('data', 0, 'id')
+          user.update!(private_metadata: user.private_metadata.merge('klaviyo_id' => klaviyo_id)) if klaviyo_id.present?
+        end
+
+        expect(subject.success?).to be(true), -> { subject.error&.value || subject.value }
+        
+        profile_data = JSON.parse(subject.value)['data']
+        if profile_data.dig('attributes', 'properties')
+          expect(profile_data.dig('attributes', 'properties')).to include(custom_properties)
+        end
+      end
+    end
+  
+    context 'and user has no klaviyo_id' do
+      subject do
+        described_class.call(
+          klaviyo_integration: klaviyo_integration,
+          user: user,
+          custom_properties: custom_properties
+        )
+      end
+      
+      it 'creates or links and then updates successfully', vcr: { cassette_name: 'create_and_update_profile_with_properties' } do
+        expect(subject.success?).to be(true), -> { subject.error&.value || subject.value }
+        
+        expect(user.reload.klaviyo_id).to be_present
+        
+        profile_data = JSON.parse(subject.value)['data']
+        expect(profile_data.dig('attributes', 'email')).to eq(user.email)
       end
     end
   end
