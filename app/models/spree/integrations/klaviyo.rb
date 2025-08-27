@@ -31,14 +31,16 @@ module Spree
         result.success?
       end
 
-      def create_profile(user, guest_id = nil, custom_properties = {})
+      def create_profile(user, guest_id: nil, custom_properties: {})
+        custom_properties = {} unless custom_properties.is_a?(Hash)
         user_presenter = ::SpreeKlaviyo::UserPresenter.new(email: user.email, address: user&.bill_address, guest_id: guest_id, custom_properties: custom_properties)
         result = client.post_request('profiles/', user_presenter.call)
 
         handle_result(result)
       end
 
-      def update_profile(user, guest_id = nil, custom_properties = {})
+      def update_profile(user, guest_id: nil, custom_properties: {})
+        custom_properties = {} unless custom_properties.is_a?(Hash)
         user_presenter = ::SpreeKlaviyo::UserPresenter.new(email: user.email, address: user&.bill_address, user: user, guest_id: guest_id, custom_properties: custom_properties)
         result = client.patch_request("profiles/#{user.klaviyo_id}/", user_presenter.call)
 
@@ -46,6 +48,7 @@ module Spree
       end
 
       def create_guest_profile(guest_id: nil, custom_properties: {})
+        custom_properties = {} unless custom_properties.is_a?(Hash)
         user_presenter = ::SpreeKlaviyo::UserPresenter.new(email: nil, address: nil, user: nil, guest_id: guest_id, custom_properties: custom_properties)
         result = client.post_request('profiles/', user_presenter.call)
 

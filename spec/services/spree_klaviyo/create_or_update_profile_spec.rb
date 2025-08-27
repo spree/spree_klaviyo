@@ -110,16 +110,12 @@ RSpec.describe SpreeKlaviyo::CreateOrUpdateProfile do
 
   context 'when creating guest-only profiles (no user)', :vcr do
     let!(:klaviyo_integration) do 
-      create(:klaviyo_integration,
-             preferred_klaviyo_public_api_key: 'RZUvUQ',
-             preferred_klaviyo_private_api_key: 'pk_8d2bcc4570678967f4d3756fed304430eb',
-             preferred_default_newsletter_list_id: 'XLUG56')
+      create(:klaviyo_integration, preferred_klaviyo_public_api_key: 'Y5VPrP', preferred_klaviyo_private_api_key: 'pk_9139be52dea58123181586b6c784b448cf', preferred_default_newsletter_list_id: 'XuuhmQ')
     end
-    
-    let(:guest_id) { "guest-#{SecureRandom.hex(12)}" }
     let(:custom_properties) { { 'source' => 'newsletter', 'zip_code' => '12345' } }
   
     context 'with guest_id' do
+      let(:guest_id) { 'guest-spec-with-props-001' }
       subject do
         described_class.call(
           klaviyo_integration: klaviyo_integration,
@@ -150,6 +146,7 @@ RSpec.describe SpreeKlaviyo::CreateOrUpdateProfile do
     end
   
     context 'with no custom properties' do
+      let(:guest_id) { 'guest-spec-no-props-001' }
       subject { described_class.call(klaviyo_integration: klaviyo_integration, guest_id: guest_id) }
       
       it 'creates a guest profile without custom properties', vcr: { cassette_name: 'create_guest_profile_without_properties' } do

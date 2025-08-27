@@ -5,7 +5,7 @@ http_interactions:
     uri: https://a.klaviyo.com/api/profiles/
     body:
       encoding: UTF-8
-      string: '{"data":{"type":"profile","attributes":{"anonymous_id":"guest-103e4a9609f8ca8c9b70cf4d","email":null,"first_name":null,"last_name":null,"external_id":null,"location":{"address1":null,"address2":null,"city":null,"country":null,"region":null,"zip":null},"properties":{"source":"newsletter","zip_code":"12345"}}}}'
+      string: '{"data":{"type":"profile","attributes":{"anonymous_id":"guest-spec-with-props-001","email":null,"first_name":null,"last_name":null,"external_id":null,"location":{"address1":null,"address2":null,"city":null,"country":null,"region":null,"zip":null},"properties":{"source":"newsletter","zip_code":"12345"}}}}'
     headers:
       Accept-Encoding:
       - gzip;q=1.0,deflate;q=0.6,identity;q=0.3
@@ -27,15 +27,15 @@ http_interactions:
       message: Created
     headers:
       Date:
-      - Wed, 27 Aug 2025 02:02:03 GMT
+      - Wed, 27 Aug 2025 02:22:25 GMT
       Content-Type:
       - application/vnd.api+json
       Content-Length:
-      - '1571'
+      - '1566'
       Connection:
       - keep-alive
       Cf-Ray:
-      - 9757fc09da17167a-KHI
+      - 975819e1c9ae97a4-KHI
       Allow:
       - GET, POST, HEAD, OPTIONS
       Cid:
@@ -43,14 +43,14 @@ http_interactions:
       Content-Language:
       - en-us
       Content-Security-Policy:
-      - object-src 'none'; script-src 'report-sample' 'strict-dynamic' 'unsafe-eval';
-        base-uri 'none'; frame-ancestors 'self' login.bigcommerce.com *.mybigcommerce.com
+      - object-src 'none'; frame-ancestors 'self' login.bigcommerce.com *.mybigcommerce.com
         admin.shopify.com klaviyo.file.force.com klaviyo.lightning.force.com klaviyo.my.salesforce.com;
+        base-uri 'none'; script-src 'report-sample' 'strict-dynamic' 'unsafe-eval';
         report-uri /csp/
       Ratelimit-Limit:
       - 75, 75;w=1, 700;w=60
       Ratelimit-Remaining:
-      - '74'
+      - '73'
       Ratelimit-Reset:
       - '0'
       Vary:
@@ -58,9 +58,9 @@ http_interactions:
       X-Klaviyo-Api-Revision:
       - '2025-04-15'
       X-Klaviyo-Req-Id:
-      - c33816f5-46c1-4470-98b1-ec2c989199c6
+      - e621d383-5b17-4857-bbbb-de420abe8748
       X-Envoy-Upstream-Service-Time:
-      - '99'
+      - '102'
       Cf-Cache-Status:
       - DYNAMIC
       Strict-Transport-Security:
@@ -71,6 +71,6 @@ http_interactions:
       - cloudflare
     body:
       encoding: UTF-8
-      string: '{"data":{"type":"profile","id":"01K3MM5GQ6WXG9MSB3D888PCP9","attributes":{"email":null,"phone_number":null,"external_id":null,"anonymous_id":"guest-103e4a9609f8ca8c9b70cf4d","first_name":null,"last_name":null,"organization":null,"locale":null,"title":null,"image":null,"created":"2025-08-27T02:02:03.368315+00:00","updated":"2025-08-27T02:02:03.368346+00:00","last_event_date":null,"location":{"city":null,"longitude":null,"country":null,"latitude":null,"address1":null,"region":null,"zip":null,"address2":null,"timezone":null,"ip":null},"properties":{"source":"newsletter","zip_code":"12345"}},"relationships":{"lists":{"links":{"self":"https://a.klaviyo.com/api/profiles/01K3MM5GQ6WXG9MSB3D888PCP9/relationships/lists/","related":"https://a.klaviyo.com/api/profiles/01K3MM5GQ6WXG9MSB3D888PCP9/lists/"}},"segments":{"links":{"self":"https://a.klaviyo.com/api/profiles/01K3MM5GQ6WXG9MSB3D888PCP9/relationships/segments/","related":"https://a.klaviyo.com/api/profiles/01K3MM5GQ6WXG9MSB3D888PCP9/segments/"}},"push-tokens":{"links":{"self":"https://a.klaviyo.com/api/profiles/01K3MM5GQ6WXG9MSB3D888PCP9/relationships/push-tokens/","related":"https://a.klaviyo.com/api/profiles/01K3MM5GQ6WXG9MSB3D888PCP9/push-tokens/"}},"conversation":{"links":{"self":"https://a.klaviyo.com/api/profiles/01K3MM5GQ6WXG9MSB3D888PCP9/relationships/conversation/","related":"https://a.klaviyo.com/api/profiles/01K3MM5GQ6WXG9MSB3D888PCP9/conversation/"}}},"links":{"self":"https://a.klaviyo.com/api/profiles/01K3MM5GQ6WXG9MSB3D888PCP9/"}},"links":{"self":"https://a.klaviyo.com/api/profiles/"}}'
-  recorded_at: Wed, 27 Aug 2025 02:02:01 GMT
+      string: '{"data":{"type":"profile","id":"01K3MNATFGCB2C265A65PY4SF4","attributes":{"email":null,"phone_number":null,"external_id":null,"anonymous_id":"guest-spec-with-props-001","first_name":null,"last_name":null,"organization":null,"locale":null,"title":null,"image":null,"created":"2025-08-27T02:22:25.777504+00:00","updated":"2025-08-27T02:22:25.777537+00:00","last_event_date":null,"location":{"zip":null,"latitude":null,"address1":null,"longitude":null,"region":null,"city":null,"address2":null,"country":null,"timezone":null,"ip":null},"properties":{"source":"newsletter","zip_code":"12345"}},"relationships":{"lists":{"links":{"self":"https://a.klaviyo.com/api/profiles/01K3MNATFGCB2C265A65PY4SF4/relationships/lists/","related":"https://a.klaviyo.com/api/profiles/01K3MNATFGCB2C265A65PY4SF4/lists/"}},"segments":{"links":{"self":"https://a.klaviyo.com/api/profiles/01K3MNATFGCB2C265A65PY4SF4/relationships/segments/","related":"https://a.klaviyo.com/api/profiles/01K3MNATFGCB2C265A65PY4SF4/segments/"}},"push-tokens":{"links":{"self":"https://a.klaviyo.com/api/profiles/01K3MNATFGCB2C265A65PY4SF4/relationships/push-tokens/","related":"https://a.klaviyo.com/api/profiles/01K3MNATFGCB2C265A65PY4SF4/push-tokens/"}},"conversation":{"links":{"self":"https://a.klaviyo.com/api/profiles/01K3MNATFGCB2C265A65PY4SF4/relationships/conversation/","related":"https://a.klaviyo.com/api/profiles/01K3MNATFGCB2C265A65PY4SF4/conversation/"}}},"links":{"self":"https://a.klaviyo.com/api/profiles/01K3MNATFGCB2C265A65PY4SF4/"}},"links":{"self":"https://a.klaviyo.com/api/profiles/"}}'
+  recorded_at: Wed, 27 Aug 2025 02:22:23 GMT
 recorded_with: VCR 6.3.1

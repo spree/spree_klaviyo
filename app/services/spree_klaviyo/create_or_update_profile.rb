@@ -8,7 +8,7 @@ module SpreeKlaviyo
       unless user.present?
         return failure(false, 'No identifier (guest_id) provided') if guest_id.blank?
 
-        return klaviyo_integration.create_guest_profile(guest_id: guest_id,custom_properties: custom_properties)
+        return klaviyo_integration.create_guest_profile(guest_id: guest_id, custom_properties: custom_properties)
       end
 
       if user&.klaviyo_id.blank?
@@ -18,16 +18,16 @@ module SpreeKlaviyo
           fetched_id = JSON.parse(fetch_profile_result.value).dig('data', 0, 'id')
           user.update!(klaviyo_id: fetched_id) if fetched_id.present?
 
-          return klaviyo_integration.update_profile(user, guest_id, custom_properties) if guest_id.present? || custom_properties.present?
+          return klaviyo_integration.update_profile(user, guest_id: guest_id, custom_properties: custom_properties) if guest_id.present? || custom_properties.present?
           return fetch_profile_result
         end
 
-        klaviyo_integration.create_profile(user, guest_id, custom_properties).tap do |result|
+        klaviyo_integration.create_profile(user, guest_id: guest_id, custom_properties: custom_properties).tap do |result|
           user.update!(klaviyo_id: JSON.parse(result.value).dig('data', 'id')) if result.success?
         end
       end
 
-      klaviyo_integration.update_profile(user, guest_id, custom_properties)
+      klaviyo_integration.update_profile(user, guest_id: guest_id, custom_properties: custom_properties)
     end
   end
 end
