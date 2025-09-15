@@ -1,17 +1,8 @@
 module SpreeKlaviyo
   module UserDecorator
     def self.prepended(base)
+      # todo: remove after the release, leaving it here for supporting existing jobs
       base.include ::SpreeKlaviyo::SubscribableResource
-
-      base.after_commit :subscribe_to_klaviyo, on: :update, if: :marketing_opt_in_changed?
-    end
-
-    private
-
-    def marketing_opt_in_changed?
-      return false if klaviyo_subscribed?
-
-      saved_change_to_accepts_email_marketing? && accepts_email_marketing?
     end
   end
 end

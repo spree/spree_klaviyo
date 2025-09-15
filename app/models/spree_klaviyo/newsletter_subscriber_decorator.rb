@@ -3,7 +3,11 @@ module SpreeKlaviyo
     def self.prepended(base)
       base.include ::SpreeKlaviyo::SubscribableResource
 
-      base.after_commit :subscribe_to_klaviyo, on: :update
+      base.after_commit :subscribe_to_klaviyo, if: :verified_at_previously_changed?
+
+      def base.needs_verification?
+        false
+      end
     end
 
     private

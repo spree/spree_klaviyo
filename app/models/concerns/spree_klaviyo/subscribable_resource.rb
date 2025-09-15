@@ -18,7 +18,7 @@ module SpreeKlaviyo
     def fetch_klaviyo_profile(klaviyo_integration:)
       return if klaviyo_id.present?
 
-      SpreeKlaviyo::FetchProfileJob.perform_later(klaviyo_integration.id, id)
+      SpreeKlaviyo::FetchProfileJob.perform_later(klaviyo_integration.id, id, self.class.name)
     end
 
     private
@@ -27,7 +27,7 @@ module SpreeKlaviyo
       klaviyo_integration = store_integration('klaviyo')
       return unless klaviyo_integration
 
-      SpreeKlaviyo::SubscribeJob.perform_later(klaviyo_integration.id, email)
+      SpreeKlaviyo::SubscribeJob.perform_later(klaviyo_integration.id, email, id, self.class.name)
     end
   end
 end
