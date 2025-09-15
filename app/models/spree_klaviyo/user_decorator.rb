@@ -1,7 +1,7 @@
 module SpreeKlaviyo
   module UserDecorator
     def self.prepended(base)
-      base.include ::SpreeKlaviyo::UserMethods
+      base.include ::SpreeKlaviyo::SubscribableResource
     end
   end
 end

@@ -1,9 +1,10 @@
 require 'spec_helper'
 
 describe SpreeKlaviyo::FetchProfile do
-  subject { described_class.call(klaviyo_integration: klaviyo_integration, user: user) }
+  subject { described_class.call(klaviyo_integration: klaviyo_integration, resource: resource) }
 
   let(:user) { create(:user, accepts_email_marketing: true) }
+  let(:resource) { user }
 
   describe '#call' do
     context 'when klaviyo integration is exists' do

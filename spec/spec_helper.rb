@@ -11,4 +11,4 @@ require 'spree_klaviyo/factories'
 # in spec/support/ and its subdirectories.
 Dir[File.join(File.dirname(__FILE__), 'support/**/*.rb')].sort.each { |f| require f }
 
-Spree::LegacyUser.include SpreeKlaviyo::UserMethods
+Spree::LegacyUser.include SpreeKlaviyo::SubscribableResource

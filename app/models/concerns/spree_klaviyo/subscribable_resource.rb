@@ -1,5 +1,5 @@
 module SpreeKlaviyo
-  module UserMethods
+  module SubscribableResource
     extend ActiveSupport::Concern
 
     included do
