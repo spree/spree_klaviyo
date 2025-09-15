@@ -25,12 +25,6 @@ module SpreeKlaviyo
 
     private
 
-    def marketing_opt_in_changed?
-      return false if klaviyo_subscribed?
-
-      saved_change_to_accepts_email_marketing? && accepts_email_marketing?
-    end
-
     def subscribe_to_klaviyo
       klaviyo_integration = store_integration('klaviyo')
       return unless klaviyo_integration
