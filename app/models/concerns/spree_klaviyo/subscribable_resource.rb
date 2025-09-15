@@ -5,8 +5,6 @@ module SpreeKlaviyo
     included do
       store_accessor :private_metadata, :klaviyo_id
       store_accessor :private_metadata, :klaviyo_subscribed
-
-      after_commit :subscribe_to_klaviyo, on: :update, if: :marketing_opt_in_changed?
     end
 
     def klaviyo_subscribed?

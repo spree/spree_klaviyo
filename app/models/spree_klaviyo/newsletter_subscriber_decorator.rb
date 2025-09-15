@@ -2,6 +2,8 @@ module SpreeKlaviyo
   module NewsletterSubscriberDecorator
     def self.prepended(base)
       base.include ::SpreeKlaviyo::SubscribableResource
+
+      base.after_commit :subscribe_to_klaviyo, on: :update
     end
 
     private

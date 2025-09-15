@@ -2,6 +2,8 @@ module SpreeKlaviyo
   module UserDecorator
     def self.prepended(base)
       base.include ::SpreeKlaviyo::SubscribableResource
+
+      base.after_commit :subscribe_to_klaviyo, on: :update, if: :marketing_opt_in_changed?
     end
 
     private
