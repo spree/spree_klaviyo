@@ -2,7 +2,7 @@ module SpreeKlaviyo
   class FetchProfileJob < BaseJob
     NoProfileFoundError = Class.new(StandardError)
 
-    def perform(klaviyo_integration_id, resource_id, resource_type=Spree.user_class)
+    def perform(klaviyo_integration_id, resource_id, resource_type=Spree.user_class.to_s)
       klaviyo_integration = ::Spree::Integrations::Klaviyo.find(klaviyo_integration_id)
       resource = resource_type.constantize.find(resource_id)
 
