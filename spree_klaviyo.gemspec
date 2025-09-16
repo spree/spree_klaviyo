@@ -20,10 +20,10 @@ Gem::Specification.new do |s|
   s.require_path = 'lib'
   s.requirements << 'none'
 
-  spree_opts = '>= 5.2.0.alpha2'
-  s.add_dependency 'spree', spree_opts
-  s.add_dependency 'spree_storefront', spree_opts
-  s.add_dependency 'spree_admin', spree_opts
+  spree_opts = ['>= 5.2.0.alpha2', '< 6.0.0']
+  s.add_dependency 'spree', *spree_opts
+  s.add_dependency 'spree_storefront', *spree_opts
+  s.add_dependency 'spree_admin', *spree_opts
   s.add_dependency 'spree_extension'
 
   s.add_development_dependency 'dotenv'

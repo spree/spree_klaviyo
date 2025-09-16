@@ -84,7 +84,7 @@ RSpec.describe Spree::NewsletterSubscriber, type: :model do
 
         it 'does not enqueue a SubscribeJob' do
           expect {
-            user.send(:subscribe_to_klaviyo)
+            resource.send(:subscribe_to_klaviyo)
           }.not_to have_enqueued_job(SpreeKlaviyo::SubscribeJob)
         end
       end
