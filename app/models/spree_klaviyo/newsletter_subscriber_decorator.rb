@@ -8,6 +8,17 @@ module SpreeKlaviyo
       def base.needs_verification?
         false
       end
+
+      def base.subscribe(email:, user: nil)
+        Spree::Newsletter::Subscribe.new(email: email, current_user: user).call.tap do |subscriber|
+          next subscriber if subscriber.errors.any?
+          next subscriber if subscriber.verified?
+
+          # opt-in is cared by Klaviyo
+          # we care about changing user's email marketing preference, though
+          Spree::Newsletter::Verify.new(subscriber: subscriber).call
+        end
+      end
     end
 
     private
