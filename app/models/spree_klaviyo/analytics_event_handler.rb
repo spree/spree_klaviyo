@@ -44,12 +44,12 @@ module SpreeKlaviyo
                  email ||= properties[:order].email
                  properties[:order]
                when 'subscribed_to_newsletter'
-                 email ||= properties[:email]
-                 SpreeKlaviyo::SubscribeJob.perform_later(client.id, email, user&.id)
+                 subscriber = Spree::NewsletterSubscriber.find_by!(email: properties[:email])
+                 SpreeKlaviyo::SubscribeJob.perform_later(client.id, subscriber.email, subscriber.id, Spree::NewsletterSubscriber.to_s)
                  nil
                when 'unsubscribed_from_newsletter'
                  email ||= properties[:email]
-                 SpreeKlaviyo::UnsubscribeJob.perform_later(client.id, email, user&.id)
+                 SpreeKlaviyo::UnsubscribeJob.perform_later(client.id, email)
                  nil
                end
 

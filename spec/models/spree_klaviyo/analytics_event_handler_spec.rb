@@ -10,7 +10,7 @@ describe SpreeKlaviyo::AnalyticsEventHandler do
   let(:taxon) { create(:taxon) }
   let(:line_item) { create(:line_item, order: order, product: product) }
   let!(:klaviyo_integration) { create(:klaviyo_integration, store: store, active: true) }
-  
+
   subject do
     described_class.new(
       user: user,
@@ -103,13 +103,16 @@ describe SpreeKlaviyo::AnalyticsEventHandler do
     end
 
     context 'with newsletter events' do
+      let!(:subscriber) { create(:newsletter_subscriber, email: 'test@example.com') }
+
       it 'enqueues subscribe job for newsletter subscription' do
         expect {
           subject.handle_event('subscribed_to_newsletter', { email: 'test@example.com' })
         }.to have_enqueued_job(SpreeKlaviyo::SubscribeJob).with(
           klaviyo_integration.id,
-          user.email,
-          user.id
+          'test@example.com',
+          subscriber.id,
+          Spree::NewsletterSubscriber.to_s
         )
       end
 
@@ -128,7 +131,8 @@ describe SpreeKlaviyo::AnalyticsEventHandler do
           }.to have_enqueued_job(SpreeKlaviyo::SubscribeJob).with(
             klaviyo_integration.id,
             'test@example.com',
-            nil
+            subscriber.id,
+            Spree::NewsletterSubscriber.to_s
           )
         end
       end
@@ -211,6 +215,8 @@ describe SpreeKlaviyo::AnalyticsEventHandler do
     end
 
     context 'when both email and visitor_id are blank' do
+      let!(:subscriber) { create(:newsletter_subscriber, email: 'test@example.com') }
+
       subject do
         described_class.new(
           user: nil,

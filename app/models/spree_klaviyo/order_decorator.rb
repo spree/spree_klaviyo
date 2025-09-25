@@ -13,7 +13,7 @@ module SpreeKlaviyo
       integration = store_integration('klaviyo')
       return if integration.blank?
 
-      SpreeKlaviyo::SubscribeJob.perform_later(integration.id, email, user_id)
+      SpreeKlaviyo::SubscribeJob.perform_later(integration.id, email, user_id, Spree.user_class.to_s)
     end
 
     def track_order_cancelled_event
