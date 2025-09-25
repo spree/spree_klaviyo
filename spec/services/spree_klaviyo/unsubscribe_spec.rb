@@ -1,9 +1,10 @@
 require 'spec_helper'
 
 describe SpreeKlaviyo::Unsubscribe do
-  subject { described_class.call(klaviyo_integration: klaviyo_integration, email: email, user: user) }
+  subject { described_class.call(klaviyo_integration: klaviyo_integration, email: email, resource: resource) }
 
   let(:email) { FFaker::Internet.email }
+  let(:resource) { user }
   let(:user) { create(:user, email: email, accepts_email_marketing: true) }
 
   describe '#call' do

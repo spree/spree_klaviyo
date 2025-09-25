@@ -103,7 +103,25 @@ describe SpreeKlaviyo::AnalyticsEventHandler do
     end
 
     context 'with newsletter events' do
-      let!(:subscriber) { create(:newsletter_subscriber, email: 'test@example.com') }
+
+      let(:subscriber) { create(:newsletter_subscriber, email: 'test@example.com') }
+
+      before do
+        subscriber
+      end
+
+      context 'when subscriber not present' do
+        let(:subscriber) { nil }
+
+        it 'still enqueues subscribe job' do
+          expect {
+            subject.handle_event('subscribed_to_newsletter', { email: 'test@example.com' })
+          }.to have_enqueued_job(SpreeKlaviyo::SubscribeJob).with(
+            klaviyo_integration.id,
+            'test@example.com'
+          )
+        end
+      end
 
       it 'enqueues subscribe job for newsletter subscription' do
         expect {
