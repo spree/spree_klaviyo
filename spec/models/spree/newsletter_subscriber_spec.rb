@@ -17,7 +17,7 @@ RSpec.describe Spree::NewsletterSubscriber, type: :model do
         let(:user) { create(:user, accepts_email_marketing: false) }
 
         it 'enqueues a SubscribeJob a job and changes user accepts_email_marketing' do
-          expect { subscribe }.to have_enqueued_job(SpreeKlaviyo::SubscribeJob).with(klaviyo_integration.id, user.email, kind_of(Integer), 'Spree::NewsletterSubscriber').once
+          expect { subscribe }.to have_enqueued_job(SpreeKlaviyo::SubscribeJob).with(klaviyo_integration.id, kind_of(Integer)).once
                              .and change { user.reload.accepts_email_marketing }.from(false).to(true)
         end
 
@@ -31,7 +31,7 @@ RSpec.describe Spree::NewsletterSubscriber, type: :model do
         let(:user) { create(:user, accepts_email_marketing: false) }
 
         it 'does not enqueue a SubscribeJob (no verification needed)' do
-          expect { subscribe }.to have_enqueued_job(SpreeKlaviyo::SubscribeJob).with(klaviyo_integration.id, 'some@email.example.com', kind_of(Integer), 'Spree::NewsletterSubscriber').once
+          expect { subscribe }.to have_enqueued_job(SpreeKlaviyo::SubscribeJob).with(klaviyo_integration.id, kind_of(Integer)).once
         end
 
         it 'change user accepts_email_marketing (no verification needed)' do
@@ -46,7 +46,7 @@ RSpec.describe Spree::NewsletterSubscriber, type: :model do
       let(:resource) { create(:newsletter_subscriber, :unverified) }
 
       it 'enqueues a SubscribeJob once' do
-        expect { verify }.to have_enqueued_job(SpreeKlaviyo::SubscribeJob).with(klaviyo_integration.id, resource.email, resource.id, "Spree::NewsletterSubscriber").once
+        expect { verify }.to have_enqueued_job(SpreeKlaviyo::SubscribeJob).with(klaviyo_integration.id, resource.id).once
                              .and change { resource.reload.accepts_email_marketing }.from(false).to(true)
       end
     end
@@ -62,7 +62,7 @@ RSpec.describe Spree::NewsletterSubscriber, type: :model do
       it 'enqueues a SubscribeJob' do
         expect {
           resource.send(:subscribe_to_klaviyo)
-        }.to have_enqueued_job(SpreeKlaviyo::SubscribeJob).with(klaviyo_integration.id, resource.email, resource.id, "Spree::NewsletterSubscriber")
+        }.to have_enqueued_job(SpreeKlaviyo::SubscribeJob).with(klaviyo_integration.id, resource.id)
       end
 
       context 'when no klaviyo integration exists' do

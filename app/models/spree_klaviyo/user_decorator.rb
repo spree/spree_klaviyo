@@ -1,8 +1,11 @@
 module SpreeKlaviyo
   module UserDecorator
     def self.prepended(base)
-      # todo: remove after the release, leaving it here for supporting existing jobs
-      base.include ::SpreeKlaviyo::SubscribableResource
+      base.store_accessor :private_metadata, :klaviyo_id
+    end
+
+    def create_or_update_klaviyo_profile(klaviyo_integration:)
+      SpreeKlaviyo::CreateOrUpdateProfileJob.perform_later(klaviyo_integration.id, id)
     end
   end
 end

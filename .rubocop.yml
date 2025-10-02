@@ -22,3 +22,10 @@ Style/Documentation:
 
 Style/FrozenStringLiteralComment:
   Enabled: false
+
+Rails/RakeEnvironment:
+  Enabled: false
+
+Style/ExpandPathArguments:
+  Exclude:
+    - 'bin/rails'

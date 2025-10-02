@@ -44,16 +44,11 @@ module SpreeKlaviyo
                  email ||= properties[:order].email
                  properties[:order]
                when 'subscribed_to_newsletter'
-                 event_email = properties[:email]
-                 email ||= event_email
-                 subscriber = Spree::NewsletterSubscriber.find_by(email: event_email)
-                 [client.id, event_email].tap do |params|
-                   params.concat([subscriber.id, Spree::NewsletterSubscriber.to_s]) if subscriber.present?
-                   SpreeKlaviyo::SubscribeJob.perform_later(*params)
-                 end
+                 email = properties[:email]
+                 enqueue_subscribe_job(email)
                  nil
                when 'unsubscribed_from_newsletter'
-                 email ||= properties[:email]
+                 email = properties[:email]
                  SpreeKlaviyo::UnsubscribeJob.perform_later(client.id, email)
                  nil
                end
@@ -61,6 +56,17 @@ module SpreeKlaviyo
       return if email.blank? && identity_hash[:visitor_id].blank?
 
       SpreeKlaviyo::AnalyticsEventJob.perform_later(client.id, event_human_name(event_name), record, email, identity_hash[:visitor_id])
+    end
+
+    def enqueue_subscribe_job(email)
+      subscriber = Spree::NewsletterSubscriber.find_by(email: email)
+      return Rails.error.report(
+         StandardError.new("NewsletterSubscriber record not found when trying to subscribe to klaviyo"),
+         context: { event_name: 'subscribed_to_newsletter', record: { email: email } },
+         source: 'spree_klaviyo'
+      ) if subscriber.blank?
+
+      SpreeKlaviyo::SubscribeJob.perform_later(client.id, subscriber.id)
     end
   end
 end

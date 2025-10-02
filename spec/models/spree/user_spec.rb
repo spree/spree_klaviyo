@@ -6,44 +6,5 @@ RSpec.describe Spree.user_class, type: :model do
   describe 'Klaviyo' do
     let(:user) { build(:user) }
     let!(:klaviyo_integration) { create(:klaviyo_integration) }
-
-    describe '#subscribe_to_klaviyo' do
-      before do
-        ActiveJob::Base.queue_adapter = :test
-        clear_enqueued_jobs
-      end
-
-      after { clear_enqueued_jobs }
-
-      it 'enqueues a SubscribeJob' do
-        expect {
-          user.send(:subscribe_to_klaviyo)
-        }.to have_enqueued_job(SpreeKlaviyo::SubscribeJob).with(klaviyo_integration.id, user.email, nil, "Spree::LegacyUser" )
-      end
-
-      context 'when no klaviyo integration exists' do
-        before do
-          klaviyo_integration.destroy!
-        end
-
-        it 'does not enqueue a SubscribeJob' do
-          expect {
-            user.send(:subscribe_to_klaviyo)
-          }.not_to have_enqueued_job(SpreeKlaviyo::SubscribeJob)
-        end
-      end
-
-      context 'when klaviyo integration is not active' do
-        before do
-          klaviyo_integration.update(active: false)
-        end
-
-        it 'does not enqueue a SubscribeJob' do
-          expect {
-            user.send(:subscribe_to_klaviyo)
-          }.not_to have_enqueued_job(SpreeKlaviyo::SubscribeJob)
-        end
-      end
-    end
   end
 end

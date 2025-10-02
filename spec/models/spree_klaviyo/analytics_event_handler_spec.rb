@@ -103,78 +103,37 @@ describe SpreeKlaviyo::AnalyticsEventHandler do
     end
 
     context 'with newsletter events' do
-
-      let(:subscriber) { create(:newsletter_subscriber, email: 'test@example.com') }
-
-      before do
-        subscriber
-      end
-
-      context 'when subscriber not present' do
-        let(:subscriber) { nil }
-
-        it 'still enqueues subscribe job' do
-          expect {
-            subject.handle_event('subscribed_to_newsletter', { email: 'test@example.com' })
-          }.to have_enqueued_job(SpreeKlaviyo::SubscribeJob).with(
-            klaviyo_integration.id,
-            'test@example.com'
-          )
-        end
-      end
+      let!(:subscriber) { create(:newsletter_subscriber, email: 'test@example.com') }
 
       it 'enqueues subscribe job for newsletter subscription' do
         expect {
           subject.handle_event('subscribed_to_newsletter', { email: 'test@example.com' })
         }.to have_enqueued_job(SpreeKlaviyo::SubscribeJob).with(
           klaviyo_integration.id,
-          'test@example.com',
-          subscriber.id,
-          Spree::NewsletterSubscriber.to_s
+          subscriber.id
         )
       end
 
-      context 'when user is not present' do
-        subject do
-          described_class.new(
-            user: nil,
-            store: store,
-            visitor_id: 'visitor_123'
-          )
-        end
-
-        it 'uses provided email for newsletter subscription' do
-          expect {
-            subject.handle_event('subscribed_to_newsletter', { email: 'test@example.com' })
-          }.to have_enqueued_job(SpreeKlaviyo::SubscribeJob).with(
-            klaviyo_integration.id,
-            'test@example.com',
-            subscriber.id,
-            Spree::NewsletterSubscriber.to_s
-          )
-        end
-      end
-
-      it 'also enqueues analytics event job for newsletter subscription' do
+      it 'enqueues analytics event job for newsletter subscription' do
         expect {
           subject.handle_event('subscribed_to_newsletter', { email: 'test@example.com' })
         }.to have_enqueued_job(SpreeKlaviyo::AnalyticsEventJob).with(
           klaviyo_integration.id,
           'Subscribed to Newsletter',
           nil,
-          user.email,
+          subscriber.email,
           'visitor_123'
         )
       end
 
-      it 'also enqueues analytics event job for newsletter unsubscription' do
+      it 'enqueues analytics event job for newsletter unsubscription' do
         expect {
           subject.handle_event('unsubscribed_from_newsletter', { email: 'test@example.com' })
         }.to have_enqueued_job(SpreeKlaviyo::AnalyticsEventJob).with(
           klaviyo_integration.id,
           'Unsubscribed from Newsletter',
           nil,
-          user.email,
+          subscriber.email,
           'visitor_123'
         )
       end

@@ -1,9 +1,10 @@
 require 'spec_helper'
 
 RSpec.describe SpreeKlaviyo::CreateOrUpdateProfile do
-  subject { described_class.call(klaviyo_integration: klaviyo_integration, resource: resource) }
+  subject { described_class.call(**params) }
 
-  let(:resource) { user }
+  let(:default_params) { { klaviyo_integration: klaviyo_integration, user: user } }
+  let(:params) { default_params }
 
   context 'when klaviyo integration is exists', :vcr do
     let(:user) { create(:user, email: email, accepts_email_marketing: true) }
@@ -33,7 +34,7 @@ RSpec.describe SpreeKlaviyo::CreateOrUpdateProfile do
       end
 
       context 'when a guest id is provided' do
-        subject { described_class.call(klaviyo_integration: klaviyo_integration, resource: resource, guest_id: guest_id) }
+        let(:params) { default_params.merge(guest_id: guest_id) }
 
         let(:guest_id) { 'guest-id-ghjiu786543' }
 
@@ -85,7 +86,7 @@ RSpec.describe SpreeKlaviyo::CreateOrUpdateProfile do
       end
 
       context 'with a guest id' do
-        subject { described_class.call(klaviyo_integration: klaviyo_integration, resource: resource, guest_id: guest_id) }
+        let(:params) { default_params.merge(guest_id: guest_id) }
 
         let(:email) { 'john.doe-3242343@getvendo.com' }
         let(:guest_id) { 'guest-id-asdsiu78645235343' }

@@ -1,7 +1,7 @@
 module SpreeKlaviyo
   module NewsletterSubscriberDecorator
     def self.prepended(base)
-      base.include ::SpreeKlaviyo::SubscribableResource
+      base.store_accessor :private_metadata, :klaviyo_subscribed
 
       base.after_commit :subscribe_to_klaviyo, if: :verified_at_previously_changed?
 
@@ -21,7 +21,22 @@ module SpreeKlaviyo
       end
     end
 
+    def klaviyo_subscribed?
+      klaviyo_subscribed.to_b
+    end
+
+    def create_or_update_klaviyo_profile(klaviyo_integration:, guest_id: nil)
+      SpreeKlaviyo::CreateOrUpdateProfileJob.perform_later(klaviyo_integration.id, id, guest_id)
+    end
+
     private
+
+    def subscribe_to_klaviyo
+      klaviyo_integration = store_integration('klaviyo')
+      return unless klaviyo_integration
+
+      SpreeKlaviyo::SubscribeJob.perform_later(klaviyo_integration.id, id)
+    end
 
     def marketing_opt_in_changed?
       return false if klaviyo_subscribed? || user.nil?
