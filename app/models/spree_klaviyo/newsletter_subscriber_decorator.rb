@@ -25,10 +25,6 @@ module SpreeKlaviyo
       klaviyo_subscribed.to_b
     end
 
-    def create_or_update_klaviyo_profile(klaviyo_integration:, guest_id: nil)
-      SpreeKlaviyo::CreateOrUpdateProfileJob.perform_later(klaviyo_integration.id, id, guest_id)
-    end
-
     private
 
     def subscribe_to_klaviyo

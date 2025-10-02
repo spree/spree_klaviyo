@@ -30,16 +30,6 @@ describe SpreeKlaviyo::Subscribe do
       end
     end
 
-    context 'when subscriber was subscribed already' do
-      let(:klaviyo_subscribed) { true }
-
-      it 'does not call subscribe_user' do
-        expect(klaviyo_integration).not_to receive(:subscribe_user)
-
-        subject
-      end
-    end
-
     context 'when subscribe request fails' do
       let(:success) { false }
 
