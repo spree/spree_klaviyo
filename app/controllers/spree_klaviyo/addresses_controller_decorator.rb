@@ -3,7 +3,7 @@ module SpreeKlaviyo
     def self.prepended(base)
       base.include ::Spree::IntegrationsHelper
 
-      base.after_action :create_or_update_klaviyo_profile, only: %i[create update]
+      base.after_action :create_or_update_klaviyo_profile, only: %i[create update], if: :try_spree_current_user
     end
 
     def create_or_update_klaviyo_profile

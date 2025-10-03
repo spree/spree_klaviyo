@@ -5,7 +5,11 @@ module SpreeKlaviyo
     def call(klaviyo_integration:, email:)
       return failure(false, ::Spree.t('admin.integrations.klaviyo.not_found')) unless klaviyo_integration
 
-      klaviyo_integration.unsubscribe_user(email)
+      klaviyo_integration.unsubscribe_user(email).tap do |result|
+        next unless result.success?
+
+        Spree::NewsletterSubscriber.where(email: email).destroy_all
+      end
     end
   end
 end

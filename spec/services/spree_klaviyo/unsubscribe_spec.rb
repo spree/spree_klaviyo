@@ -16,6 +16,16 @@ describe SpreeKlaviyo::Unsubscribe do
             .and_return(Spree::ServiceModule::Result.new(true, 'response'))
         end
 
+        context 'when newsletter subscriber exists' do
+          before do
+            create(:newsletter_subscriber, email: email)
+          end
+
+          it 'destroys newsletter subscriber' do
+            expect { subject }.to change { Spree::NewsletterSubscriber.count }.by(-1)
+          end
+        end
+
         context 'when email belongs to registered user' do
           it 'returns success' do
             expect(subject.success?).to be true
