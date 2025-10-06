@@ -24,17 +24,13 @@ describe SpreeKlaviyo::Unsubscribe do
           it 'destroys newsletter subscriber' do
             expect { subject }.to change { Spree::NewsletterSubscriber.count }.by(-1)
           end
-        end
 
-        context 'when email belongs to registered user' do
           it 'returns success' do
             expect(subject.success?).to be true
           end
         end
 
-        context 'when emails belongs to guest user' do
-          let(:user) { nil }
-
+        context 'when newsletter subscriber does not exist' do
           it 'returns success' do
             expect(subject.success?).to be true
           end
