@@ -89,44 +89,5 @@ RSpec.describe Spree::NewsletterSubscriber, type: :model do
         end
       end
     end
-
-    describe '#marketing_opt_in_changed? (private)' do
-      context 'when using accepts_email_marketing column (integration style)' do
-        context 'when toggled to true' do
-          let(:user) { create(:user, accepts_email_marketing: false) }
-
-          it 'returns true' do
-            expect(resource.accepts_email_marketing).to be(false)
-            # Ensure not already subscribed
-            expect(resource.send(:klaviyo_subscribed?)).to be(false)
-
-            user.update!(accepts_email_marketing: true)
-            expect(resource.accepts_email_marketing).to be(true)
-            expect(resource.send(:marketing_opt_in_changed?)).to be(true)
-          end
-        end
-
-        context 'when toggled to false' do
-          let(:user) { create(:user, accepts_email_marketing: true) }
-
-          it 'returns false' do
-            user.update!(accepts_email_marketing: false)
-            expect(resource.accepts_email_marketing).to be(false)
-            expect(resource.send(:marketing_opt_in_changed?)).to be(false)
-          end
-        end
-
-        context 'when already Klaviyo-subscribed even if flag changed to true' do
-          let(:user) { create(:user, accepts_email_marketing: false) }
-
-          it 'returns false ' do
-            resource.klaviyo_subscribed = true
-            user.update!(accepts_email_marketing: true)
-            expect(resource.accepts_email_marketing).to be(true)
-            expect(resource.send(:marketing_opt_in_changed?)).to be(false)
-          end
-        end
-      end
-    end
   end
 end

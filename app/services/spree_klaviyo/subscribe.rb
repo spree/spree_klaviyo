@@ -8,7 +8,7 @@ module SpreeKlaviyo
       klaviyo_integration.subscribe_user(subscriber.email).tap do |result|
         next unless result.success?
 
-        subscriber.update(klaviyo_subscribed: true)
+        subscriber.set_metafield('klaviyo.subscribed', true)
       end
     end
   end

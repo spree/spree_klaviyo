@@ -26,14 +26,16 @@ module SpreeKlaviyo
               zip: @address&.zipcode
             }
           }
-        }.merge(try_klaviyo_id)
+        }.merge!(
+          { id: try_klaviyo_id }.compact
+        )
       }
     end
 
     private
 
     def try_klaviyo_id
-      @user&.klaviyo_id.present? ? { id: @user.klaviyo_id } : {}
+      @user&.get_metafield('klaviyo.id')&.value
     end
   end
 end

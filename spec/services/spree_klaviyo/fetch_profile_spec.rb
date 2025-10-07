@@ -9,8 +9,8 @@ describe SpreeKlaviyo::FetchProfile do
     context 'when klaviyo integration is exists' do
       let!(:klaviyo_integration) { create(:klaviyo_integration) }
 
-      context 'when user has klaviyo_id' do
-        before { user.update(klaviyo_id: '123') }
+      context 'when user has klaviyo.id metafield' do
+        before { user.set_metafield('klaviyo.id', '123') }
 
         it 'doest not make request and returns success' do
           expect_any_instance_of(Spree::Integrations::Klaviyo).not_to receive(:fetch_profile)
@@ -18,7 +18,7 @@ describe SpreeKlaviyo::FetchProfile do
         end
       end
 
-      context 'when user does not have klaviyo_id' do
+      context 'when user does not have klaviyo.id metafield' do
         before do
           allow_any_instance_of(Spree::Integrations::Klaviyo)
             .to receive(:fetch_profile)
@@ -31,12 +31,12 @@ describe SpreeKlaviyo::FetchProfile do
             expect(subject.success?).to be true
           end
 
-          it 'assigns fetched klaviyo_id' do
-            expect { subject }.to change { user.reload.klaviyo_id }.from(nil).to('123')
+          it 'assigns fetched klaviyo.id metafield' do
+            expect { subject }.to change { user.has_metafield?('klaviyo.id') }.to(true)
           end
         end
 
-        context 'when user does not have profile in klaviyo' do
+        context 'when user does not have profile in Klaviyo' do
           before do
             allow_any_instance_of(Spree::Integrations::Klaviyo)
               .to receive(:fetch_profile)

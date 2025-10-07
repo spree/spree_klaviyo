@@ -5,10 +5,14 @@ module SpreeKlaviyo
     def call(klaviyo_integration:, user:)
       return failure(false, ::Spree.t('admin.integrations.klaviyo.not_found')) unless klaviyo_integration
 
-      return success(user.klaviyo_id) if user.klaviyo_id.present?
+      klaviyo_id = user.get_metafield('klaviyo.id')&.value
+      return success(klaviyo_id) if klaviyo_id.present?
 
       klaviyo_integration.fetch_profile(email: user.email).tap do |result|
-        user.update!(klaviyo_id: JSON.parse(result.value)['data'].first['id']) if result.success?
+        next if result.failure?
+
+        id = JSON.parse(result.value)['data'].first['id'].presence
+        user.set_metafield('klaviyo.id', id)
       end
     end
   end
