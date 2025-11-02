@@ -14,7 +14,9 @@ module SpreeKlaviyo
     end
 
     initializer 'spree_klaviyo.assets' do |app|
-      app.config.assets.precompile += %w[spree_klaviyo_manifest]
+      if app.config.respond_to?(:assets)
+        app.config.assets.precompile += %w[spree_klaviyo_manifest]
+      end
     end
 
     def self.activate
