@@ -9,8 +9,8 @@ gem 'rails-controller-testing'
 
 spree_opts = { github: 'spree/spree', branch: 'main' }
 gem 'spree', spree_opts
-gem 'spree_emails', spree_opts
 gem 'spree_admin', spree_opts
+gem 'spree_emails', spree_opts
 gem 'spree_storefront', spree_opts
 
 gem 'mysql2' if ENV['DB'] == 'mysql' || ENV['CI']

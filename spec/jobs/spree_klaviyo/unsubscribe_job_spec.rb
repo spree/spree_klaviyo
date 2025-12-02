@@ -1,15 +1,16 @@
 require 'spec_helper'
 
 describe SpreeKlaviyo::UnsubscribeJob do
-  subject { described_class.new.perform(klaviyo_integration.id, email, user&.id) }
+  subject { described_class.new.perform(klaviyo_integration.id, email) }
 
   let(:klaviyo_integration) { create(:klaviyo_integration) }
-  let(:user) { create(:user) }
-  let(:email) { user.email }
+  let(:email) { 'test@example.com' }
 
-  it 'calls SpreeKlaviyo::Unsubscribe with user' do
-    expect(SpreeKlaviyo::Unsubscribe).to receive(:call).with(klaviyo_integration: klaviyo_integration, email: user.email, user: user).and_return(true)
+  context 'with valid params' do
+    it 'calls SpreeKlaviyo::Unsubscribe' do
+      expect(SpreeKlaviyo::Unsubscribe).to receive(:call).with(klaviyo_integration: klaviyo_integration, email: email).and_return(true)
 
-    subject
+      subject
+    end
   end
 end

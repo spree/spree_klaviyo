@@ -1,10 +1,9 @@
 require 'spec_helper'
 
 describe SpreeKlaviyo::Unsubscribe do
-  subject { described_class.call(klaviyo_integration: klaviyo_integration, email: email, user: user) }
+  subject { described_class.call(klaviyo_integration: klaviyo_integration, email: email) }
 
   let(:email) { FFaker::Internet.email }
-  let(:user) { create(:user, email: email, accepts_email_marketing: true) }
 
   describe '#call' do
     context 'when klaviyo integration exists' do
@@ -14,36 +13,24 @@ describe SpreeKlaviyo::Unsubscribe do
         before do
           allow_any_instance_of(Spree::Integrations::Klaviyo)
             .to receive(:unsubscribe_user).with(email)
-            .and_return(Spree::ServiceModule::Result.new(true, user))
+            .and_return(Spree::ServiceModule::Result.new(true, 'response'))
         end
 
-        context 'when email belongs to registered user' do
+        context 'when newsletter subscriber exists' do
+          before do
+            create(:newsletter_subscriber, email: email)
+          end
+
+          it 'destroys newsletter subscriber' do
+            expect { subject }.to change { Spree::NewsletterSubscriber.count }.by(-1)
+          end
+
           it 'returns success' do
             expect(subject.success?).to be true
           end
-
-          context 'when user was already subscribed' do
-            before { user.update(klaviyo_subscribed: true) }
-
-            it 'marks user as not a subscriber' do
-              expect { subject }.to change { user.reload.klaviyo_subscribed? }.from(true).to(false)
-            end
-          end
-
-          context 'when user was not a subscriber already' do
-            before { user.update(klaviyo_subscribed: false) }
-
-            it 'does not update user as not a subscriber again' do
-              expect(user).not_to receive(:update).with(klaviyo_subscribed: false)
-              subject
-              expect(user.reload.klaviyo_subscribed?).to be false
-            end
-          end
         end
 
-        context 'when emails belongs to guest user' do
-          let(:user) { nil }
-
+        context 'when newsletter subscriber does not exist' do
           it 'returns success' do
             expect(subject.success?).to be true
           end
@@ -54,7 +41,7 @@ describe SpreeKlaviyo::Unsubscribe do
         it 'returns failure' do
           allow_any_instance_of(Spree::Integrations::Klaviyo)
             .to receive(:unsubscribe_user).with(email)
-            .and_return(Spree::ServiceModule::Result.new(false, user))
+            .and_return(Spree::ServiceModule::Result.new(false, 'response'))
 
           expect(subject.success?).to be false
         end

@@ -1,7 +1,10 @@
 require 'spec_helper'
 
 RSpec.describe SpreeKlaviyo::CreateOrUpdateProfile do
-  subject { described_class.call(klaviyo_integration: klaviyo_integration, user: user) }
+  subject { described_class.call(**params) }
+
+  let(:default_params) { { klaviyo_integration: klaviyo_integration, user: user } }
+  let(:params) { default_params }
 
   context 'when klaviyo integration is exists', :vcr do
     let(:user) { create(:user, email: email, accepts_email_marketing: true) }
@@ -15,7 +18,7 @@ RSpec.describe SpreeKlaviyo::CreateOrUpdateProfile do
       it 'links an existing profile' do
         expect(subject.success?).to be(true)
 
-        expect(user.reload.klaviyo_id).to eq(profile_data['id'])
+        expect(user.get_metafield('klaviyo.id').value).to eq(profile_data['id'])
         expect(profile_data.dig('attributes', 'email')).to eq('existing.user@getvendo.com')
       end
 
@@ -25,13 +28,13 @@ RSpec.describe SpreeKlaviyo::CreateOrUpdateProfile do
         it 'links an existing profile' do
           expect(subject.success?).to be(true)
 
-          expect(user.reload.klaviyo_id).to eq(profile_data['id'])
+          expect(user.get_metafield('klaviyo.id').value).to eq(profile_data['id'])
           expect(profile_data.dig('attributes', 'email')).to eq('angelika+13@getvendo.com')
         end
       end
 
       context 'when a guest id is provided' do
-        subject { described_class.call(klaviyo_integration: klaviyo_integration, user: user, guest_id: guest_id) }
+        let(:params) { default_params.merge(guest_id: guest_id) }
 
         let(:guest_id) { 'guest-id-ghjiu786543' }
 
@@ -46,7 +49,7 @@ RSpec.describe SpreeKlaviyo::CreateOrUpdateProfile do
         it 'links user and guest profiles' do
           expect(subject.success?).to be(true)
 
-          expect(user.reload.klaviyo_id).to eq(profile_data['id'])
+          expect(user.get_metafield('klaviyo.id').value).to eq(profile_data['id'])
           expect(profile_data.dig('attributes', 'email')).to eq('existing.user@getvendo.com')
           expect(profile_data.dig('attributes', 'anonymous_id')).to eq('guest-id-ghjiu786543')
         end
@@ -78,12 +81,12 @@ RSpec.describe SpreeKlaviyo::CreateOrUpdateProfile do
       it 'creates a new profile' do
         expect(subject.success?).to be(true)
 
-        expect(user.klaviyo_id).to eq(profile_data['id'])
+        expect(user.get_metafield('klaviyo.id').value).to eq(profile_data['id'])
         expect(profile_data.dig('attributes', 'email')).to eq(email)
       end
 
       context 'with a guest id' do
-        subject { described_class.call(klaviyo_integration: klaviyo_integration, user: user, guest_id: guest_id) }
+        let(:params) { default_params.merge(guest_id: guest_id) }
 
         let(:email) { 'john.doe-3242343@getvendo.com' }
         let(:guest_id) { 'guest-id-asdsiu78645235343' }
@@ -91,7 +94,7 @@ RSpec.describe SpreeKlaviyo::CreateOrUpdateProfile do
         it 'creates a new profile and updates it with the guest id' do
           expect(subject.success?).to be(true)
 
-          expect(user.klaviyo_id).to eq(profile_data['id'])
+          expect(user.get_metafield('klaviyo.id').value).to eq(profile_data['id'])
           expect(profile_data.dig('attributes', 'email')).to eq(email)
         end
       end

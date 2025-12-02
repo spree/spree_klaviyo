@@ -1,70 +1,50 @@
 require 'spec_helper'
 
 describe SpreeKlaviyo::Subscribe do
-  subject { described_class.call(klaviyo_integration: klaviyo_integration, email: email, user: user) }
+  subject { described_class.call(klaviyo_integration: klaviyo_integration, subscriber: subscriber) }
 
+  let(:subscriber) { create(:newsletter_subscriber, user: user, email: email) }
   let(:user) { create(:user) }
-  let(:email) { user.email }
+  let(:email) { 'foo@bar.com' }
 
-  describe '#call' do
-    context 'when klaviyo integration is exists' do
-      let!(:klaviyo_integration) { create(:klaviyo_integration) }
+  let(:success) { true }
 
-      context 'when subscribe request succeeds' do
-        before {
-          allow_any_instance_of(Spree::Integrations::Klaviyo).to receive(:subscribe_user).with(email).and_return(Spree::ServiceModule::Result.new(true,
-                                                                                                                                                  user))
-        }
+  before do
+    allow(klaviyo_integration).to receive(:subscribe_user).with(subscriber.email).and_return(Spree::ServiceModule::Result.new(success, subscriber))
+    create(:metafield_definition, namespace: 'klaviyo', metafield_type: 'Spree::Metafields::Boolean', key: 'subscribed', resource_type: 'Spree::NewsletterSubscriber')
+  end
 
-        context 'when email belongs to registered user' do
-          it 'returns success' do
-            expect(subject.success?).to be true
-          end
+  context 'when klaviyo integration is exists' do
+    let!(:klaviyo_integration) { create(:klaviyo_integration) }
 
-          context 'when user was not subscribed yet' do
-            it 'marks user as subscriber' do
-              expect { subject }.to change { user.reload.klaviyo_subscribed? }.from(false).to(true)
-            end
-          end
+    context 'when subscriber was not subscribed yet' do
+      it 'marks subscriber as subscribed' do
+        expect { subject }.to change { subscriber.has_metafield?('klaviyo.subscribed') }.to(true)
 
-          context 'when user was subscriber already' do
-            before { user.update(klaviyo_subscribed: true) }
-
-            it 'does not update user as a subscriber again' do
-              expect(user).not_to receive(:update).with(klaviyo_subscribed: true)
-              subject
-              expect(user.reload.klaviyo_subscribed?).to be true
-            end
-          end
-        end
-
-        context 'when emails belongs to guest user' do
-          let(:user) { nil }
-          let(:email) { FFaker::Internet.email }
-
-          it 'returns success' do
-            expect(subject.success?).to be true
-          end
-        end
       end
 
-      context 'when subscribe request fails' do
-        it 'returns failure' do
-          allow_any_instance_of(Spree::Integrations::Klaviyo).to receive(:subscribe_user).with(email).and_return(Spree::ServiceModule::Result.new(
-                                                                                                                   false, user
-                                                                                                                 ))
-          expect(subject.success?).to be false
-        end
+      it 'calls subscribe_user' do
+        expect(klaviyo_integration).to receive(:subscribe_user).once
+
+        subject
       end
     end
 
-    context 'when klaviyo integration is not found' do
-      let(:klaviyo_integration) { nil }
+    context 'when subscribe request fails' do
+      let(:success) { false }
 
-      it 'returns a failure' do
-        expect(subject.success?).to be false
-        expect(subject.error.value).to eq Spree.t('admin.integrations.klaviyo.not_found')
+      it 'does not mark subscriber as subscribed' do
+        expect { subject }.not_to change { subscriber.has_metafield?('klaviyo.subscribed') }
       end
+    end
+  end
+
+  context 'when klaviyo integration is not found' do
+    let(:klaviyo_integration) { nil }
+
+    it 'returns a failure' do
+      expect(subject.success?).to be false
+      expect(subject.error.value).to eq Spree.t('admin.integrations.klaviyo.not_found')
     end
   end
 end

@@ -40,7 +40,7 @@ module Spree
 
       def update_profile(user, guest_id = nil)
         user_presenter = ::SpreeKlaviyo::UserPresenter.new(email: user.email, address: user&.bill_address, user: user, guest_id: guest_id)
-        result = client.patch_request("profiles/#{user.klaviyo_id}/", user_presenter.call)
+        result = client.patch_request("profiles/#{user.get_metafield('klaviyo.id').value}/", user_presenter.call)
 
         handle_result(result)
       end

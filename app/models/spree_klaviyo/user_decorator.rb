@@ -1,7 +1,7 @@
 module SpreeKlaviyo
   module UserDecorator
-    def self.prepended(base)
-      base.include ::SpreeKlaviyo::UserMethods
+    def create_or_update_klaviyo_profile(klaviyo_integration:)
+      SpreeKlaviyo::CreateOrUpdateProfileJob.perform_later(klaviyo_integration.id, id)
     end
   end
 end
