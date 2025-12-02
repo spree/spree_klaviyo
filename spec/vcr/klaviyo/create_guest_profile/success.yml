@@ -1,0 +1,76 @@
+---
+http_interactions:
+- request:
+    method: post
+    uri: https://a.klaviyo.com/api/profiles/
+    body:
+      encoding: UTF-8
+      string: '{"data":{"type":"profile","attributes":{"anonymous_id":"guest-123","email":null,"first_name":null,"last_name":null,"external_id":null,"location":{"address1":null,"address2":null,"city":null,"country":null,"region":null,"zip":null},"properties":{"source":"test"}}}}'
+    headers:
+      Accept-Encoding:
+      - gzip;q=1.0,deflate;q=0.6,identity;q=0.3
+      Accept:
+      - application/json
+      User-Agent:
+      - Ruby
+      Host:
+      - a.klaviyo.com
+      Revision:
+      - '2025-04-15'
+      Content-Type:
+      - application/json
+      Authorization:
+      - Klaviyo-API-Key <KLAVIYO_PRIVATE_API_KEY>
+  response:
+    status:
+      code: 201
+      message: Created
+    headers:
+      Date:
+      - Tue, 26 Aug 2025 23:21:24 GMT
+      Content-Type:
+      - application/vnd.api+json
+      Content-Length:
+      - '1525'
+      Connection:
+      - keep-alive
+      Cf-Ray:
+      - 975710b2b8a03890-KHI
+      Allow:
+      - GET, POST, HEAD, OPTIONS
+      Cid:
+      - "<KLAVIYO_PUBLIC_API_KEY>"
+      Content-Language:
+      - en-us
+      Content-Security-Policy:
+      - script-src 'report-sample' 'strict-dynamic' 'unsafe-eval'; object-src 'none';
+        frame-ancestors 'self' login.bigcommerce.com *.mybigcommerce.com admin.shopify.com
+        klaviyo.file.force.com klaviyo.lightning.force.com klaviyo.my.salesforce.com;
+        base-uri 'none'; report-uri /csp/
+      Ratelimit-Limit:
+      - 75, 75;w=1, 700;w=60
+      Ratelimit-Remaining:
+      - '74'
+      Ratelimit-Reset:
+      - '0'
+      Vary:
+      - Accept, Accept-Language, Cookie
+      X-Klaviyo-Api-Revision:
+      - '2025-04-15'
+      X-Klaviyo-Req-Id:
+      - 50ac419e-f638-4198-9920-b8e8e59c9157
+      X-Envoy-Upstream-Service-Time:
+      - '103'
+      Cf-Cache-Status:
+      - DYNAMIC
+      Strict-Transport-Security:
+      - max-age=31536000; includeSubDomains; preload
+      X-Content-Type-Options:
+      - nosniff
+      Server:
+      - cloudflare
+    body:
+      encoding: UTF-8
+      string: '{"data":{"type":"profile","id":"01K3MAZB3ADY5EYYGB1BBCJEDT","attributes":{"email":null,"phone_number":null,"external_id":null,"anonymous_id":"guest-123","first_name":null,"last_name":null,"organization":null,"locale":null,"title":null,"image":null,"created":"2025-08-26T23:21:23.820122+00:00","updated":"2025-08-26T23:21:23.820153+00:00","last_event_date":null,"location":{"zip":null,"longitude":null,"address2":null,"latitude":null,"city":null,"region":null,"country":null,"address1":null,"timezone":null,"ip":null},"properties":{"source":"test"}},"relationships":{"lists":{"links":{"self":"https://a.klaviyo.com/api/profiles/01K3MAZB3ADY5EYYGB1BBCJEDT/relationships/lists/","related":"https://a.klaviyo.com/api/profiles/01K3MAZB3ADY5EYYGB1BBCJEDT/lists/"}},"segments":{"links":{"self":"https://a.klaviyo.com/api/profiles/01K3MAZB3ADY5EYYGB1BBCJEDT/relationships/segments/","related":"https://a.klaviyo.com/api/profiles/01K3MAZB3ADY5EYYGB1BBCJEDT/segments/"}},"push-tokens":{"links":{"self":"https://a.klaviyo.com/api/profiles/01K3MAZB3ADY5EYYGB1BBCJEDT/relationships/push-tokens/","related":"https://a.klaviyo.com/api/profiles/01K3MAZB3ADY5EYYGB1BBCJEDT/push-tokens/"}},"conversation":{"links":{"self":"https://a.klaviyo.com/api/profiles/01K3MAZB3ADY5EYYGB1BBCJEDT/relationships/conversation/","related":"https://a.klaviyo.com/api/profiles/01K3MAZB3ADY5EYYGB1BBCJEDT/conversation/"}}},"links":{"self":"https://a.klaviyo.com/api/profiles/01K3MAZB3ADY5EYYGB1BBCJEDT/"}},"links":{"self":"https://a.klaviyo.com/api/profiles/"}}'
+  recorded_at: Tue, 26 Aug 2025 23:21:23 GMT
+recorded_with: VCR 6.3.1
