@@ -45,7 +45,7 @@ module SpreeKlaviyo
           total_quantity: shipped_items_quantity,
           price: shipped_item.line_item.price.to_f,
           total_price: shipped_item.line_item.amount.to_f,
-          brand: brand_name(shipped_item.variant.product)
+          brand: shipped_item.variant.product.brand_name
         }.merge(try_variants(shipped_item.variant))
       end
     end
