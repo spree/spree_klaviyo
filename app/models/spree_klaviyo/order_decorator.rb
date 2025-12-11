@@ -13,6 +13,9 @@ module SpreeKlaviyo
       integration = store_integration('klaviyo')
       return if integration.blank?
 
+      # Set a flag to prevent the user callback from also subscribing
+      user&.instance_variable_set(:@subscribing_via_order, true)
+
       SpreeKlaviyo::SubscribeJob.perform_later(integration.id, email, user_id)
     end
 

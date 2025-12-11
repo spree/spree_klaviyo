@@ -32,6 +32,9 @@ module SpreeKlaviyo
     end
 
     def subscribe_to_klaviyo
+      # Skip if subscription is already being handled by order completion
+      return if instance_variable_get(:@subscribing_via_order)
+
       klaviyo_integration = store_integration('klaviyo')
       return unless klaviyo_integration
 
