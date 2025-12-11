@@ -27,7 +27,21 @@ describe SpreeKlaviyo::AnalyticsEventHandler do
         }.to have_enqueued_job(SpreeKlaviyo::AnalyticsEventJob).with(
           klaviyo_integration.id,
           'Product Viewed',
-          product,
+          { 'class' => 'Spree::Product', 'id' => product.id },
+          user.email,
+          'visitor_123'
+        )
+      end
+    end
+
+    context 'with search events' do
+      it 'enqueues analytics event job for product_searched with query string as record' do
+        expect {
+          subject.handle_event('product_searched', { query: 'red shoes' })
+        }.to have_enqueued_job(SpreeKlaviyo::AnalyticsEventJob).with(
+          klaviyo_integration.id,
+          'Product Searched',
+          'red shoes',
           user.email,
           'visitor_123'
         )
@@ -41,7 +55,7 @@ describe SpreeKlaviyo::AnalyticsEventHandler do
         }.to have_enqueued_job(SpreeKlaviyo::AnalyticsEventJob).with(
           klaviyo_integration.id,
           'Product Added',
-          order,
+          { 'class' => 'Spree::Order', 'id' => order.id },
           order.email,
           'visitor_123'
         )
@@ -55,7 +69,7 @@ describe SpreeKlaviyo::AnalyticsEventHandler do
         }.to have_enqueued_job(SpreeKlaviyo::AnalyticsEventJob).with(
           klaviyo_integration.id,
           'Checkout Started',
-          order,
+          { 'class' => 'Spree::Order', 'id' => order.id },
           order.email,
           'visitor_123'
         )
@@ -67,7 +81,7 @@ describe SpreeKlaviyo::AnalyticsEventHandler do
         }.to have_enqueued_job(SpreeKlaviyo::AnalyticsEventJob).with(
           klaviyo_integration.id,
           'Checkout Email Entered',
-          order,
+          { 'class' => 'Spree::Order', 'id' => order.id },
           'new@example.com',
           'visitor_123'
         )
@@ -81,7 +95,7 @@ describe SpreeKlaviyo::AnalyticsEventHandler do
         }.to have_enqueued_job(SpreeKlaviyo::AnalyticsEventJob).with(
           klaviyo_integration.id,
           'Coupon Entered',
-          order,
+          { 'class' => 'Spree::Order', 'id' => order.id },
           order.email,
           'visitor_123'
         )
@@ -95,7 +109,7 @@ describe SpreeKlaviyo::AnalyticsEventHandler do
         }.to have_enqueued_job(SpreeKlaviyo::AnalyticsEventJob).with(
           klaviyo_integration.id,
           'Order Completed',
-          order,
+          { 'class' => 'Spree::Order', 'id' => order.id },
           order.email,
           'visitor_123'
         )
@@ -173,7 +187,7 @@ describe SpreeKlaviyo::AnalyticsEventHandler do
         }.to have_enqueued_job(SpreeKlaviyo::AnalyticsEventJob).with(
           klaviyo_integration.id,
           'Product Added',
-          order,
+          { 'class' => 'Spree::Order', 'id' => order.id },
           order.email,
           'visitor_123'
         )
@@ -185,7 +199,7 @@ describe SpreeKlaviyo::AnalyticsEventHandler do
         }.to have_enqueued_job(SpreeKlaviyo::AnalyticsEventJob).with(
           klaviyo_integration.id,
           'Product Viewed',
-          product,
+          { 'class' => 'Spree::Product', 'id' => product.id },
           nil,
           'visitor_123'
         )
