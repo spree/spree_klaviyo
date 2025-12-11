@@ -13,9 +13,7 @@ module SpreeKlaviyo
       integration = store_integration('klaviyo')
       return if integration.blank?
 
-      puts 'DECORATOR'
-      # Set a flag to prevent the user callback from also subscribing
-      user&.instance_variable_set(:@subscribing_via_order, true)
+      return if user&.instance_variable_get(:@subscribing_via_user)
 
       SpreeKlaviyo::SubscribeJob.perform_later(integration.id, email, user_id)
     end
