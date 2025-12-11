@@ -15,6 +15,7 @@ module SpreeKlaviyo
 
       return if user&.instance_variable_get(:@subscribing_via_user)
 
+      puts 'DECORATOR'
       SpreeKlaviyo::SubscribeJob.perform_later(integration.id, email, user_id)
     end
 
