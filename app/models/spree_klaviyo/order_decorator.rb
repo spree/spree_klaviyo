@@ -13,6 +13,7 @@ module SpreeKlaviyo
       integration = store_integration('klaviyo')
       return if integration.blank?
 
+      puts 'DECORATOR'
       # Set a flag to prevent the user callback from also subscribing
       user&.instance_variable_set(:@subscribing_via_order, true)
 

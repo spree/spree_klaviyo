@@ -38,6 +38,8 @@ module SpreeKlaviyo
       klaviyo_integration = store_integration('klaviyo')
       return unless klaviyo_integration
 
+      puts 'USER METHODS'
+
       SpreeKlaviyo::SubscribeJob.perform_later(klaviyo_integration.id, email, id)
     end
   end
