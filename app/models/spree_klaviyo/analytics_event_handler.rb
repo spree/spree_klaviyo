@@ -45,7 +45,6 @@ module SpreeKlaviyo
                  properties[:order]
                when 'subscribed_to_newsletter'
                  email ||= properties[:email]
-                 puts 'ANALYTICS EVENT HANDLER'
                  SpreeKlaviyo::SubscribeJob.perform_later(client.id, email, user&.id)
                  nil
                when 'unsubscribed_from_newsletter'
