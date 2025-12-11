@@ -18,7 +18,7 @@ RSpec.describe Spree.user_class, type: :model do
       it 'enqueues a SubscribeJob' do
         expect {
           user.send(:subscribe_to_klaviyo)
-        }.to have_enqueued_job(SpreeKlaviyo::SubscribeJob).with(klaviyo_integration.id, user.email, user.id)
+        }.to have_enqueued_job(SpreeKlaviyo::SubscribeJob).with(klaviyo_integration.id, user.email)
       end
 
       context 'when no klaviyo integration exists' do
