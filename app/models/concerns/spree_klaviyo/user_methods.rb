@@ -35,7 +35,7 @@ module SpreeKlaviyo
       klaviyo_integration = store_integration('klaviyo')
       return unless klaviyo_integration
 
-      user&.instance_variable_set(:@subscribing_via_user, true)
+      self.instance_variable_set(:@subscribing_via_user, true)
 
       SpreeKlaviyo::SubscribeJob.perform_later(klaviyo_integration.id, email, id)
     end
