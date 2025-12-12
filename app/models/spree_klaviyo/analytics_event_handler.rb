@@ -55,7 +55,10 @@ module SpreeKlaviyo
 
       return if email.blank? && identity_hash[:visitor_id].blank?
 
-      SpreeKlaviyo::AnalyticsEventJob.perform_later(client.id, event_human_name(event_name), record, email, identity_hash[:visitor_id])
+      resource_type = record.nil? ? nil : (record.is_a?(String) ? 'String' : record.class.name)
+      resource_id = record.is_a?(String) ? record : record&.id
+
+      SpreeKlaviyo::AnalyticsEventJob.perform_later(client.id, event_human_name(event_name), resource_type, resource_id, email, identity_hash[:visitor_id])
     end
   end
 end
