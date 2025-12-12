@@ -11,6 +11,7 @@ RSpec.describe Spree::Order, type: :model do
         let!(:klaviyo_integration) { create(:klaviyo_integration) }
 
         it 'calls Klaviyo::SubscribeJob' do
+          # Can be restored to one call when deprecated SpreeKlaviyo::UserMethods#subscribe_to_klaviyo method is removed.
           expect(SpreeKlaviyo::SubscribeJob).to receive(:perform_later).with(klaviyo_integration.id, order.email, order.user_id).at_least(:once)
           order.next!
         end
