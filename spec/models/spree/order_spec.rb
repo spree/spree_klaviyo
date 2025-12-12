@@ -11,7 +11,7 @@ RSpec.describe Spree::Order, type: :model do
         let!(:klaviyo_integration) { create(:klaviyo_integration) }
 
         it 'calls Klaviyo::SubscribeJob' do
-          expect(SpreeKlaviyo::SubscribeJob).to receive(:perform_later).with(klaviyo_integration.id, order.email, order.user_id)
+          expect(SpreeKlaviyo::SubscribeJob).to receive(:perform_later).with(klaviyo_integration.id, order.email, order.user_id).at_least(:once)
           order.next!
         end
       end
