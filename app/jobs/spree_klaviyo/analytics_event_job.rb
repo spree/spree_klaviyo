@@ -1,8 +1,8 @@
 module SpreeKlaviyo
   class AnalyticsEventJob < BaseJob
-    def perform(klaviyo_integration_id, event_name, serialized_record, email, guest_id = nil)
+    def perform(klaviyo_integration_id, event_name, resource_type, resource_id, email, guest_id = nil)
       klaviyo_integration = ::Spree::Integrations::Klaviyo.find(klaviyo_integration_id)
-      record = deserialize_record(serialized_record)
+      record = load_record(resource_type, resource_id)
 
       SpreeKlaviyo::CreateEvent.call(
         klaviyo_integration: klaviyo_integration,
@@ -15,11 +15,11 @@ module SpreeKlaviyo
 
     private
 
-    def deserialize_record(serialized_record)
-      return nil if serialized_record.nil?
-      return serialized_record if serialized_record.is_a?(String)
+    def load_record(resource_type, resource_id)
+      return nil if resource_type.nil?
+      return resource_id if resource_type == 'String'
 
-      serialized_record['class'].constantize.find(serialized_record['id'])
+      resource_type.constantize.find(resource_id)
     end
   end
 end

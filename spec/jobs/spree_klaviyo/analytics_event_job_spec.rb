@@ -1,11 +1,12 @@
 require 'spec_helper'
 
 describe SpreeKlaviyo::AnalyticsEventJob do
-  subject(:perform_job) { described_class.new.perform(klaviyo_integration.id, event_name, record, email, guest_id) }
+  subject(:perform_job) { described_class.new.perform(klaviyo_integration.id, event_name, resource_type, resource_id, email, guest_id) }
 
   let(:klaviyo_integration) { create(:klaviyo_integration) }
   let(:event_name) { 'test_event' }
-  let(:record) { { 'class' => 'Spree::Order', 'id' => order.id } }
+  let(:resource_type) { 'Spree::Order' }
+  let(:resource_id) { order.id }
   let!(:order) { create(:order) }
   let(:email) { 'test@example.com' }
   let(:guest_id) { 'guest_123' }
@@ -45,8 +46,9 @@ describe SpreeKlaviyo::AnalyticsEventJob do
     end
   end
 
-  context 'with string record (e.g. search query)' do
-    let(:record) { 'red shoes' }
+  context 'with string resource (e.g. search query)' do
+    let(:resource_type) { 'String' }
+    let(:resource_id) { 'red shoes' }
 
     it 'calls SpreeKlaviyo::CreateEvent with string as resource' do
       perform_job
@@ -61,8 +63,9 @@ describe SpreeKlaviyo::AnalyticsEventJob do
     end
   end
 
-  context 'with nil record' do
-    let(:record) { nil }
+  context 'with nil resource' do
+    let(:resource_type) { nil }
+    let(:resource_id) { nil }
 
     it 'calls SpreeKlaviyo::CreateEvent with nil as resource' do
       perform_job
@@ -80,7 +83,7 @@ describe SpreeKlaviyo::AnalyticsEventJob do
   context 'when klaviyo_integration is not found' do
     it 'raises ActiveRecord::RecordNotFound' do
       expect {
-        described_class.new.perform(999_999, event_name, record, email, guest_id)
+        described_class.new.perform(999_999, event_name, resource_type, resource_id, email, guest_id)
       }.to raise_error(ActiveRecord::RecordNotFound)
     end
   end
