@@ -26,16 +26,16 @@ module SpreeKlaviyo
     private
 
     def marketing_opt_in_changed?
-      Spree::Deprecation.warn('`SpreeKlaviyo::UserMethods#marketing_opt_in_changed?`is deprecated and will be removed in SpreeKlaviyo 1.1.0.
-        Use `SpreeKlaviyo::OrderDecorator#subscribe_user_to_klaviyo_newsletter` or `SpreeKlaviyo::AnalyticsEventHandler#handle_event` instead.')
       return false if klaviyo_subscribed?
 
+      Spree::Deprecation.warn('`SpreeKlaviyo::UserMethods#marketing_opt_in_changed?` is deprecated and will be removed in SpreeKlaviyo 1.1.0. ' \
+        'Use `SpreeKlaviyo::OrderDecorator#subscribe_user_to_klaviyo_newsletter` or `SpreeKlaviyo::AnalyticsEventHandler#handle_event` instead.')
       saved_change_to_accepts_email_marketing? && accepts_email_marketing?
     end
 
     def subscribe_to_klaviyo
-      Spree::Deprecation.warn('`SpreeKlaviyo::UserMethods#subscribe_to_klaviyo`is deprecated and will be removed in SpreeKlaviyo 1.1.0.
-        Use `SpreeKlaviyo::OrderDecorator#subscribe_user_to_klaviyo_newsletter` or `SpreeKlaviyo::AnalyticsEventHandler#handle_event` instead.')
+      Spree::Deprecation.warn('`SpreeKlaviyo::UserMethods#subscribe_to_klaviyo` is deprecated and will be removed in SpreeKlaviyo 1.1.0. ' \
+        'Use `SpreeKlaviyo::OrderDecorator#subscribe_user_to_klaviyo_newsletter` or `SpreeKlaviyo::AnalyticsEventHandler#handle_event` instead.')
       klaviyo_integration = store_integration('klaviyo')
       return unless klaviyo_integration
 
