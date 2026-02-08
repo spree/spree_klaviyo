@@ -1,5 +1,4 @@
 require 'spree_core'
-require 'spree_extension'
 require 'spree_klaviyo/engine'
 require 'spree_klaviyo/version'
 require 'spree_klaviyo/configuration'
