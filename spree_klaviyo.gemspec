@@ -29,9 +29,7 @@ Gem::Specification.new do |s|
 
   spree_opts = '>= 5.1.0.beta2'
   s.add_dependency 'spree', spree_opts
-  s.add_dependency 'spree_storefront', spree_opts
   s.add_dependency 'spree_admin', spree_opts
-  s.add_dependency 'spree_extension'
 
   s.add_development_dependency 'dotenv'
   s.add_development_dependency 'rubocop-rspec'
