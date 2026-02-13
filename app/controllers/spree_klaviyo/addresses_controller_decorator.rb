@@ -15,4 +15,6 @@ module SpreeKlaviyo
   end
 end
 
-Spree::AddressesController.prepend(SpreeKlaviyo::AddressesControllerDecorator)
+if defined?(Spree::AddressesController)
+  Spree::AddressesController.prepend(SpreeKlaviyo::AddressesControllerDecorator)
+end

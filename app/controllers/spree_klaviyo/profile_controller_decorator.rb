@@ -15,4 +15,6 @@ module SpreeKlaviyo
   end
 end
 
-Spree::Account::ProfileController.prepend(SpreeKlaviyo::ProfileControllerDecorator)
+if defined?(Spree::Account::ProfileController)
+  Spree::Account::ProfileController.prepend(SpreeKlaviyo::ProfileControllerDecorator)
+end
