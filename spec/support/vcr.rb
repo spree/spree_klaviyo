@@ -1,4 +1,5 @@
 require 'vcr'
+require 'json'
 require 'webmock/rspec'
 
 WebMock.disable_net_connect!(net_http_connect_on_start: true, allow_localhost: true)
@@ -8,8 +9,25 @@ VCR.configure do |c|
   c.cassette_library_dir = File.join(SpreeKlaviyo::Engine.root, 'spec', 'vcr')
   c.hook_into :webmock
   c.ignore_localhost = true
-  c.configure_rspec_metadata!
-  c.default_cassette_options = { record: :new_episodes }
+  c.default_cassette_options = {
+    allow_unused_http_interactions: false,
+    record: :once,
+    match_requests_on: [:method, :uri, :body]
+  }
+  VCR.configure do |config|
+    config.register_request_matcher :body do |req1, req2|
+      normalize = ->(body) do
+        parsed = JSON.parse(body)
+        list_data = parsed.dig("data", "relationships", "list", "data")
+        list_data["id"] = "PLACEHOLDER" if list_data&.key?("id")
+        parsed
+      rescue JSON::ParserError
+        body
+      end
+
+      normalize.call(req1.body) == normalize.call(req2.body)
+    end
+  end
   c.filter_sensitive_data('<KLAVIYO_PUBLIC_API_KEY>') { ENV['KLAVIYO_PUBLIC_API_KEY'] }
   c.filter_sensitive_data('<KLAVIYO_PRIVATE_API_KEY>') { ENV['KLAVIYO_PRIVATE_API_KEY'] }
   c.filter_sensitive_data('<KLAVIYO_DEFAULT_NEWSLETTER_LIST_ID>') { ENV['KLAVIYO_DEFAULT_NEWSLETTER_LIST_ID'] }

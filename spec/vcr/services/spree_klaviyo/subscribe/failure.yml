@@ -1,0 +1,77 @@
+---
+http_interactions:
+- request:
+    method: post
+    uri: https://a.klaviyo.com/api/profile-subscription-bulk-create-jobs/
+    body:
+      encoding: UTF-8
+      string: '{"data":{"type":"profile-subscription-bulk-create-job","attributes":{"profiles":{"data":[{"type":"profile","attributes":{"email":"user@example.com","subscriptions":{"email":{"marketing":{"consent":"SUBSCRIBED"}}}}}]}},"relationships":{"list":{"data":{"type":"list","id":"invalid-list-id"}}}}}'
+    headers:
+      Accept-Encoding:
+      - gzip;q=1.0,deflate;q=0.6,identity;q=0.3
+      Accept:
+      - application/json
+      User-Agent:
+      - Ruby
+      Host:
+      - a.klaviyo.com
+      Revision:
+      - '2025-04-15'
+      Content-Type:
+      - application/json
+      Authorization:
+      - Klaviyo-API-Key <KLAVIYO_PRIVATE_API_KEY>
+  response:
+    status:
+      code: 400
+      message: Bad Request
+    headers:
+      Date:
+      - Tue, 17 Mar 2026 15:02:16 GMT
+      Content-Type:
+      - application/vnd.api+json
+      Content-Length:
+      - '241'
+      Connection:
+      - keep-alive
+      Cf-Ray:
+      - 9ddce0b13f97c58e-WAW
+      Allow:
+      - GET, POST, HEAD, OPTIONS
+      Cid:
+      - "<KLAVIYO_PUBLIC_API_KEY>"
+      Content-Language:
+      - en-us
+      Content-Security-Policy:
+      - script-src 'report-sample' 'strict-dynamic' 'unsafe-eval'; frame-ancestors
+        'self' login.bigcommerce.com *.mybigcommerce.com admin.shopify.com klaviyo.file.force.com
+        klaviyo.lightning.force.com klaviyo.my.salesforce.com; base-uri 'none'; object-src
+        'none'; report-uri /csp/
+      Ratelimit-Limit:
+      - 75, 75;w=1, 700;w=60
+      Ratelimit-Remaining:
+      - '74'
+      Ratelimit-Reset:
+      - '0'
+      Vary:
+      - Accept, Accept-Language, Cookie, Origin
+      X-Klaviyo-Api-Revision:
+      - '2025-04-15'
+      X-Klaviyo-Req-Id:
+      - 7cf9ade4-0399-42bc-bd4f-89cec0fbd476
+      X-Envoy-Upstream-Service-Time:
+      - '53'
+      Cf-Cache-Status:
+      - DYNAMIC
+      Strict-Transport-Security:
+      - max-age=31536000; includeSubDomains; preload
+      X-Content-Type-Options:
+      - nosniff
+      Server:
+      - cloudflare
+    body:
+      encoding: UTF-8
+      string: '{"errors":[{"id":"7cf9ade4-0399-42bc-bd4f-89cec0fbd476","status":400,"code":"invalid","title":"Invalid
+        input.","detail":"List not found with id invalid-list-id.","source":{"pointer":"/data/relationships/list/data/id"},"links":{},"meta":{}}]}'
+  recorded_at: Tue, 17 Mar 2026 15:02:16 GMT
+recorded_with: VCR 6.4.0

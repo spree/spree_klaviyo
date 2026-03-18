@@ -1,0 +1,67 @@
+---
+http_interactions:
+- request:
+    method: get
+    uri: https://a.klaviyo.com/api/lists/<KLAVIYO_DEFAULT_NEWSLETTER_LIST_ID>
+    body:
+      encoding: US-ASCII
+      string: ''
+    headers:
+      Accept-Encoding:
+      - gzip;q=1.0,deflate;q=0.6,identity;q=0.3
+      Accept:
+      - application/json
+      User-Agent:
+      - Ruby
+      Host:
+      - a.klaviyo.com
+      Revision:
+      - '2025-04-15'
+      Authorization:
+      - Klaviyo-API-Key invalid
+  response:
+    status:
+      code: 401
+      message: Unauthorized
+    headers:
+      Date:
+      - Tue, 17 Mar 2026 10:18:18 GMT
+      Content-Type:
+      - application/vnd.api+json
+      Content-Length:
+      - '227'
+      Connection:
+      - keep-alive
+      Cf-Ray:
+      - 9ddb40b5ed2cc057-WAW
+      Allow:
+      - GET, PUT, PATCH, DELETE, HEAD, OPTIONS
+      Content-Language:
+      - en-us
+      Content-Security-Policy:
+      - frame-ancestors 'self' login.bigcommerce.com *.mybigcommerce.com admin.shopify.com
+        klaviyo.file.force.com klaviyo.lightning.force.com klaviyo.my.salesforce.com;
+        base-uri 'none'; script-src 'report-sample' 'strict-dynamic' 'unsafe-eval';
+        object-src 'none'; report-uri /csp/
+      Vary:
+      - Accept, Accept-Language, Cookie, Origin
+      Www-Authenticate:
+      - Bearer, Klaviyo-API-Key
+      X-Klaviyo-Req-Id:
+      - 5e82e068-d8cf-4fc1-9a21-2d5409b7cb81
+      X-Envoy-Upstream-Service-Time:
+      - '36'
+      Cf-Cache-Status:
+      - DYNAMIC
+      Strict-Transport-Security:
+      - max-age=31536000; includeSubDomains; preload
+      X-Content-Type-Options:
+      - nosniff
+      Server:
+      - cloudflare
+    body:
+      encoding: UTF-8
+      string: '{"errors":[{"id":"5e82e068-d8cf-4fc1-9a21-2d5409b7cb81","status":401,"code":"not_authenticated","title":"Authentication
+        credentials were not provided.","detail":"Missing or invalid private key.","source":{"pointer":"/data/"}}]}'
+  recorded_at: Tue, 17 Mar 2026 10:18:18 GMT
+recorded_with: VCR 6.4.0

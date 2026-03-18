@@ -9,6 +9,8 @@ module SpreeKlaviyo
       g.test_framework :rspec
     end
 
+    config.paths.add 'app/subscribers', eager_load: true
+
     initializer 'spree_klaviyo.environment', before: :load_config_initializers do |_app|
       SpreeKlaviyo::Config = SpreeKlaviyo::Configuration.new
     end

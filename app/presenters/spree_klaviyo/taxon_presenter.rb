@@ -12,7 +12,7 @@ module SpreeKlaviyo
       {
         name: @taxon.pretty_name,
         image_url: @taxon.image.present? ? spree_image_url(@taxon.image, width: 1200, height: 1200, format: :png) : '',
-        url: spree_storefront_resource_url(@taxon, store: @taxon.store)
+        url: respond_to?(:spree_storefront_resource_url) ? spree_storefront_resource_url(@taxon, store: @taxon.store) : nil
       }
     end
   end

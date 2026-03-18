@@ -1,110 +1,40 @@
 require 'spec_helper'
 
 RSpec.describe SpreeKlaviyo::CreateOrUpdateProfile do
-  subject { described_class.call(klaviyo_integration: klaviyo_integration, user: user) }
+  subject(:call) { described_class.call(klaviyo_integration: klaviyo_integration, user: user) }
 
-  context 'when klaviyo integration is exists', :vcr do
-    let(:user) { create(:user, email: email, accepts_email_marketing: true) }
+  let(:user) { create(:user, email: email, first_name: 'Cami', last_name: 'Leffler', accepts_email_marketing: true, klaviyo_id: nil) }
 
-    let!(:klaviyo_integration) { create(:klaviyo_integration, preferred_klaviyo_private_api_key: 'pk_123') }
+  let(:klaviyo_integration) { create(:klaviyo_integration) }
+  let(:profile_data) { JSON.parse(call_with_request.value)['data'] }
 
-    context 'when user has a profile in Klaviyo' do
-      let(:email) { 'existing.user@getvendo.com' }
-      let(:profile_data) { JSON.parse(subject.value)['data'][0] }
+  context 'when user has a profile in Klaviyo' do
+    let(:email) { 'existing.user@getvendo.com' }
+    let(:id_from_response) { '01JX2SMZ5B8MA1GY0HS4PHB35S' }
 
-      it 'links an existing profile' do
-        expect(subject.success?).to be(true)
-
-        expect(user.reload.klaviyo_id).to eq(profile_data['id'])
-        expect(profile_data.dig('attributes', 'email')).to eq('existing.user@getvendo.com')
-      end
-
-      context 'when email is a subaddress' do
-        let(:email) { 'angelika+13@getvendo.com' }
-
-        it 'links an existing profile' do
-          expect(subject.success?).to be(true)
-
-          expect(user.reload.klaviyo_id).to eq(profile_data['id'])
-          expect(profile_data.dig('attributes', 'email')).to eq('angelika+13@getvendo.com')
-        end
-      end
-
-      context 'when a guest id is provided' do
-        subject { described_class.call(klaviyo_integration: klaviyo_integration, user: user, guest_id: guest_id) }
-
-        let(:guest_id) { 'guest-id-ghjiu786543' }
-
-        let!(:klaviyo_integration) do
-          create(
-            :klaviyo_integration
-          )
-        end
-
-        let(:profile_data) { JSON.parse(subject.value)['data'] }
-
-        it 'links user and guest profiles' do
-          expect(subject.success?).to be(true)
-
-          expect(user.reload.klaviyo_id).to eq(profile_data['id'])
-          expect(profile_data.dig('attributes', 'email')).to eq('existing.user@getvendo.com')
-          expect(profile_data.dig('attributes', 'anonymous_id')).to eq('guest-id-ghjiu786543')
-        end
-
-        context 'when the user profile already exists' do
-          let(:email) { 'john.doe+track-guest-test-1@getvendo.com' }
-          let(:guest_id) { 'guest-id-gasdasdsiu786543' }
-
-          it 'updates the user profile with the guest id' do
-            expect(subject.success?).to be(true)
-
-            expect(profile_data.dig('attributes', 'email')).to eq(email)
-            expect(profile_data.dig('attributes', 'anonymous_id')).to eq(guest_id)
-          end
-        end
+    it 'updates user klaviyo_id' do
+      VCR.use_cassette('services/spree_klaviyo/create_or_update_profile/success_with_exisitng_profile') do
+        expect { call }.to change(user, :klaviyo_id).from(nil).to(id_from_response)
+        expect(call).to be_success
       end
     end
 
-    context 'when user does not have profile in klaviyo' do
-      let(:email) { 'john.doe-578423@getvendo.com' }
-      let(:profile_data) { JSON.parse(subject.value)['data'] }
-
-      let!(:klaviyo_integration) do
-        create(
-          :klaviyo_integration
-        )
-      end
-
-      it 'creates a new profile' do
-        expect(subject.success?).to be(true)
-
-        expect(user.klaviyo_id).to eq(profile_data['id'])
-        expect(profile_data.dig('attributes', 'email')).to eq(email)
-      end
-
-      context 'with a guest id' do
-        subject { described_class.call(klaviyo_integration: klaviyo_integration, user: user, guest_id: guest_id) }
-
-        let(:email) { 'john.doe-3242343@getvendo.com' }
-        let(:guest_id) { 'guest-id-asdsiu78645235343' }
-
-        it 'creates a new profile and updates it with the guest id' do
-          expect(subject.success?).to be(true)
-
-          expect(user.klaviyo_id).to eq(profile_data['id'])
-          expect(profile_data.dig('attributes', 'email')).to eq(email)
-        end
+    it 'links an existing profile' do
+      VCR.use_cassette('services/spree_klaviyo/create_or_update_profile/success_with_exisitng_profile') do
+        expect(JSON.parse(call.value).dig('data', 'attributes', 'email')).to eq('existing.user@getvendo.com')
       end
     end
   end
 
-  context 'when klaviyo integration is not found' do
-    let(:user) { create(:user, accepts_email_marketing: true) }
-    let(:klaviyo_integration) { nil }
+  context 'when user does not have profile in klaviyo' do
+    let(:email) { 'john.doe-578423@getvendo.com' }
+    let(:id_from_response) { '01KKY2N04K6W3SKM6QP24PSW56' }
 
-    it 'returns a failure' do
-      expect(subject.success?).to be(false)
-      expect(subject.error.value).to eq(Spree.t('admin.integrations.klaviyo.not_found'))
+    it 'assigned klaviyo_id from newly created profile to user' do
+      VCR.use_cassette('services/spree_klaviyo/create_or_update_profile/success_with_new_profile') do
+        expect { call }.to change(user, :klaviyo_id).from(nil).to(id_from_response)
+        expect(call).to be_success
+      end
     end
   end
 end

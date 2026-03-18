@@ -31,7 +31,7 @@ module SpreeKlaviyo
         coupon: @order.coupon_code.to_s,
         currency: @order.currency,
         completed_at: @order.completed_at&.iso8601.to_s,
-        checkout_url: ::Spree::Core::Engine.routes.url_helpers.checkout_url(host: @current_store.url_or_custom_domain, token: @order.token),
+        checkout_url: checkout_url_for(@order),
         all_adjustments: all_adjustments,
         bill_address: AddressPresenter.new(address: @order.bill_address).call,
         ship_address: AddressPresenter.new(address: @order.ship_address).call
@@ -80,6 +80,12 @@ module SpreeKlaviyo
           ShipmentPresenter.new(order: @order, shipment: shipment).call
         end
       }
+    end
+
+    def checkout_url_for(order)
+      return nil unless ::Spree::Core::Engine.routes.url_helpers.respond_to?(:checkout_url)
+
+      ::Spree::Core::Engine.routes.url_helpers.checkout_url(host: @current_store.url_or_custom_domain, token: order.token)
     end
 
     def subtotal
