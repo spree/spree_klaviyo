@@ -2,7 +2,7 @@
 http_interactions:
 - request:
     method: get
-    uri: https://a.klaviyo.com/api/lists/<KLAVIYO_DEFAULT_NEWSLETTER_LIST_ID>
+    uri: https://a.klaviyo.com/api/lists/KLAVIYO_DEFAULT_NEWSLETTER_LIST_ID
     body:
       encoding: US-ASCII
       string: ''

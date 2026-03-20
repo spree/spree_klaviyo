@@ -5,7 +5,7 @@ http_interactions:
     uri: https://a.klaviyo.com/api/profile-subscription-bulk-delete-jobs/
     body:
       encoding: UTF-8
-      string: '{"data":{"type":"profile-subscription-bulk-delete-job","attributes":{"profiles":{"data":[{"type":"profile","attributes":{"email":"unsubscribe-user@example.com","subscriptions":{"email":{"marketing":{"consent":"UNSUBSCRIBED"}}}}}]}},"relationships":{"list":{"data":{"type":"list","id":"<KLAVIYO_DEFAULT_NEWSLETTER_LIST_ID>"}}}}}'
+      string: '{"data":{"type":"profile-subscription-bulk-delete-job","attributes":{"profiles":{"data":[{"type":"profile","attributes":{"email":"unsubscribe-user@example.com","subscriptions":{"email":{"marketing":{"consent":"UNSUBSCRIBED"}}}}}]}},"relationships":{"list":{"data":{"type":"list","id":"KLAVIYO_DEFAULT_NEWSLETTER_LIST_ID"}}}}}'
     headers:
       Accept-Encoding:
       - gzip;q=1.0,deflate;q=0.6,identity;q=0.3

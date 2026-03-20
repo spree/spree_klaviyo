@@ -1,6 +1,7 @@
 require 'vcr'
 require 'json'
 require 'webmock/rspec'
+require 'spree_klaviyo/testing_support/defaults'
 
 WebMock.disable_net_connect!(net_http_connect_on_start: true, allow_localhost: true)
 
@@ -28,7 +29,7 @@ VCR.configure do |c|
       normalize.call(req1.body) == normalize.call(req2.body)
     end
   end
-  c.filter_sensitive_data('<KLAVIYO_PUBLIC_API_KEY>') { ENV['KLAVIYO_PUBLIC_API_KEY'] }
-  c.filter_sensitive_data('<KLAVIYO_PRIVATE_API_KEY>') { ENV['KLAVIYO_PRIVATE_API_KEY'] }
-  c.filter_sensitive_data('<KLAVIYO_DEFAULT_NEWSLETTER_LIST_ID>') { ENV['KLAVIYO_DEFAULT_NEWSLETTER_LIST_ID'] }
+  c.filter_sensitive_data('<KLAVIYO_PUBLIC_API_KEY>') { SpreeKlaviyo::Testing.default_public_api_key }
+  c.filter_sensitive_data('<KLAVIYO_PRIVATE_API_KEY>') { SpreeKlaviyo::Testing.default_private_api_key }
+  c.filter_sensitive_data('KLAVIYO_DEFAULT_NEWSLETTER_LIST_ID') { SpreeKlaviyo::Testing.default_newsletter_list_id }
 end
