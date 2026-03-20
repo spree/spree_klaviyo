@@ -2,8 +2,7 @@ require 'spec_helper'
 
 RSpec.describe SpreeKlaviyo::NewsletterSubscriber do
   describe '#newsletter_subscriber.subscribed event' do
-    # Spree invokes Spree::Subscriber#call (async via SubscriberJob); that delegates to #handle.
-    subject(:invoke_subscriber) { described_class.new.call(event) }
+    subject(:invoke_subscriber) { described_class.new.handle(event) }
 
     let(:store) { Spree::Store.default }
     let(:newsletter_subscriber) { create(:newsletter_subscriber) }
@@ -27,6 +26,23 @@ RSpec.describe SpreeKlaviyo::NewsletterSubscriber do
       it 'does not enqueue SubscribeJob' do
         expect(SpreeKlaviyo::SubscribeJob).not_to receive(:perform_later)
         invoke_subscriber
+      end
+    end
+
+    context 'when an error occured' do
+      before { allow(SpreeKlaviyo::SubscribeJob).to receive(:perform_later).and_raise(StandardError.new('test error')) }
+
+      it 'reports the error and raises the error' do
+        expect(Rails.error).to receive(:report) do |error, **kwargs|
+          expect(error).to be_a(StandardError)
+          expect(error.message).to eq('test error')
+          expect(kwargs).to eq(
+            context: { event_name: 'newsletter_subscriber.subscribed' },
+            source: 'spree_klaviyo'
+          )
+        end
+
+        expect { invoke_subscriber }.to raise_error(StandardError, 'test error')
       end
     end
   end

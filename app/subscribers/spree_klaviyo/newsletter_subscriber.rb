@@ -15,6 +15,7 @@ module SpreeKlaviyo
       SpreeKlaviyo::SubscribeJob.perform_later(klaviyo_integration.id, subscriber.id)
     rescue StandardError => e
       Rails.error.report(e, context: { event_name: 'newsletter_subscriber.subscribed' }, source: 'spree_klaviyo')
+      raise e
     end
 
     private
