@@ -219,10 +219,6 @@ describe Spree::Integrations::Klaviyo, type: :model do
       let(:user) { user_with_bill_address }
       let(:klaviyo_id) { '01KM0AN5P8BYVMH6HZ4PEBT2CW' }
 
-      before do
-        allow_any_instance_of(SpreeKlaviyo::UserPresenter).to receive(:klaviyo_external_id).and_return('some-extarnal-id')
-      end
-
       context 'with valid request' do
         it 'sends a successful request' do
           VCR.use_cassette('klaviyo/update_profile/success') do

@@ -7,7 +7,7 @@ http_interactions:
       encoding: UTF-8
       string: '{"data":{"type":"profile","attributes":{"anonymous_id":null,"email":"example@email.com","first_name":"John","last_name":"Doe","location":{"address1":"123
         Main St","address2":"Northwest","city":"Anytown","country":"United States
-        of America","region":"CA","zip":"12345"},"external_id":"some-extarnal-id"},"id":"invalid"}}'
+        of America","region":"CA","zip":"12345"},"external_id":1},"id":"invalid"}}'
     headers:
       Accept-Encoding:
       - gzip;q=1.0,deflate;q=0.6,identity;q=0.3

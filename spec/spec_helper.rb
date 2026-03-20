@@ -8,6 +8,11 @@ require 'spree_dev_tools/rspec/spec_helper'
 require 'spree_klaviyo/factories'
 
 RSpec.configure do |config|
+  config.before(:each) do
+    # VCR cassetes are matched by body payload which contains spree user id
+    allow_any_instance_of(SpreeKlaviyo::UserPresenter).to receive(:klaviyo_external_id).and_return(1)
+  end
+
   config.before(:suite) do
     SpreeKlaviyo::MetafieldMigration.ensure_klaviyo_subscribed_definition!
   end
