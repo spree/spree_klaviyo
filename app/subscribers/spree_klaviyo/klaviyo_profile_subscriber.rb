@@ -38,10 +38,15 @@ module SpreeKlaviyo
     end
 
     def find_user(event)
-      user_id = event.payload['id']
-      return unless user_id
+      param =
+        if event.resource_type == 'address'
+          event.payload['user_id']
+        else
+          event.payload['id']
+        end
+      return unless param
 
-      Spree.user_class.find_by_param(user_id)
+      Spree.user_class.find_by_param(param)
     end
 
     def find_integration(event)
