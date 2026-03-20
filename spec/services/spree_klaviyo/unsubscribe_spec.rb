@@ -1,50 +1,27 @@
 require 'spec_helper'
 
 describe SpreeKlaviyo::Unsubscribe do
-  subject(:call) { described_class.call(klaviyo_integration: klaviyo_integration, email: email, user: user) }
+  subject(:call) { described_class.call(klaviyo_integration: klaviyo_integration, subscriber: subscriber) }
 
-  let(:email) { 'unsubscribe-user@example.com' }
-  let(:user) { create(:user, email: email, accepts_email_marketing: true, klaviyo_subscribed: klaviyo_subscribed) }
-  let(:klaviyo_subscribed) { true }
+  let(:subscriber) { create(:newsletter_subscriber, email: 'unsubscribe-user@example.com') }
   let(:klaviyo_integration) { create(:klaviyo_integration) }
 
+  before do
+    subscriber.set_metafield('klaviyo.subscribed', true)
+  end
+
   context 'when unsubscribe request succeeds' do
-    context 'when email belongs to registered user' do
-      it 'returns success' do
-        VCR.use_cassette('services/spree_klaviyo/unsubscribe/success_for_registered_user') do
-          expect(call).to be_success
-        end
-      end
-
-      context 'when user was subscribed' do
-        let(:klaviyo_subscribed) { true }
-
-        it 'marks user as not a subscriber' do
-          VCR.use_cassette('services/spree_klaviyo/unsubscribe/success_for_registered_user') do
-            expect { call }.to change { user.reload.klaviyo_subscribed? }.from(true).to(false)
-          end
-        end
-      end
-
-      context 'when user was not subscribed' do
-        let(:klaviyo_subscribed) { false }
-
-        it 'does not update user as not a subscriber again' do
-          VCR.use_cassette('services/spree_klaviyo/unsubscribe/success_for_registered_user') do
-            expect(call).to be_success
-          end
-        end
+    it 'returns success' do
+      VCR.use_cassette('services/spree_klaviyo/unsubscribe/success') do
+        expect(call).to be_success
       end
     end
 
-    context 'when emails belongs to guest user' do
-      let(:user) { nil }
-      let(:email) { 'guest@example.com' }
-
-      it 'returns success' do
-        VCR.use_cassette('services/spree_klaviyo/unsubscribe/success_for_guest_user') do
-          expect(call).to be_success
-        end
+    it 'marks subscriber as not subscribed' do
+      VCR.use_cassette('services/spree_klaviyo/unsubscribe/success') do
+        expect { call }.to change {
+          subscriber.get_metafield('klaviyo.subscribed').serialize_value
+        }.from(true).to(false)
       end
     end
   end

@@ -2,12 +2,18 @@ module SpreeKlaviyo
   class Unsubscribe < Base
     prepend ::Spree::ServiceModule::Base
 
-    def call(klaviyo_integration:, email:, user: nil)
-      return failure(false, ::Spree.t('admin.integrations.klaviyo.not_found')) unless klaviyo_integration
+    def call(klaviyo_integration:, subscriber:)
+      @subscriber = subscriber
 
       klaviyo_integration.unsubscribe_user(email).tap do |result|
-        user.update(klaviyo_subscribed: false) if result.success? && user && user.klaviyo_subscribed?
+        subscriber.set_metafield('klaviyo.subscribed', false) if result.success?
       end
     end
+
+    private
+
+    attr_reader :subscriber
+
+    delegate :email, to: :subscriber
   end
 end

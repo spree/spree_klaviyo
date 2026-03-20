@@ -28,5 +28,9 @@ module SpreeKlaviyo
     end
 
     config.to_prepare(&method(:activate).to_proc)
+
+    rake_tasks do
+      load "#{root}/lib/tasks/migrations.rake"
+    end
   end
 end

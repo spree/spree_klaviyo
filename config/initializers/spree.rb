@@ -4,7 +4,7 @@ Rails.application.config.after_initialize do
 
   # Register event subscribers
   Spree.subscribers << SpreeKlaviyo::OrderSubscriber
-  Spree.subscribers << SpreeKlaviyo::KlaviyoNewsletterSubscriber
+  Spree.subscribers << SpreeKlaviyo::NewsletterSubscriber
   Spree.subscribers << SpreeKlaviyo::ShipmentSubscriber
   Spree.subscribers << SpreeKlaviyo::KlaviyoProfileSubscriber
 end
