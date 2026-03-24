@@ -76,7 +76,7 @@ http_interactions:
     uri: https://a.klaviyo.com/api/profiles/
     body:
       encoding: UTF-8
-      string: '{"data":{"type":"profile","attributes":{"anonymous_id":null,"email":"john.doe-578423@getvendo.com"}}}'
+      string: '{"data":{"type":"profile","attributes":{"anonymous_id":null,"email":"john.doe-578423@getvendo.com","first_name":"Cami","last_name":"Leffler","external_id":1,"location":{"address1":null,"address2":null,"city":null,"country":null,"region":null,"zip":null}}}}'
     headers:
       Accept-Encoding:
       - gzip;q=1.0,deflate;q=0.6,identity;q=0.3

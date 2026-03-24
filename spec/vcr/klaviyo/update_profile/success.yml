@@ -5,9 +5,9 @@ http_interactions:
     uri: https://a.klaviyo.com/api/profiles/01KM0AN5P8BYVMH6HZ4PEBT2CW/
     body:
       encoding: UTF-8
-      string: '{"data":{"type":"profile","attributes":{"anonymous_id":null,"email":"example@email.com","first_name":"John","last_name":"Doe","location":{"address1":"123
+      string: '{"data":{"type":"profile","attributes":{"anonymous_id":null,"email":"example@email.com","first_name":"John","last_name":"Doe","external_id":1,"location":{"address1":"123
         Main St","address2":"Northwest","city":"Anytown","country":"United States
-        of America","region":"CA","zip":"12345"},"external_id":1},"id":"01KM0AN5P8BYVMH6HZ4PEBT2CW"}}'
+        of America","region":"CA","zip":"12345"}},"id":"01KM0AN5P8BYVMH6HZ4PEBT2CW"}}'
     headers:
       Accept-Encoding:
       - gzip;q=1.0,deflate;q=0.6,identity;q=0.3

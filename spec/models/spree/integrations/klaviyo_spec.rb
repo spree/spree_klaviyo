@@ -140,7 +140,8 @@ describe Spree::Integrations::Klaviyo, type: :model do
           }
         end
 
-        let(:order) { create(:order, number: 'R360992544', store: store, email: user.email, line_items: [line_item_1, line_item_2], ship_address: ship_address, bill_address: bill_address, user: user) }
+        let(:order) { create(:order, state: 'complete', total: price, item_total: price, number: 'R360992544', store: store, email: user.email, line_items: [line_item_1, line_item_2], ship_address: ship_address, bill_address: bill_address, user: user) }
+        let(:price) { line_item_1.amount + line_item_2.amount }
         let(:user) { user_with_bill_address }
 
         let(:product_1) { create(:product_in_stock, name: 'Product 1', price: 19.99, currency: 'USD', sku: 'SKU-1', stores: [store]) }
@@ -151,6 +152,10 @@ describe Spree::Integrations::Klaviyo, type: :model do
 
         let(:ship_address) { create(:ship_address, first_name: 'John', last_name: 'Ferguson', address1: '456 Oak Ave', city: 'Othertown', state: new_york, zipcode: '67890', phone: '555-555-0199', country: usa) }
         let(:new_york) { create(:state, name: 'New York', country: usa, abbr: 'NY') }
+
+        before do
+          create(:payment, order: order, amount: order.total, state: 'completed')
+        end
 
         it { is_expected.to be_success }
       end
@@ -176,7 +181,7 @@ describe Spree::Integrations::Klaviyo, type: :model do
     describe '#create_profile' do
       subject(:create_profile) { klaviyo_integration.create_profile(user) }
 
-      let(:user) { create(:user, email: email) }
+      let(:user) { create(:user, email: email, first_name: 'Ailene', last_name: 'Gerlach') }
       let(:email) { 'example@email.com' }
 
       context 'with valid request' do
