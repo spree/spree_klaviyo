@@ -7,7 +7,7 @@ end
 
 gem 'rails-controller-testing'
 
-spree_opts = { 'path': ENV['SPREE_PATH'] } if ENV['SPREE_PATH'].to_s.strip != ''
+spree_opts = { path: ENV.fetch('SPREE_PATH', nil) } if ENV['SPREE_PATH'].to_s.strip != ''
 
 gem 'spree', '>= 5.4.0.beta', spree_opts || {}
 gem 'spree_admin', '>= 5.4.0.beta', spree_opts || {}
