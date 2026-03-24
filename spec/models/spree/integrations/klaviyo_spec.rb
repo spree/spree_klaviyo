@@ -160,7 +160,7 @@ describe Spree::Integrations::Klaviyo, type: :model do
         it { is_expected.to be_success }
       end
 
-      context 'for a quest user' do
+      context 'for a guest user' do
         subject { VCR.use_cassette('klaviyo/create_event/product_viewed_for_a_quest_user/success') { create_event } }
 
         let(:params) do
