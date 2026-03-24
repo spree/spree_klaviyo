@@ -2,7 +2,9 @@ require 'spec_helper'
 
 RSpec.describe SpreeKlaviyo::KlaviyoProfileSubscriber do
   let(:store) { Spree::Store.default }
-  let!(:user) { create(:user) }
+  let!(:user) { create(:user, klaviyo_id: klaviyo_id, klaviyo_visitor_id: klaviyo_visitor_id) }
+  let(:klaviyo_id) { nil }
+  let(:klaviyo_visitor_id) { nil }
   let!(:klaviyo_integration) { create(:klaviyo_integration, store: store) }
 
   describe '#handle_user_created' do
@@ -14,14 +16,24 @@ RSpec.describe SpreeKlaviyo::KlaviyoProfileSubscriber do
           .with(klaviyo_integration.id, user.id)
         described_class.new.call(event)
       end
+
+      it 'does not enqueue MergeVisitorProfileJob' do
+        expect(SpreeKlaviyo::MergeVisitorProfileJob).not_to receive(:perform_later)
+        described_class.new.call(event)
+      end
     end
 
     context 'with visitor_id stored on user' do
-      before { user.update_columns(private_metadata: (user.private_metadata || {}).merge('klaviyo_visitor_id' => 'visitor-123')) }
+      let(:klaviyo_visitor_id) { 'visitor-123' }
 
       it 'enqueues MergeVisitorProfileJob' do
         expect(SpreeKlaviyo::MergeVisitorProfileJob).to receive(:perform_later)
-          .with(klaviyo_integration.id, user.id, 'visitor-123')
+          .with(klaviyo_integration.id, user.id, klaviyo_visitor_id)
+        described_class.new.call(event)
+      end
+
+      it 'does not enqueue CreateOrUpdateProfileJob' do
+        expect(SpreeKlaviyo::CreateOrUpdateProfileJob).not_to receive(:perform_later)
         described_class.new.call(event)
       end
     end
@@ -47,21 +59,10 @@ RSpec.describe SpreeKlaviyo::KlaviyoProfileSubscriber do
         described_class.new.call(event)
       end
 
-      context 'with visitor_id stored on user' do
-        before { user.update_columns(private_metadata: (user.private_metadata || {}).merge('klaviyo_visitor_id' => 'visitor-123')) }
-
-        it 'does not enqueue MergeVisitorProfileJob' do
-          expect(SpreeKlaviyo::MergeVisitorProfileJob).not_to receive(:perform_later)
-          expect(SpreeKlaviyo::CreateOrUpdateProfileJob).to receive(:perform_later)
-            .with(klaviyo_integration.id, user.id)
-          described_class.new.call(event)
-        end
-      end
-
       context 'without klaviyo integration' do
         before { klaviyo_integration.destroy! }
 
-        it 'does not enqueue any job' do
+        it 'does not enqueue CreateOrUpdateProfileJob' do
           expect(SpreeKlaviyo::CreateOrUpdateProfileJob).not_to receive(:perform_later)
           described_class.new.call(event)
         end
