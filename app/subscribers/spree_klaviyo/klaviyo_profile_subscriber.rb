@@ -16,8 +16,10 @@ module SpreeKlaviyo
       integration = find_integration(event)
       return unless integration
 
-      if user.klaviyo_visitor_id.present?
-        SpreeKlaviyo::MergeVisitorProfileJob.perform_later(integration.id, user.id, user.klaviyo_visitor_id)
+      guest_id = event.payload.dig('visitor_id')
+
+      if guest_id.present?
+        SpreeKlaviyo::MergeVisitorProfileJob.perform_later(integration.id, user.id, guest_id)
       else
         SpreeKlaviyo::CreateOrUpdateProfileJob.perform_later(integration.id, user.id)
       end

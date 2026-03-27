@@ -2,9 +2,8 @@ require 'spec_helper'
 
 RSpec.describe SpreeKlaviyo::KlaviyoProfileSubscriber do
   let(:store) { Spree::Store.default }
-  let!(:user) { create(:user, klaviyo_id: klaviyo_id, klaviyo_visitor_id: klaviyo_visitor_id) }
+  let!(:user) { create(:user, klaviyo_id: klaviyo_id) }
   let(:klaviyo_id) { nil }
-  let(:klaviyo_visitor_id) { nil }
   let!(:klaviyo_integration) { create(:klaviyo_integration, store: store) }
 
   describe '#handle_user_created' do
@@ -23,17 +22,35 @@ RSpec.describe SpreeKlaviyo::KlaviyoProfileSubscriber do
       end
     end
 
-    context 'with visitor_id stored on user' do
-      let(:klaviyo_visitor_id) { 'visitor-123' }
-
-      it 'enqueues MergeVisitorProfileJob' do
-        expect(SpreeKlaviyo::MergeVisitorProfileJob).to receive(:perform_later)
-          .with(klaviyo_integration.id, user.id, klaviyo_visitor_id)
-        described_class.new.call(event)
+    context 'with visitor_id on event payload' do
+      let(:event) do
+        Spree::Event.new(
+          name: 'user.created',
+          payload: { id: user.prefixed_id, 'visitor_id' => 'payload-visitor' },
+          store_id: store.id
+        )
       end
 
-      it 'does not enqueue CreateOrUpdateProfileJob' do
-        expect(SpreeKlaviyo::CreateOrUpdateProfileJob).not_to receive(:perform_later)
+      it 'enqueues MergeVisitorProfileJob with payload visitor_id' do
+        expect(SpreeKlaviyo::MergeVisitorProfileJob).to receive(:perform_later)
+          .with(klaviyo_integration.id, user.id, 'payload-visitor')
+        described_class.new.call(event)
+      end
+    end
+
+    context 'with visitor_id on both payload and user' do
+      let(:klaviyo_visitor_id) { 'stored-visitor' }
+      let(:event) do
+        Spree::Event.new(
+          name: 'user.created',
+          payload: { id: user.prefixed_id, 'visitor_id' => 'payload-visitor' },
+          store_id: store.id
+        )
+      end
+
+      it 'prefers payload visitor_id' do
+        expect(SpreeKlaviyo::MergeVisitorProfileJob).to receive(:perform_later)
+          .with(klaviyo_integration.id, user.id, 'payload-visitor')
         described_class.new.call(event)
       end
     end

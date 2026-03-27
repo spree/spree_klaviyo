@@ -4,7 +4,7 @@ RSpec.describe SpreeKlaviyo::OrderSubscriber do
   describe '#track_order_cancelled_event' do
     let(:order) { create(:completed_order_with_totals) }
     let!(:klaviyo_integration) { create(:klaviyo_integration, store: order.store) }
-    let(:event) { Spree::Event.new(name: 'order.canceled', payload: { id: order.id }, store_id: order.store_id) }
+    let(:event) { Spree::Event.new(name: 'order.canceled', payload: order.event_payload, store_id: order.store_id) }
 
     it 'enqueues AnalyticsEventJob' do
       expect(SpreeKlaviyo::AnalyticsEventJob).to receive(:perform_later)
