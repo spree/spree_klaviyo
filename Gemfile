@@ -7,12 +7,11 @@ end
 
 gem 'rails-controller-testing'
 
-spree_opts = { path: ENV.fetch('SPREE_PATH', nil) } if ENV['SPREE_PATH'].to_s.strip != ''
+spree_opts = { path: ENV.fetch('SPREE_PATH', nil) }.compact
 
 gem 'spree', '>= 5.4.0.beta', spree_opts || {}
 gem 'spree_admin', '>= 5.4.0.beta', spree_opts || {}
 gem 'spree_dev_tools', '>= 0.6.0.rc1'
-gem 'spree_storefront', require: false
 
 if ENV['DB'] == 'mysql'
   gem 'mysql2'

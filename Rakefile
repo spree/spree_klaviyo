@@ -18,7 +18,7 @@ desc 'Generates a dummy app for testing'
 task :test_app do
   ENV['LIB_NAME'] = 'spree_klaviyo'
   Rake::Task['extension:test_app'].execute(
-    install_storefront: true,
+    install_storefront: false,
     install_admin: true
   )
 end
