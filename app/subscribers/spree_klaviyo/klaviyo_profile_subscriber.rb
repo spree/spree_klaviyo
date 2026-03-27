@@ -48,7 +48,7 @@ module SpreeKlaviyo
         end
       return unless param
 
-      Spree.user_class.find_by_param(param)
+      Spree.user_class.respond_to?(:find_by_param) ? Spree.user_class.find_by_param(param) : Spree.user_class.find_by(id: param)
     end
 
     def find_integration(event)
