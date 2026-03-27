@@ -22,6 +22,6 @@ module SpreeKlaviyo
   end
 end
 
-if defined?(Spree::BaseController)
+if defined?(Spree::StoreController)
   Spree::BaseController.prepend(SpreeKlaviyo::BaseControllerDecorator)
 end
