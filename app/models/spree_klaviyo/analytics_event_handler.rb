@@ -45,11 +45,9 @@ module SpreeKlaviyo
                  properties[:order]
                when 'subscribed_to_newsletter'
                  email ||= properties[:email]
-                 SpreeKlaviyo::SubscribeJob.perform_later(client.id, email, user&.id)
                  nil
                when 'unsubscribed_from_newsletter'
                  email ||= properties[:email]
-                 SpreeKlaviyo::UnsubscribeJob.perform_later(client.id, email, user&.id)
                  nil
                end
 

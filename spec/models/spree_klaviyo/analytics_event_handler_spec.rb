@@ -10,7 +10,7 @@ describe SpreeKlaviyo::AnalyticsEventHandler do
   let(:taxon) { create(:taxon) }
   let(:line_item) { create(:line_item, order: order, product: product) }
   let!(:klaviyo_integration) { create(:klaviyo_integration, store: store, active: true) }
-  
+
   subject do
     described_class.new(
       user: user,
@@ -124,16 +124,6 @@ describe SpreeKlaviyo::AnalyticsEventHandler do
     end
 
     context 'with newsletter events' do
-      it 'enqueues subscribe job for newsletter subscription' do
-        expect {
-          subject.handle_event('subscribed_to_newsletter', { email: 'test@example.com' })
-        }.to have_enqueued_job(SpreeKlaviyo::SubscribeJob).with(
-          klaviyo_integration.id,
-          user.email,
-          user.id
-        )
-      end
-
       context 'when user is not present' do
         subject do
           described_class.new(
@@ -142,19 +132,9 @@ describe SpreeKlaviyo::AnalyticsEventHandler do
             visitor_id: 'visitor_123'
           )
         end
-
-        it 'uses provided email for newsletter subscription' do
-          expect {
-            subject.handle_event('subscribed_to_newsletter', { email: 'test@example.com' })
-          }.to have_enqueued_job(SpreeKlaviyo::SubscribeJob).with(
-            klaviyo_integration.id,
-            'test@example.com',
-            nil
-          )
-        end
       end
 
-      it 'also enqueues analytics event job for newsletter subscription' do
+      it 'enqueues analytics event job for newsletter subscription' do
         expect {
           subject.handle_event('subscribed_to_newsletter', { email: 'test@example.com' })
         }.to have_enqueued_job(SpreeKlaviyo::AnalyticsEventJob).with(
@@ -167,7 +147,7 @@ describe SpreeKlaviyo::AnalyticsEventHandler do
         )
       end
 
-      it 'also enqueues analytics event job for newsletter unsubscription' do
+      it 'enqueues analytics event job for newsletter unsubscription' do
         expect {
           subject.handle_event('unsubscribed_from_newsletter', { email: 'test@example.com' })
         }.to have_enqueued_job(SpreeKlaviyo::AnalyticsEventJob).with(
@@ -227,12 +207,6 @@ describe SpreeKlaviyo::AnalyticsEventHandler do
           subject.handle_event('product_viewed', { product: product })
         }.not_to have_enqueued_job(SpreeKlaviyo::AnalyticsEventJob)
       end
-
-      it 'returns early without processing newsletter events' do
-        expect {
-          subject.handle_event('subscribed_to_newsletter', { email: 'test@example.com' })
-        }.not_to have_enqueued_job(SpreeKlaviyo::SubscribeJob)
-      end
     end
 
     context 'when both email and visitor_id are blank' do
@@ -248,12 +222,6 @@ describe SpreeKlaviyo::AnalyticsEventHandler do
         expect {
           subject.handle_event('product_viewed', { product: product })
         }.not_to have_enqueued_job(SpreeKlaviyo::AnalyticsEventJob)
-      end
-
-      it 'still processes newsletter subscription (has explicit email)' do
-        expect {
-          subject.handle_event('subscribed_to_newsletter', { email: 'test@example.com' })
-        }.to have_enqueued_job(SpreeKlaviyo::SubscribeJob)
       end
     end
   end

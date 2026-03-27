@@ -1,16 +1,16 @@
 require 'spec_helper'
 
 RSpec.describe SpreeKlaviyo::NewsletterSubscriber do
-  describe '#newsletter_subscriber.subscribed event' do
-    subject(:invoke_subscriber) { described_class.new.handle(event) }
+  subject(:invoke_subscriber) { described_class.new.call(event) }
+  let(:store) { Spree::Store.default }
+  let(:newsletter_subscriber) { create(:newsletter_subscriber) }
+  let!(:klaviyo_integration) { create(:klaviyo_integration, store: store) }
 
-    let(:store) { Spree::Store.default }
-    let(:newsletter_subscriber) { create(:newsletter_subscriber) }
-    let!(:klaviyo_integration) { create(:klaviyo_integration, store: store) }
+  describe '#newsletter_subscriber.created event' do
     let(:event) do
       Spree::Event.new(
-        name: 'newsletter_subscriber.subscribed',
-        payload: { id: newsletter_subscriber.prefixed_id },
+        name: 'newsletter_subscriber.created',
+        payload: newsletter_subscriber.event_payload,
         store_id: store.id
       )
     end
@@ -37,13 +37,32 @@ RSpec.describe SpreeKlaviyo::NewsletterSubscriber do
           expect(error).to be_a(StandardError)
           expect(error.message).to eq('test error')
           expect(kwargs).to eq(
-            context: { event_name: 'newsletter_subscriber.subscribed' },
+            context: { event_name: 'newsletter_subscriber.created' },
             source: 'spree_klaviyo'
           )
         end
 
         expect { invoke_subscriber }.to raise_error(StandardError, 'test error')
       end
+    end
+  end
+
+  describe '#newsletter_subscriber.deleted event' do
+    let(:event) do
+      Spree::Event.new(
+        name: 'newsletter_subscriber.deleted',
+        payload: newsletter_subscriber.event_payload,
+        store_id: store.id
+      )
+    end
+
+    before do
+      newsletter_subscriber.delete
+    end
+
+    it 'enqueues UnsubscribeJob' do
+      expect(SpreeKlaviyo::UnsubscribeJob).to receive(:perform_later).with(klaviyo_integration.id, newsletter_subscriber.email)
+      invoke_subscriber
     end
   end
 end

@@ -1,5 +1,7 @@
 module SpreeKlaviyo
   class KlaviyoProfileSubscriber < Spree::Subscriber
+    subscribes_to 'user.created', 'user.updated', 'address.created', 'address.updated'
+
     on 'user.created', :handle_user_created
     on 'user.updated', :handle_profile_upsert
     on 'address.created', :handle_profile_upsert
