@@ -38,8 +38,7 @@ RSpec.describe SpreeKlaviyo::KlaviyoProfileSubscriber do
       end
     end
 
-    context 'with visitor_id on both payload and user' do
-      let(:klaviyo_visitor_id) { 'stored-visitor' }
+    context 'with visitor_id on payload' do
       let(:event) do
         Spree::Event.new(
           name: 'user.created',

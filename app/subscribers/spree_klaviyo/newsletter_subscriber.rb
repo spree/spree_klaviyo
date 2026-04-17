@@ -15,9 +15,6 @@ module SpreeKlaviyo
       return if klaviyo_integration.blank?
 
       SpreeKlaviyo::SubscribeJob.perform_later(klaviyo_integration.id, subscriber.id)
-    rescue StandardError => e
-      Rails.error.report(e, context: { event_name: event.name }, source: 'spree_klaviyo')
-      raise e
     end
 
     def handle_email_unsubscription(event)
@@ -28,9 +25,6 @@ module SpreeKlaviyo
       return if klaviyo_integration.blank?
 
       SpreeKlaviyo::UnsubscribeJob.perform_later(klaviyo_integration.id, email)
-    rescue StandardError => e
-      Rails.error.report(e, context: { event_name: event.name }, source: 'spree_klaviyo')
-      raise e
     end
 
     def klaviyo_integration(event)

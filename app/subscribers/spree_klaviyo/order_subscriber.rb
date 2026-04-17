@@ -14,10 +14,8 @@ module SpreeKlaviyo
       return if integration.blank?
 
       SpreeKlaviyo::AnalyticsEventJob.perform_later(
-        integration.id, 'Order Cancelled', 'Spree::Order', order.id, order.email
+        integration.id, 'Order Cancelled', Spree::Order.name, order.id, order.email
       )
-    rescue StandardError => e
-      Rails.error.report(e, context: { event_name: 'order_cancelled' }, source: 'spree_klaviyo')
     end
   end
 end

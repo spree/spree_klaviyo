@@ -23,8 +23,6 @@ module SpreeKlaviyo
       else
         SpreeKlaviyo::CreateOrUpdateProfileJob.perform_later(integration.id, user.id)
       end
-    rescue StandardError => e
-      Rails.error.report(e, context: { event_name: 'user.created' }, source: 'spree_klaviyo')
     end
 
     def handle_profile_upsert(event)
@@ -35,8 +33,6 @@ module SpreeKlaviyo
       return unless integration
 
       SpreeKlaviyo::CreateOrUpdateProfileJob.perform_later(integration.id, user.id)
-    rescue StandardError => e
-      Rails.error.report(e, context: { event_name: event.name }, source: 'spree_klaviyo')
     end
 
     def find_user(event)
@@ -53,7 +49,7 @@ module SpreeKlaviyo
 
     def find_integration(event)
       store = Spree::Store.find_by(id: event.store_id) || Spree::Store.default
-      store.integrations.active.find_by(type: 'Spree::Integrations::Klaviyo')
+      store.integrations.active.find_by(type: Spree::Integrations::Klaviyo.name)
     end
   end
 end

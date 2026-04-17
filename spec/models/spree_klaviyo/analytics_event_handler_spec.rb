@@ -124,16 +124,6 @@ describe SpreeKlaviyo::AnalyticsEventHandler do
     end
 
     context 'with newsletter events' do
-      context 'when user is not present' do
-        subject do
-          described_class.new(
-            user: nil,
-            store: store,
-            visitor_id: 'visitor_123'
-          )
-        end
-      end
-
       it 'enqueues analytics event job for newsletter subscription' do
         expect {
           subject.handle_event('subscribed_to_newsletter', { email: 'test@example.com' })

@@ -1,7 +1,7 @@
 module SpreeKlaviyo
   class AnalyticsEventHandler < ::Spree::BaseAnalyticsEventHandler
     def client
-      @client ||= store.integrations.active.find_by(type: 'Spree::Integrations::Klaviyo')
+      @client ||= store.integrations.active.find_by(type: Spree::Integrations::Klaviyo.name)
     end
 
     def handle_event(event_name, properties)
@@ -53,7 +53,7 @@ module SpreeKlaviyo
 
       return if email.blank? && identity_hash[:visitor_id].blank?
 
-      resource_type = record.nil? ? nil : (record.is_a?(String) ? 'String' : record.class.name)
+      resource_type = record.nil? ? nil : (record.is_a?(String) ? String.name : record.class.name)
       resource_id = record.is_a?(String) ? record : record&.id
 
       SpreeKlaviyo::AnalyticsEventJob.perform_later(client.id, event_human_name(event_name), resource_type, resource_id, email, identity_hash[:visitor_id])

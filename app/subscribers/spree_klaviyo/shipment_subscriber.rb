@@ -18,10 +18,8 @@ module SpreeKlaviyo
       return if integration.blank?
 
       SpreeKlaviyo::AnalyticsEventJob.perform_later(
-        integration.id, 'Package Shipped', 'Spree::Shipment', shipment.id, order.email
+        integration.id, 'Package Shipped', Spree::Shipment.name, shipment.id, order.email
       )
-    rescue StandardError => e
-      Rails.error.report(e, context: { event_name: 'package_shipped' }, source: 'spree_klaviyo')
     end
   end
 end

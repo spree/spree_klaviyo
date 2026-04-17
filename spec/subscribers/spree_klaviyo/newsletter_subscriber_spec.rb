@@ -28,23 +28,6 @@ RSpec.describe SpreeKlaviyo::NewsletterSubscriber do
         invoke_subscriber
       end
     end
-
-    context 'when an error occured' do
-      before { allow(SpreeKlaviyo::SubscribeJob).to receive(:perform_later).and_raise(StandardError.new('test error')) }
-
-      it 'reports the error and raises the error' do
-        expect(Rails.error).to receive(:report) do |error, **kwargs|
-          expect(error).to be_a(StandardError)
-          expect(error.message).to eq('test error')
-          expect(kwargs).to eq(
-            context: { event_name: 'newsletter_subscriber.created' },
-            source: 'spree_klaviyo'
-          )
-        end
-
-        expect { invoke_subscriber }.to raise_error(StandardError, 'test error')
-      end
-    end
   end
 
   describe '#newsletter_subscriber.deleted event' do
