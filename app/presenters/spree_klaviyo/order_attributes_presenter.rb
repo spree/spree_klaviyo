@@ -8,20 +8,20 @@ module SpreeKlaviyo
     def call
       {
         value: @order.total&.to_f,
-        time: time(@order)&.iso8601
+        time: time&.iso8601
       }
     end
 
     private
 
-    def time(order)
+    def time
       case @event_name
       when ::Spree::Analytics.events[:order_completed]
-        order.completed_at
+        @order.completed_at
       when 'Order Cancelled'
-        order.canceled_at
+        @order.canceled_at
       else
-        order.updated_at
+        @order.updated_at
       end
     end
   end
