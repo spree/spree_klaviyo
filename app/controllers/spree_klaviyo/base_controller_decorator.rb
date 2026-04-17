@@ -1,18 +1,16 @@
 module SpreeKlaviyo
   module BaseControllerDecorator
     def self.prepended(base)
-      base.before_action :set_spree_klaviyo_visitor_current
+      base.before_action :set_spree_klaviyo_current_visitor
     end
 
     private
 
-    def set_spree_klaviyo_visitor_current
-      SpreeKlaviyo::Current.visitor_id = resolve_visitor_id_for_klaviyo_current
+    def set_spree_klaviyo_current_visitor
+      SpreeKlaviyo::Current.visitor_id = set_visitor_id_for_spree_klaviyo
     end
 
-    # Devise (e.g. sign up) inherits Spree::BaseController, not Spree::StoreController, so we cannot
-    # rely on StoreController's AnalyticsHelper alone. Match storefront session token when needed.
-    def resolve_visitor_id_for_klaviyo_current
+    def set_visitor_id_for_spree_klaviyo
       if respond_to?(:visitor_id, true)
         visitor_id
       else
@@ -22,6 +20,9 @@ module SpreeKlaviyo
   end
 end
 
+# Only activate when the storefront engine is loaded (Spree::StoreController is defined).
+# We prepend BaseController (not StoreController) because Devise controllers inherit from
+# BaseController directly and would otherwise miss the visitor_id setup.
 if defined?(Spree::StoreController)
   Spree::BaseController.prepend(SpreeKlaviyo::BaseControllerDecorator)
 end
