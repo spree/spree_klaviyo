@@ -7,7 +7,7 @@ RSpec.describe SpreeKlaviyo::KlaviyoProfileSubscriber do
   let!(:klaviyo_integration) { create(:klaviyo_integration, store: store) }
 
   describe '#handle_user_created' do
-    let(:event) { Spree::Event.new(name: 'user.created', payload: { id: user.prefixed_id }, store_id: store.id) }
+    let(:event) { Spree::Event.new(name: 'user.created', payload: { 'id' => user.prefixed_id }, store_id: store.id) }
 
     context 'without visitor_id' do
       it 'enqueues CreateOrUpdateProfileJob' do
@@ -26,7 +26,7 @@ RSpec.describe SpreeKlaviyo::KlaviyoProfileSubscriber do
       let(:event) do
         Spree::Event.new(
           name: 'user.created',
-          payload: { id: user.prefixed_id, 'visitor_id' => 'payload-visitor' },
+          payload: { 'id' => user.prefixed_id, 'visitor_id' => 'payload-visitor' },
           store_id: store.id
         )
       end
@@ -42,7 +42,7 @@ RSpec.describe SpreeKlaviyo::KlaviyoProfileSubscriber do
       let(:event) do
         Spree::Event.new(
           name: 'user.created',
-          payload: { id: user.prefixed_id, 'visitor_id' => 'payload-visitor' },
+          payload: { 'id' => user.prefixed_id, 'visitor_id' => 'payload-visitor' },
           store_id: store.id
         )
       end
@@ -67,7 +67,7 @@ RSpec.describe SpreeKlaviyo::KlaviyoProfileSubscriber do
 
   describe '#handle_profile_upsert' do
     context 'with user.updated event' do
-      let(:event) { Spree::Event.new(name: 'user.updated', payload: { id: user.prefixed_id }, store_id: store.id) }
+      let(:event) { Spree::Event.new(name: 'user.updated', payload: { 'id' => user.prefixed_id }, store_id: store.id) }
 
       it 'enqueues CreateOrUpdateProfileJob' do
         expect(SpreeKlaviyo::CreateOrUpdateProfileJob).to receive(:perform_later)

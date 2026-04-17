@@ -13,7 +13,7 @@ module SpreeKlaviyo
       user = find_user(event)
       return unless user
 
-      integration = find_integration(event)
+      integration = klaviyo_integration(event)
       return unless integration
 
       guest_id = event.payload.dig('visitor_id')
@@ -29,7 +29,7 @@ module SpreeKlaviyo
       user = find_user(event)
       return unless user
 
-      integration = find_integration(event)
+      integration = klaviyo_integration(event)
       return unless integration
 
       SpreeKlaviyo::CreateOrUpdateProfileJob.perform_later(integration.id, user.id)
@@ -47,9 +47,11 @@ module SpreeKlaviyo
       Spree.user_class.respond_to?(:find_by_param) ? Spree.user_class.find_by_param(param) : Spree.user_class.find_by(id: param)
     end
 
-    def find_integration(event)
-      store = Spree::Store.find_by(id: event.store_id) || Spree::Store.default
-      store.integrations.active.find_by(type: Spree::Integrations::Klaviyo.name)
+    def klaviyo_integration(event)
+      store_id = event.store_id.presence || Spree::Store.default&.id
+      return if store_id.blank?
+
+      Spree::Integrations::Klaviyo.find_by(store_id: store_id)
     end
   end
 end

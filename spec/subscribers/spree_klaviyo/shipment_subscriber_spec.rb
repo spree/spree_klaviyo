@@ -8,7 +8,7 @@ RSpec.describe SpreeKlaviyo::ShipmentSubscriber do
       create(:shipment, number: 'H21265865494', cost: 1, state: 'pending', stock_location: create(:stock_location), order: order)
     end
     let!(:klaviyo_integration) { create(:klaviyo_integration, store: order.store) }
-    let(:event) { Spree::Event.new(name: 'shipment.shipped', payload: { id: shipment.prefixed_id }, store_id: store.id) }
+    let(:event) { Spree::Event.new(name: 'shipment.shipped', payload: { 'id' => shipment.prefixed_id }, store_id: store.id) }
 
     it 'enqueues AnalyticsEventJob' do
       expect(SpreeKlaviyo::AnalyticsEventJob).to receive(:perform_later)
