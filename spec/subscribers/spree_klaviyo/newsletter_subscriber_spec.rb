@@ -1,9 +1,7 @@
 require 'spec_helper'
 
 RSpec.describe SpreeKlaviyo::NewsletterSubscriber do
-  subject(:invoke_subscriber) { described_class.new.call(event) }
   let(:store) { Spree::Store.default }
-  let(:newsletter_subscriber) { create(:newsletter_subscriber) }
   let!(:klaviyo_integration) { create(:klaviyo_integration, store: store) }
 
   around do |example|
