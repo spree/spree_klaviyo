@@ -15,6 +15,10 @@ module SpreeKlaviyo
           puts 'Skipping rails db:migrate, don\'t forget to run it!'
         end
       end
+
+      def create_metafield_definitions
+        SpreeKlaviyo::MetafieldMigration.ensure_klaviyo_subscribed_definition!
+      end
     end
   end
 end
