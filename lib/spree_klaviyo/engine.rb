@@ -30,7 +30,7 @@ module SpreeKlaviyo
     config.to_prepare(&method(:activate).to_proc)
 
     rake_tasks do
-      load "#{root}/lib/tasks/migrations.rake"
+      load "#{root}/lib/tasks/setup.rake"
     end
   end
 end

@@ -17,7 +17,7 @@ module SpreeKlaviyo
       end
 
       def create_metafield_definitions
-        SpreeKlaviyo::MetafieldMigration.ensure_klaviyo_subscribed_definition!
+        run 'bin/rails spree_klaviyo:setup:create_metafield_definitions'
       end
     end
   end

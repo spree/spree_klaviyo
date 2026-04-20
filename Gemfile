@@ -7,10 +7,14 @@ end
 
 gem 'rails-controller-testing'
 
-spree_opts = { path: ENV.fetch('SPREE_PATH', nil) }.compact
+spree_opts = if ENV['SPREE_PATH']
+  { 'path': ENV['SPREE_PATH'] }
+else
+  { 'github': 'spree/spree', 'branch': 'main', 'glob': 'spree/**/*.gemspec' }
+end
+gem 'spree', spree_opts
+gem 'spree_admin', spree_opts
 
-gem 'spree', '>= 5.4.0.beta', spree_opts || {}
-gem 'spree_admin', '>= 5.4.0.beta', spree_opts || {}
 gem 'spree_dev_tools', '>= 0.6.0.rc1'
 
 if ENV['DB'] == 'mysql'
