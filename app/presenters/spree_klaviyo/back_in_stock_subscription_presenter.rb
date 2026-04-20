@@ -15,7 +15,7 @@ module SpreeKlaviyo
               data: {
                 type: 'profile',
                 attributes: {
-                  email: email
+                  email: @email
                 }
               }
             }
@@ -24,16 +24,12 @@ module SpreeKlaviyo
             variant: {
               data: {
                 type: 'catalog-variant',
-                id: "$custom:::$default:::#{variant_id}"
+                id: "$custom:::$default:::#{@variant_id}"
               }
             }
           }
         }
       }
     end
-
-    private
-
-    attr_reader :email, :variant_id
   end
 end

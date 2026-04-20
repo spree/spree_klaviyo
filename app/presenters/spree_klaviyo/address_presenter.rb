@@ -19,9 +19,5 @@ module SpreeKlaviyo
         last_name: @address.last_name
       }
     end
-
-    private
-
-    attr_reader :address
   end
 end

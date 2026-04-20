@@ -1,11 +1,10 @@
 require 'spec_helper'
 
 describe SpreeKlaviyo::CreateOrUpdateProfileJob do
-  subject(:perform_job) { described_class.new.perform(klaviyo_integration.id, user.id, guest_id) }
+  subject(:perform_job) { described_class.new.perform(klaviyo_integration.id, user.id) }
 
   let(:klaviyo_integration) { create(:klaviyo_integration) }
   let(:user) { create(:user) }
-  let(:guest_id) { 'guest_123' }
   let(:service_result) { instance_double(Spree::ServiceModule::Result, success?: true) }
 
   before do
@@ -18,22 +17,7 @@ describe SpreeKlaviyo::CreateOrUpdateProfileJob do
 
       expect(SpreeKlaviyo::CreateOrUpdateProfile).to have_received(:call).with(
         klaviyo_integration: klaviyo_integration,
-        user: user,
-        guest_id: guest_id
-      )
-    end
-  end
-
-  context 'without guest_id' do
-    let(:guest_id) { nil }
-
-    it 'calls SpreeKlaviyo::CreateOrUpdateProfile with nil guest_id' do
-      perform_job
-
-      expect(SpreeKlaviyo::CreateOrUpdateProfile).to have_received(:call).with(
-        klaviyo_integration: klaviyo_integration,
-        user: user,
-        guest_id: nil
+        user: user
       )
     end
   end
@@ -41,7 +25,7 @@ describe SpreeKlaviyo::CreateOrUpdateProfileJob do
   context 'when user is not found' do
     it 'raises ActiveRecord::RecordNotFound' do
       expect {
-        described_class.new.perform(klaviyo_integration.id, 999_999, guest_id)
+        described_class.new.perform(klaviyo_integration.id, 999_999)
       }.to raise_error(ActiveRecord::RecordNotFound)
     end
   end
@@ -49,7 +33,7 @@ describe SpreeKlaviyo::CreateOrUpdateProfileJob do
   context 'when klaviyo_integration is not found' do
     it 'raises ActiveRecord::RecordNotFound' do
       expect {
-        described_class.new.perform(999_999, user.id, guest_id)
+        described_class.new.perform(999_999, user.id)
       }.to raise_error(ActiveRecord::RecordNotFound)
     end
   end
@@ -66,8 +50,7 @@ describe SpreeKlaviyo::CreateOrUpdateProfileJob do
 
       expect(SpreeKlaviyo::CreateOrUpdateProfile).to have_received(:call).with(
         klaviyo_integration: klaviyo_integration,
-        user: user,
-        guest_id: guest_id
+        user: user
       )
     end
   end

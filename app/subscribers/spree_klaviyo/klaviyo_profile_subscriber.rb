@@ -1,0 +1,57 @@
+module SpreeKlaviyo
+  class KlaviyoProfileSubscriber < Spree::Subscriber
+    subscribes_to 'user.created', 'user.updated', 'address.created', 'address.updated'
+
+    on 'user.created', :handle_user_created
+    on 'user.updated', :handle_profile_upsert
+    on 'address.created', :handle_profile_upsert
+    on 'address.updated', :handle_profile_upsert
+
+    private
+
+    def handle_user_created(event)
+      user = find_user(event)
+      return unless user
+
+      integration = klaviyo_integration(event)
+      return unless integration
+
+      guest_id = event.payload.dig('visitor_id')
+
+      if guest_id.present?
+        SpreeKlaviyo::MergeVisitorProfileJob.perform_later(integration.id, user.id, guest_id)
+      else
+        SpreeKlaviyo::CreateOrUpdateProfileJob.perform_later(integration.id, user.id)
+      end
+    end
+
+    def handle_profile_upsert(event)
+      user = find_user(event)
+      return unless user
+
+      integration = klaviyo_integration(event)
+      return unless integration
+
+      SpreeKlaviyo::CreateOrUpdateProfileJob.perform_later(integration.id, user.id)
+    end
+
+    def find_user(event)
+      param =
+        if event.name == 'address.created' || event.name == 'address.updated'
+          event.payload['user_id']
+        else
+          event.payload['id']
+        end
+      return unless param
+
+      Spree.user_class.respond_to?(:find_by_param) ? Spree.user_class.find_by_param(param) : Spree.user_class.find_by(id: param)
+    end
+
+    def klaviyo_integration(event)
+      store_id = event.store_id.presence || Spree::Store.default&.id
+      return if store_id.blank?
+
+      Spree::Integrations::Klaviyo.find_by(store_id: store_id)
+    end
+  end
+end

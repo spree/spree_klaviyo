@@ -1,78 +1,39 @@
 require 'spec_helper'
 
 RSpec.describe Spree.user_class, type: :model do
-  include ActiveJob::TestHelper
+  describe 'Klaviyo related methods' do
+    let(:user) { build(:user, klaviyo_id: klaviyo_id_value) }
 
-  describe 'Klaviyo' do
-    let(:user) { build(:user) }
-    let!(:klaviyo_integration) { create(:klaviyo_integration) }
+    let(:klaviyo_id_value) { nil }
 
-    describe '#subscribe_to_klaviyo' do
-      before do
-        ActiveJob::Base.queue_adapter = :test
-        clear_enqueued_jobs
+    describe '#klaviyo_id' do
+      subject(:klaviyo_id) { user.klaviyo_id }
+
+      context 'when not set' do
+        let(:klaviyo_id_value) { nil }
+
+        it { is_expected.to be_nil }
       end
 
-      after { clear_enqueued_jobs }
+      context 'when set' do
+        let(:klaviyo_id_value) { '123' }
 
-      it 'enqueues a SubscribeJob' do
-        expect {
-          user.send(:subscribe_to_klaviyo)
-        }.to have_enqueued_job(SpreeKlaviyo::SubscribeJob).with(klaviyo_integration.id, user.email, user.id)
-      end
-
-      context 'when no klaviyo integration exists' do
-        before do
-          klaviyo_integration.destroy!
-        end
-
-        it 'does not enqueue a SubscribeJob' do
-          expect {
-            user.send(:subscribe_to_klaviyo)
-          }.not_to have_enqueued_job(SpreeKlaviyo::SubscribeJob)
-        end
-      end
-
-      context 'when klaviyo integration is not active' do
-        before do
-          klaviyo_integration.update(active: false)
-        end
-
-        it 'does not enqueue a SubscribeJob' do
-          expect {
-            user.send(:subscribe_to_klaviyo)
-          }.not_to have_enqueued_job(SpreeKlaviyo::SubscribeJob)
-        end
+        it { is_expected.to eq('123') }
       end
     end
 
-    describe '#marketing_opt_in_changed? (private)' do
-      context 'when using accepts_email_marketing column (integration style)' do
-        it 'returns true when toggled from false to true on the same instance' do
-          u = create(:user, accepts_email_marketing: false)
-          expect(u.accepts_email_marketing).to be(false)
-          # Ensure not already subscribed
-          expect(u.send(:klaviyo_subscribed?)).to be(false)
+    describe '#event_payload' do
+      let(:user) { create(:user) }
 
-          u.update!(accepts_email_marketing: true)
-          expect(u.accepts_email_marketing).to be(true)
-          expect(u.send(:marketing_opt_in_changed?)).to be(true)
-        end
+      after { SpreeKlaviyo::Current.reset }
 
-        it 'returns false when toggled to false' do
-          u = create(:user, accepts_email_marketing: true)
-          u.update!(accepts_email_marketing: false)
-          expect(u.accepts_email_marketing).to be(false)
-          expect(u.send(:marketing_opt_in_changed?)).to be(false)
-        end
+      it 'does not add visitor_id when Current is unset' do
+        expect(user.event_payload).not_to have_key('visitor_id')
+      end
 
-        it 'returns false when already Klaviyo-subscribed even if flag changed to true' do
-          u = create(:user, accepts_email_marketing: false)
-          u.klaviyo_subscribed = true
-          u.update!(accepts_email_marketing: true)
-          expect(u.accepts_email_marketing).to be(true)
-          expect(u.send(:marketing_opt_in_changed?)).to be(false)
-        end
+      it 'merges visitor_id from SpreeKlaviyo::Current when set' do
+        SpreeKlaviyo::Current.visitor_id = 'anon-xyz'
+        expect(user.event_payload['visitor_id']).to eq('anon-xyz')
       end
     end
   end

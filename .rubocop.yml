@@ -2,6 +2,7 @@ plugins:
   - rubocop-rails
 
 AllCops:
+  NewCops: enable
   DisplayCopNames: true
   TargetRubyVersion: 3.3
   Include:
@@ -16,6 +17,9 @@ Layout/LineLength:
   Max: 150
 
 # DISABLED
+
+Rails/RakeEnvironment:
+  Enabled: false
 
 Style/Documentation:
   Enabled: false

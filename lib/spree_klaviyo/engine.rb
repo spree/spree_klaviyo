@@ -9,6 +9,8 @@ module SpreeKlaviyo
       g.test_framework :rspec
     end
 
+    config.paths.add 'app/subscribers', eager_load: true
+
     initializer 'spree_klaviyo.environment', before: :load_config_initializers do |_app|
       SpreeKlaviyo::Config = SpreeKlaviyo::Configuration.new
     end
@@ -26,5 +28,9 @@ module SpreeKlaviyo
     end
 
     config.to_prepare(&method(:activate).to_proc)
+
+    rake_tasks do
+      load "#{root}/lib/tasks/setup.rake"
+    end
   end
 end

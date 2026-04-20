@@ -6,7 +6,6 @@ module SpreeKlaviyo
     def initialize(order:)
       @order = order
       @current_store = order.store
-      @products = products(order)
     end
 
     def call
@@ -27,11 +26,11 @@ module SpreeKlaviyo
         tax: @order.additional_tax_total&.to_f,
         included_tax: @order.included_tax_total&.to_f,
         discount: @order.promo_total&.to_f,
-        items: products(@order),
+        items: products,
         coupon: @order.coupon_code.to_s,
         currency: @order.currency,
         completed_at: @order.completed_at&.iso8601.to_s,
-        checkout_url: ::Spree::Core::Engine.routes.url_helpers.checkout_url(host: @current_store.url_or_custom_domain, token: @order.token),
+        checkout_url: checkout_url,
         all_adjustments: all_adjustments,
         bill_address: AddressPresenter.new(address: @order.bill_address).call,
         ship_address: AddressPresenter.new(address: @order.ship_address).call
@@ -40,17 +39,15 @@ module SpreeKlaviyo
 
     private
 
-    attr_reader :order, :current_store
-
-    def products(order)
-      @products ||= order.line_items.includes(variant: { product: :taxons }).map.with_index do |line_item, index|
+    def products
+      @products ||= @order.line_items.includes(variant: { product: :taxons }).map.with_index do |line_item, index|
         LineItemPresenter.new(
           resource: line_item,
           quantity: line_item.quantity,
           total_price: line_item.amount,
-          currency: order.currency,
+          currency: @order.currency,
           position: index + 1,
-          store: order.store
+          store: @order.store
         ).call
       end
     end
@@ -80,6 +77,12 @@ module SpreeKlaviyo
           ShipmentPresenter.new(order: @order, shipment: shipment).call
         end
       }
+    end
+
+    def checkout_url
+      return nil unless ::Spree::Core::Engine.routes.url_helpers.respond_to?(:checkout_url)
+
+      ::Spree::Core::Engine.routes.url_helpers.checkout_url(host: @current_store.url_or_custom_domain, token: @order.token)
     end
 
     def subtotal
