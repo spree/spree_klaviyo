@@ -6,46 +6,55 @@ RSpec.describe SpreeKlaviyo::NewsletterSubscriber do
   let(:newsletter_subscriber) { create(:newsletter_subscriber) }
   let!(:klaviyo_integration) { create(:klaviyo_integration, store: store) }
 
+  around do |example|
+    perform_enqueued_jobs(only: Spree::Events::SubscriberJob) { example.run }
+  end
+
   describe '#newsletter_subscriber.created event' do
-    let(:event) do
-      Spree::Event.new(
-        name: 'newsletter_subscriber.created',
-        payload: newsletter_subscriber.event_payload,
-        store_id: store.id
-      )
+    let(:email) { 'customer@example.com' }
+
+    it 'enqueues SubscribeJob when a newsletter subscriber is created via checkout' do
+      expect {
+        Spree::Newsletter::Subscribe.new(email: email).call
+      }.to have_enqueued_job(SpreeKlaviyo::SubscribeJob)
     end
 
-    it 'enqueues SubscribeJob' do
-      expect(SpreeKlaviyo::SubscribeJob).to receive(:perform_later).with(klaviyo_integration.id, newsletter_subscriber.id)
-      invoke_subscriber
+    it 'does not enqueue SubscribeJob when subscriber already exists' do
+      create(:newsletter_subscriber, email: email)
+
+      expect {
+        Spree::Newsletter::Subscribe.new(email: email).call
+      }.not_to have_enqueued_job(SpreeKlaviyo::SubscribeJob)
     end
 
     context 'without klaviyo integration' do
       before { klaviyo_integration.destroy! }
 
       it 'does not enqueue SubscribeJob' do
-        expect(SpreeKlaviyo::SubscribeJob).not_to receive(:perform_later)
-        invoke_subscriber
+        expect {
+          Spree::Newsletter::Subscribe.new(email: email).call
+        }.not_to have_enqueued_job(SpreeKlaviyo::SubscribeJob)
       end
     end
   end
 
   describe '#newsletter_subscriber.deleted event' do
-    let(:event) do
-      Spree::Event.new(
-        name: 'newsletter_subscriber.deleted',
-        payload: newsletter_subscriber.event_payload,
-        store_id: store.id
-      )
+    let!(:existing_subscriber) { create(:newsletter_subscriber) }
+
+    it 'enqueues UnsubscribeJob when a newsletter subscriber is destroyed' do
+      expect {
+        existing_subscriber.destroy!
+      }.to have_enqueued_job(SpreeKlaviyo::UnsubscribeJob)
     end
 
-    before do
-      newsletter_subscriber.delete
-    end
+    context 'without klaviyo integration' do
+      before { klaviyo_integration.destroy! }
 
-    it 'enqueues UnsubscribeJob' do
-      expect(SpreeKlaviyo::UnsubscribeJob).to receive(:perform_later).with(klaviyo_integration.id, newsletter_subscriber.email)
-      invoke_subscriber
+      it 'does not enqueue UnsubscribeJob' do
+        expect {
+          existing_subscriber.destroy!
+        }.not_to have_enqueued_job(SpreeKlaviyo::UnsubscribeJob)
+      end
     end
   end
 end
