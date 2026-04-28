@@ -1,6 +1,6 @@
 module SpreeKlaviyo
   class UserPresenter
-    def initialize(email: nil, address: nil, user: nil, guest_id: nil)
+    def initialize(user: nil, email: nil, address: nil, guest_id: nil)
       @user = user
       @email = email || user&.email
       @address = address || user&.bill_address
