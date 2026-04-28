@@ -218,6 +218,62 @@ describe Spree::Integrations::Klaviyo, type: :model do
       end
     end
 
+    describe '#create_guest_profile' do
+      subject(:create_guest_profile) { klaviyo_integration.create_guest_profile(email: email, address: address) }
+
+      let(:email) { 'guest+no_address@example.com' }
+      let(:address) { nil }
+
+      context 'with email only' do
+        subject { VCR.use_cassette('klaviyo/create_guest_profile/success') { create_guest_profile } }
+
+        it 'returns a successful response' do
+          expect(subject).to be_success
+          expect(JSON.parse(subject.value).dig('data', 'attributes', 'email')).to eq(email)
+          expect(JSON.parse(subject.value).dig('data', 'attributes', 'external_id')).to be_nil
+        end
+      end
+
+      context 'with email and address' do
+        subject { VCR.use_cassette('klaviyo/create_guest_profile/success_with_address') { create_guest_profile } }
+
+        let(:email) { 'guest+with_address@example.com' }
+        let(:address) { bill_address }
+
+        it 'returns a successful response' do
+          expect(subject).to be_success
+          expect(JSON.parse(subject.value).dig('data', 'attributes', 'email')).to eq(email)
+          expect(JSON.parse(subject.value).dig('data', 'attributes', 'external_id')).to be_nil
+          expect(JSON.parse(subject.value).dig('data', 'attributes', 'location', 'address1')).to eq(address.address1)
+          expect(JSON.parse(subject.value).dig('data', 'attributes', 'location', 'address2')).to eq(address.address2)
+          expect(JSON.parse(subject.value).dig('data', 'attributes', 'location', 'city')).to eq(address.city)
+        end
+      end
+
+      context 'when klaviyo profile already exists' do
+        subject { VCR.use_cassette('klaviyo/create_guest_profile/success_with_existing_profile') { create_guest_profile } }
+
+        let(:email) { 'guest+with_address@example.com' }
+        let(:address) { bill_address }
+
+        it 'returns a failed response' do
+          expect(subject).to be_failure
+          expect(JSON.parse(subject.value).dig('errors', 0, 'code')).to eq('duplicate_profile')
+        end
+      end
+
+      context 'with invalid email' do
+        subject { VCR.use_cassette('klaviyo/create_guest_profile/failure') { create_guest_profile } }
+
+        let(:email) { 'invalid-email' }
+
+        it 'reports the error' do
+          expect(Rails.error).to receive(:report)
+          expect(subject).to be_failure
+        end
+      end
+    end
+
     describe '#update_profile' do
       subject(:update_profile) { klaviyo_integration.update_profile(user) }
 

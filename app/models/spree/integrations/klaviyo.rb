@@ -38,6 +38,13 @@ module Spree
         handle_result(result)
       end
 
+      def create_guest_profile(email:, address: nil)
+        user_presenter = ::SpreeKlaviyo::UserPresenter.new(email: email, address: address)
+        result = client.post_request('profiles/', user_presenter.call)
+
+        handle_result(result)
+      end
+
       def update_profile(user, guest_id = nil)
         user_presenter = ::SpreeKlaviyo::UserPresenter.new(user: user, guest_id: guest_id)
         result = client.patch_request("profiles/#{user.klaviyo_id}/", user_presenter.call)

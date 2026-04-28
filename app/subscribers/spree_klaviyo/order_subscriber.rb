@@ -1,10 +1,23 @@
 module SpreeKlaviyo
   class OrderSubscriber < Spree::Subscriber
-    subscribes_to 'order.canceled'
+    subscribes_to 'order.completed', 'order.canceled'
 
+    on 'order.completed', :handle_order_completed_event
     on 'order.canceled', :track_order_cancelled_event
 
     private
+
+    def handle_order_completed_event(event)
+      order = Spree::Order.find_by_param(event.payload['id'])
+      return unless order
+
+      integration = Spree::Integrations::Klaviyo.find_by(store_id: order.store_id)
+      return if integration.blank?
+
+      if order.user_id.blank?
+        SpreeKlaviyo::CreateGuestProfileJob.perform_later(integration.id, order.id)
+      end
+    end
 
     def track_order_cancelled_event(event)
       order = Spree::Order.find_by_param(event.payload['id'])

@@ -41,7 +41,7 @@ module SpreeKlaviyo
     end
 
     def klaviyo_external_id
-      @user.id
+      @user&.id
     end
 
     def try_klaviyo_id
