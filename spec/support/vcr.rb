@@ -15,6 +15,10 @@ VCR.configure do |c|
       parsed = JSON.parse(body)
       list_data = parsed.dig("data", "relationships", "list", "data")
       list_data["id"] = "PLACEHOLDER" if list_data&.key?("id")
+      attributes = parsed.dig("data", "attributes")
+      attributes["external_id"] = "PLACEHOLDER" if attributes&.key?("external_id")
+      profile_attributes = parsed.dig("data", "attributes", "profile", "data", "attributes")
+      profile_attributes["external_id"] = "PLACEHOLDER" if profile_attributes&.key?("external_id")
       parsed
     rescue JSON::ParserError
       body

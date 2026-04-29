@@ -10,7 +10,7 @@ module SpreeKlaviyo
       if get_klaviyo_id.success?
         klaviyo_integration.update_profile(user, guest_id)
       else
-        klaviyo_integration.create_profile(user, guest_id).tap do |result|
+        klaviyo_integration.create_profile(user: user, guest_id: guest_id).tap do |result|
           user.update!(klaviyo_id: JSON.parse(result.value).dig('data', 'id')) if result.success?
         end
       end

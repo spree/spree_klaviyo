@@ -31,8 +31,8 @@ module Spree
         result.success?
       end
 
-      def create_profile(user, guest_id = nil)
-        user_presenter = ::SpreeKlaviyo::UserPresenter.new(user: user, guest_id: guest_id)
+      def create_profile(user: nil, email: nil, address: nil, guest_id: nil)
+        user_presenter = ::SpreeKlaviyo::UserPresenter.new(user: user, email: email, address: address, guest_id: guest_id)
         result = client.post_request('profiles/', user_presenter.call)
 
         handle_result(result)

@@ -1,0 +1,81 @@
+---
+http_interactions:
+- request:
+    method: post
+    uri: https://a.klaviyo.com/api/profiles/
+    body:
+      encoding: UTF-8
+      string: '{"data":{"type":"profile","attributes":{"anonymous_id":null,"email":"guest+with_address@example.com","first_name":"John","last_name":"Doe","external_id":null,"location":{"address1":"123
+        Main St","address2":"Northwest","city":"Anytown","country":"United States
+        of America","region":"CA","zip":"12345"}}}}'
+    headers:
+      Accept-Encoding:
+      - gzip;q=1.0,deflate;q=0.6,identity;q=0.3
+      Accept:
+      - application/json
+      User-Agent:
+      - Ruby
+      Host:
+      - a.klaviyo.com
+      Revision:
+      - '2025-04-15'
+      Content-Type:
+      - application/json
+      Authorization:
+      - Klaviyo-API-Key <KLAVIYO_PRIVATE_API_KEY>
+  response:
+    status:
+      code: 409
+      message: Conflict
+    headers:
+      Date:
+      - Tue, 28 Apr 2026 12:53:35 GMT
+      Content-Type:
+      - application/vnd.api+json
+      Content-Length:
+      - '297'
+      Connection:
+      - keep-alive
+      Allow:
+      - GET, POST, HEAD, OPTIONS
+      Cid:
+      - <KLAVIYO_PUBLIC_API_KEY>
+      Content-Language:
+      - en-us
+      Content-Security-Policy:
+      - frame-ancestors 'self' login.bigcommerce.com *.mybigcommerce.com admin.shopify.com
+        klaviyo.file.force.com klaviyo.lightning.force.com klaviyo.my.salesforce.com;
+        base-uri 'none'; script-src 'report-sample' 'strict-dynamic' 'unsafe-eval';
+        object-src 'none'; report-uri /csp/
+      Ratelimit-Limit:
+      - 75, 75;w=1, 750;w=60
+      Ratelimit-Remaining:
+      - '74'
+      Ratelimit-Reset:
+      - '0'
+      Server:
+      - cloudflare
+      Vary:
+      - Accept, Accept-Language, Cookie, Origin
+      X-Klaviyo-Api-Retirement-Date:
+      - '2027-04-15'
+      X-Klaviyo-Api-Revision:
+      - '2025-04-15'
+      X-Klaviyo-Req-Id:
+      - 6bade569-c7f0-4b09-b33c-12a371793538
+      X-Envoy-Upstream-Service-Time:
+      - '98'
+      Cf-Cache-Status:
+      - DYNAMIC
+      X-Content-Type-Options:
+      - nosniff
+      Strict-Transport-Security:
+      - max-age=31536000; includeSubDomains; preload
+      Cf-Ray:
+      - 9f3635ecc8757311-WAW
+    body:
+      encoding: UTF-8
+      string: '{"errors":[{"id":"6bade569-c7f0-4b09-b33c-12a371793538","status":409,"code":"duplicate_profile","title":"Conflict.","detail":"A
+        profile already exists with one of these identifiers.","source":{"pointer":"/data/attributes"},"links":{},"meta":{"duplicate_profile_id":"01KQ9YF2AE893M5XV82CQD3VHA"}}]}'
+  recorded_at: Tue, 28 Apr 2026 12:53:35 GMT
+recorded_with: VCR 6.4.0
