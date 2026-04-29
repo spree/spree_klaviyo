@@ -7,7 +7,7 @@ http_interactions:
       encoding: UTF-8
       string: '{"data":{"type":"profile","attributes":{"anonymous_id":null,"email":"guest+with_address@example.com","first_name":"John","last_name":"Doe","external_id":null,"location":{"address1":"123
         Main St","address2":"Northwest","city":"Anytown","country":"United States
-        of America","region":"CA","zip":"<KLAVIYO_PUBLIC_API_KEY>5"}}}}'
+        of America","region":"CA","zip":"12345"}}}}'
     headers:
       Accept-Encoding:
       - gzip;q=1.0,deflate;q=0.6,identity;q=0.3
