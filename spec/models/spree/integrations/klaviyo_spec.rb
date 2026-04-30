@@ -151,7 +151,7 @@ describe Spree::Integrations::Klaviyo, type: :model do
         let(:line_item_2) { create(:line_item, product: product_2, price: 21.37, currency: 'USD', quantity: 10) }
 
         let(:ship_address) { create(:ship_address, first_name: 'John', last_name: 'Ferguson', address1: '456 Oak Ave', city: 'Othertown', state: new_york, zipcode: '67890', phone: '555-555-0199', country: usa) }
-        let(:new_york) { create(:state, name: 'New York', country: usa, abbr: 'NY') }
+        let(:new_york) { Spree::State.find_by(abbr: 'NY', country: usa) || create(:state, name: 'New York', country: usa, abbr: 'NY') }
 
         before do
           create(:payment, order: order, amount: order.total, state: 'completed')
