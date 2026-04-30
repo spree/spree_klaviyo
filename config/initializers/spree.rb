@@ -7,4 +7,5 @@ Rails.application.config.after_initialize do
   Spree.subscribers << SpreeKlaviyo::NewsletterSubscriber
   Spree.subscribers << SpreeKlaviyo::ShipmentSubscriber
   Spree.subscribers << SpreeKlaviyo::KlaviyoProfileSubscriber
+  Spree.subscribers << SpreeKlaviyo::ReimbursementSubscriber
 end
