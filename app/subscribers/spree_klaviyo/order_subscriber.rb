@@ -14,9 +14,9 @@ module SpreeKlaviyo
       integration = Spree::Integrations::Klaviyo.find_by(store_id: order.store_id)
       return if integration.blank?
 
-      if order.user_id.blank?
-        SpreeKlaviyo::CreateGuestProfileJob.perform_later(integration.id, order.id)
-      end
+      SpreeKlaviyo::AnalyticsEventJob.perform_later(
+        integration.id, ::Spree::Analytics.events[:order_completed], Spree::Order.name, order.id, order.email
+      )
     end
 
     def track_order_cancelled_event(event)
