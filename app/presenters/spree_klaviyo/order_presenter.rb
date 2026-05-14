@@ -91,7 +91,7 @@ module SpreeKlaviyo
 
     def try_variants(variant)
       {
-        variant_dict: ::Spree::Variants::OptionsPresenter.new(variant).to_hash
+        variant_dict: variant.options_text
       }
     end
   end

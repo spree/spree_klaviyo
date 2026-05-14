@@ -16,11 +16,11 @@ module SpreeKlaviyo
       {
         name: @product.name,
         price: @product.amount_in(current_currency)&.to_f,
-        brand: @product&.brand_name,
+        brand: @product&.brand_taxon&.name,
         category: @product.main_taxon&.pretty_name,
         currency: current_currency,
         url: respond_to?(:spree_storefront_resource_url) ? spree_storefront_resource_url(@product, store: @current_store) : nil,
-        image_url: @product.default_image.present? ? spree_image_url(@product.default_image, width: 1200, height: 1200, format: :png) : '',
+        image_url: @product.primary_media&.attached? ? spree_image_url(@product.primary_media, width: 1200, height: 1200, format: :png) : '',
         sku: @product.sku
       }
     end

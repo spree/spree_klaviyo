@@ -37,7 +37,7 @@ module SpreeKlaviyo
         shipped_items_quantity = shipped_item.line_item.quantity
         {
           url: respond_to?(:spree_storefront_resource_url) ? spree_storefront_resource_url(shipped_item.variant.product, store: @current_store) : nil,
-          image_url: shipped_item.variant.default_image.present? ? spree_image_url(shipped_item.variant.default_image, width: 1200, height: 1200, format: :png) : '',
+          image_url: shipped_item.variant.primary_media&.attached? ? spree_image_url(shipped_item.variant.primary_media, width: 1200, height: 1200, format: :png) : '',
           name: shipped_item.variant.name,
           variant: shipped_item.variant.options_text,
           sku: shipped_item.variant.sku,
@@ -45,7 +45,7 @@ module SpreeKlaviyo
           total_quantity: shipped_items_quantity,
           price: shipped_item.line_item.price.to_f,
           total_price: shipped_item.line_item.amount.to_f,
-          brand: shipped_item.variant.product.brand_name
+          brand: shipped_item.variant.product.brand_taxon&.name
         }.merge(try_variants(shipped_item.variant))
       end
     end
