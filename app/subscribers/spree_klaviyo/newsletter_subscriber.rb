@@ -8,30 +8,26 @@ module SpreeKlaviyo
     private
 
     def handle_email_subscription(event)
-      subscriber = Spree::NewsletterSubscriber.find_by(email: event.payload['email'])
+      prefix_id = event.payload['id']
+      return if prefix_id.blank?
+
+      subscriber = Spree::NewsletterSubscriber.find_by_prefix_id(prefix_id)
       return if subscriber.blank?
 
-      klaviyo_integration = klaviyo_integration(event)
-      return if klaviyo_integration.blank?
+      integration = Spree::Integrations::Klaviyo.find_by(store_id: subscriber.store_id)
+      return if integration.blank?
 
-      SpreeKlaviyo::SubscribeJob.perform_later(klaviyo_integration.id, subscriber.id)
+      SpreeKlaviyo::SubscribeJob.perform_later(integration.id, subscriber.id)
     end
 
     def handle_email_unsubscription(event)
       email = event.payload['email']
-      return if email.blank?
+      return if email.blank? || event.store_id.blank?
 
-      klaviyo_integration = klaviyo_integration(event)
-      return if klaviyo_integration.blank?
+      integration = Spree::Integrations::Klaviyo.find_by(store_id: event.store_id)
+      return if integration.blank?
 
-      SpreeKlaviyo::UnsubscribeJob.perform_later(klaviyo_integration.id, email)
-    end
-
-    def klaviyo_integration(event)
-      store_id = event.store_id.presence || Spree::Store.default&.id
-      return if store_id.blank?
-
-      Spree::Integrations::Klaviyo.find_by(store_id: store_id)
+      SpreeKlaviyo::UnsubscribeJob.perform_later(integration.id, email)
     end
   end
 end
